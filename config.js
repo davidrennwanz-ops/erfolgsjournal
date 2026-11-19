@@ -1,4 +1,4 @@
 window.EJ_CONFIG = {
-  SUPABASE_URL: "https://kywmzqblpkdoillehmma.supabase.co/rest/v1/",
+  SUPABASE_URL: "https://kywmzqblpkdoillehmma.supabase.co",
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5d216cWJscGtkb2lsbGVobW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ5OTE5MzksImV4cCI6MjExMDU2NzkzOX0.RNphKwrRtbWWucK1SiOdTHNjGb16z7l4qHYklWRJ5pk"
 };
