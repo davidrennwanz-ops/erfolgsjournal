@@ -354,6 +354,13 @@ body.t-verbindlich .edit-btn{border-radius:4px}
 body.t-verbindlich .logout-side{border-radius:4px}
 .logout-side:hover{filter:brightness(1.1)}
 @media (max-width:860px){.savepill{top:10px;right:10px;font-size:11.5px;padding:5px 9px}}
+
+.tour-hole{position:fixed;z-index:60;border-radius:10px;box-shadow:0 0 0 9999px rgba(15,18,25,.62);transition:all .25s;pointer-events:none;outline:2px solid var(--accent)}
+.tour-card{position:fixed;z-index:61;left:50%;transform:translateX(-50%);width:min(420px,calc(100vw - 28px));background:var(--panel);color:var(--ink);border-radius:12px;padding:18px 20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6);border-top:4px solid var(--accent)}
+.tour-card h3{font-size:19px;margin:2px 0 8px}
+.tour-card p{font-size:14.5px;line-height:1.55;margin:0 0 14px}
+.tour-step{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tour-btns{display:flex;justify-content:space-between;gap:10px;align-items:center}
 </style>
 </head>
 <body>
@@ -374,34 +381,40 @@ const addDays=(ds,n)=>{const d=new Date(ds+'T12:00');d.setDate(d.getDate()+n);re
 const uid=()=>Math.random().toString(36).slice(2,9);
 const DISTR_SEED=[['alk','🍺 Alkohol'],['shorts','📱 Shorts / Social Media'],['suess','🍫 Süßes / Snacks'],['spaet','🌙 Zu spät ins Bett'],['prok','⏳ Aufgeschoben'],['couch','🛋️ Keine Bewegung']];
 
-function seedGoals(){return[
-    {id:'g0',master:true,title:'Trading zu meiner Lebensgrundlage machen',why:'',deadline:'',progress:10},
-    {id:'g3',title:'Gesunder Körper und Geist – gesund ernähren',why:'Energie und Klarheit für mein Masterziel',deadline:'',progress:20},
-    {id:'g1',title:'Silvesterlauf entspannt finishen',why:'Gesund und fit ins neue Jahr',deadline:'2026-12-31',progress:40}
+function addMonths(ds,n){const d=new Date(ds+'T12:00');d.setMonth(d.getMonth()+n);return iso(d)}
+function firstOfNextMonth(){const d=new Date();return iso(new Date(d.getFullYear(),d.getMonth()+1,1))}
+function seedGoals(){const st=firstOfNextMonth();return[
+    {id:'d1',master:true,title:'Nebeneinkommen aufbauen',metric:'Einnahmen',target:500,unit:'€',rhythm:'monat',start:st,deadline:(()=>{const d=new Date(addMonths(st,6)+'T12:00');d.setDate(d.getDate()-1);return iso(d)})(),months:{},progress:0,
+     why:'Mehr finanzielle Freiheit und ein Projekt, das mir gehört',
+     vision:'Ich habe ein finanzielles Polster und weniger Druck\nIch arbeite an etwas, das mich begeistert\nIch entscheide selbst, wie es beruflich weitergeht',
+     obstacle:'Abends bin ich müde und lande auf der Couch',plan:'Wenn ich nach Hause komme, arbeite ich zuerst 30 Minuten an meinem Projekt – danach ist Feierabend.'},
+    {id:'d2',title:'10 km unter 60 Minuten laufen',metric:'',target:'',unit:'',rhythm:'gesamt',start:today(),deadline:addMonths(today(),4),progress:10,why:'Fit und energiegeladen sein'},
+    {id:'d3',title:'12 Bücher in diesem Jahr lesen',metric:'Gelesene Bücher',target:12,unit:'Bücher',rhythm:'gesamt',current:0,start:today(),deadline:new Date().getFullYear()+'-12-31',progress:0,why:'Jeden Monat etwas Neues lernen'}
   ]}
 function seedIdeal(){return[
-    {id:'i1',time:'06:00',end:'',title:'Aufstehen'},
-    {id:'i2',time:'06:15',end:'06:45',title:'Yoga'},
-    {id:'i3',time:'09:00',end:'',title:'Trading Session'}
+    {id:'i1',time:'06:30',end:'',title:'Aufstehen, Wasser trinken'},
+    {id:'i2',time:'07:00',end:'07:30',title:'Bewegung'},
+    {id:'i3',time:'08:00',end:'12:00',title:'Fokuszeit – das Wichtigste zuerst'},
+    {id:'i4',time:'12:30',end:'13:00',title:'Mittag und kurzer Spaziergang'},
+    {id:'i5',time:'18:00',end:'20:00',title:'Zeit mit Familie und Freunden'},
+    {id:'i6',time:'21:30',end:'',title:'Handy weg, Tag reflektieren'},
+    {id:'i7',time:'22:30',end:'',title:'Schlafen'}
   ]}
 function seed(){return{
-  name:'David',
+  name:'',
+  settings:{v:4,layout:'verbindlich',evening:17,tutorialDone:false},
   goals:seedGoals(),
-  idealDay:seedIdeal(),idealWhy:'',
+  idealDay:seedIdeal(),idealWhy:'Ich starte ausgeruht in den Tag, arbeite konzentriert an dem, was mir wichtig ist, und habe abends Zeit für die Menschen, die ich liebe.',
   habits:[
-    {id:'h1',name:'Raus an die frische Luft',icon:'🌳',type:'do',target:7},
-    {id:'h2',name:'Laufen',icon:'🏃',type:'do',target:3},
-    {id:'h4',name:'2 Liter Wasser',icon:'💧',type:'do',target:7},
-    {id:'h5',name:'10 Min. lesen',icon:'📖',type:'do',target:5},
-    {id:'h6',name:'Kein Alkohol',icon:'🍺',type:'avoid',cost:3,unit:'€'},
-    {id:'h7',name:'Kein Handy ab 22 Uhr',icon:'📵',type:'avoid',cost:60,unit:'Min.'},
-    {id:'h3',name:'Keine Süßigkeiten',icon:'🍬',type:'avoid',cost:2,unit:'€'}
+    {id:'h1',name:'30 Min. Bewegung',icon:'🏃',type:'do',target:4},
+    {id:'h2',name:'2 Liter Wasser',icon:'💧',type:'do',target:7},
+    {id:'h3',name:'10 Min. lesen',icon:'📖',type:'do',target:5},
+    {id:'h4',name:'Vor 23 Uhr schlafen',icon:'😴',type:'do',target:5},
+    {id:'h5',name:'Kein Social Media nach 21 Uhr',icon:'📵',type:'avoid',cost:45,unit:'Min.'},
+    {id:'h6',name:'Keine Süßgetränke',icon:'🥤',type:'avoid',cost:2,unit:'€'},
+    {id:'h7',name:'Kein Fast Food',icon:'🍔',type:'avoid',cost:9,unit:'€'}
   ],
-  values:[
-    {id:'v1',name:'Gesundheit',desc:'Mein Körper trägt mich durchs Leben – ich behandle ihn entsprechend.'},
-    {id:'v2',name:'Familie',desc:'Zeit mit den Menschen, die mir am wichtigsten sind, hat Vorrang.'},
-    {id:'v3',name:'Disziplin',desc:'Ich tue, was ich mir vornehme – auch wenn keiner zuschaut.'}
-  ],
+  values:[],
   days:{}
 }}
 const dl=()=>S.distractions;
@@ -437,6 +450,21 @@ S=normalize(S||seed());
 function day(d=today()){if(!S.days[d])S.days[d]=DAY_DEFAULT();return S.days[d]}
 const metaObj=()=>({distractions:S.distractions,idealDay:S.idealDay,idealWhy:S.idealWhy,name:S.name,goals:S.goals,habits:S.habits,values:S.values,settings:S.settings});
 
+/* --- Verschlüsselung: Daten werden im Browser mit dem Passwort verschlüsselt --- */
+const TE=new TextEncoder(),TD=new TextDecoder();
+function b64(buf){const u=new Uint8Array(buf);let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)}
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let CK=null;
+async function deriveKey(pw,uid){const base=await crypto.subtle.importKey('raw',TE.encode(pw),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:TE.encode('erfolgsjournal:'+uid),iterations:210000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function encObj(o){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},CK,TE.encode(JSON.stringify(o)));return{enc:1,iv:b64(iv),ct:b64(ct)}}
+async function decObj(d){const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(d.iv)},CK,unb64(d.ct));return JSON.parse(TD.decode(pt))}
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('ej',1);r.onupgradeneeded=()=>r.result.createObjectStore('k');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function keyGet(uid){try{const db=await idb();return await new Promise(res=>{const t=db.transaction('k').objectStore('k').get(uid);t.onsuccess=()=>res(t.result||null);t.onerror=()=>res(null)})}catch(e){return null}}
+async function keyPut(uid,k){try{const db=await idb();await new Promise(res=>{const t=db.transaction('k','readwrite');t.objectStore('k').put(k,uid);t.oncomplete=res;t.onerror=res})}catch(e){}}
+async function keyClear(){try{const db=await idb();await new Promise(res=>{const t=db.transaction('k','readwrite');t.objectStore('k').clear();t.oncomplete=res;t.onerror=res})}catch(e){}}
+async function doLogout(){try{await SB.auth.signOut()}catch(e){}await keyClear();try{localStorage.removeItem(LKEY);localStorage.removeItem('ej_uid')}catch(e){}location.reload()}
+
 /* --- Cloud (Supabase) --- */
 const CFG=window.EJ_CONFIG||{};
 const CONFIGURED=!!(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/DEIN|XXX/.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY));
@@ -459,7 +487,8 @@ function queue(k){if(!cloud)return;pend[k]=JSON.parse(JSON.stringify(k==='meta'?
 async function flush(k){
   if(inflight[k]||!(k in pend))return;
   const data=pend[k];delete pend[k];inflight[k]=true;
-  const {error}=await SB.from('journal').upsert({user_id:UID,key:k,data,updated_at:new Date().toISOString()});
+  let error=null;
+  try{const payload=await encObj(data);({error}=await SB.from('journal').upsert({user_id:UID,key:k,data:payload,updated_at:new Date().toISOString()}))}catch(e){error=e}
   if(error){console.warn('db',error);if(!(k in pend))pend[k]=data;setSave('error');setTimeout(()=>flush(k),5000+Math.random()*3000)}
   inflight[k]=false;if(k in pend&&!error)flush(k);
   if(!error&&!Object.keys(pend).length&&!Object.values(inflight).some(Boolean)&&!dirty.size)setSave('ok');
@@ -471,22 +500,49 @@ async function loadAll(){
 }
 async function initCloud(){
   dictation=makeDictation();
-  if(!SB)return;
+  if(!SB){if(!S.settings.tutorialDone)setTimeout(startTour,400);return}
   try{
     const {data:{session}}=await SB.auth.getSession();
     if(!session){showLogin();return}
     UID=session.user.id;
+    CK=await keyGet(UID);
+    if(!CK){showUnlock(session.user.email);return}
+    let cachedFor='';try{cachedFor=localStorage.getItem('ej_uid')||''}catch(e){}
+    if(cachedFor!==UID)S=normalize(seed());
+    try{localStorage.setItem('ej_uid',UID)}catch(e){}
     const rows=await loadAll();
     if(!rows.length){
-      cloud=true;queue('meta');Object.keys(S.days).forEach(d=>queue('d-'+d));
-    }else{
-      const n={name:S.name,goals:[],habits:[],values:[],days:{}};
-      rows.forEach(r=>{if(r.key==='meta')Object.assign(n,r.data);else if(r.key.startsWith('d-'))n.days[r.key.slice(2)]=r.data});
-      S=normalize(n);cloud=true;
-      try{localStorage.setItem(LKEY,JSON.stringify(S))}catch(e){}
+      // Neues Konto: neutrale Beispiele + Tutorial
+      S=normalize(seed());cloud=true;queue('meta');
+      setSync();render();setSave('ok');setTimeout(startTour,400);return;
     }
+    const n={name:'',goals:[],habits:[],values:[],days:{}},plain=[];
+    for(const r of rows){
+      let v=r.data;
+      if(v&&v.enc){try{v=await decObj(v)}catch(e){await keyClear();CK=null;showUnlock(session.user.email,'Das Passwort passt nicht zu deinen Daten.');return}}
+      else plain.push(r.key);
+      if(r.key==='meta')Object.assign(n,v);else if(r.key.startsWith('d-'))n.days[r.key.slice(2)]=v;
+    }
+    if(n.settings&&n.settings.tutorialDone===undefined)n.settings.tutorialDone=true; // bestehende Konten: keine Auto-Tour
+    S=normalize(n);cloud=true;
+    try{localStorage.setItem(LKEY,JSON.stringify(S))}catch(e){}
+    plain.forEach(k=>queue(k)); // alte, unverschlüsselte Einträge jetzt verschlüsselt speichern
     setSync();render();setSave('ok');
-  }catch(e){console.warn('cloud init',e);renderSave();toast('Keine Verbindung – du arbeitest mit dem letzten Stand auf diesem Gerät.',4000);setSync()}
+    if(!S.settings.tutorialDone)setTimeout(startTour,400);
+  }catch(e){console.warn('cloud init',e);toast('Keine Verbindung – du arbeitest mit dem letzten Stand auf diesem Gerät.',4000);renderSave();setSync()}
+}
+function showUnlock(email,msg){
+  document.querySelector('.app').style.display='none';
+  let el=document.getElementById('auth');if(!el){el=document.createElement('div');el.id='auth';el.className='auth';document.body.appendChild(el)}
+  el.innerHTML=`<div class="card"><h1>Entsperren</h1><div class="meta">Deine Einträge sind mit deinem Passwort verschlüsselt. Gib es einmal ein, um sie auf diesem Gerät zu öffnen.</div><div class="gold"></div>
+    <input type="email" value="${esc(email)}" disabled>
+    <input type="password" id="uP" placeholder="Passwort" autocomplete="current-password">
+    <div class="err" id="uErr">${msg?esc(msg):''}</div>
+    <div class="row"><button class="btn" id="uGo">Entsperren</button><button class="btn ghost" id="uOut">Abmelden</button></div></div>`;
+  const go=async()=>{const pw=el.querySelector('#uP').value,err=el.querySelector('#uErr');err.textContent='';
+    const r=await SB.auth.signInWithPassword({email,password:pw});if(r.error){err.textContent='Passwort falsch.';return}
+    CK=await deriveKey(pw,r.data.user.id);await keyPut(r.data.user.id,CK);el.remove();document.querySelector('.app').style.display='';initCloud()};
+  el.querySelector('#uGo').onclick=go;el.querySelector('#uP').onkeydown=e=>{if(e.key==='Enter')go()};el.querySelector('#uOut').onclick=doLogout;
 }
 function showLogin(){
   document.querySelector('.app').style.display='none';
@@ -495,12 +551,14 @@ function showLogin(){
     <input type="email" id="aE" placeholder="E-Mail" autocomplete="email">
     <input type="password" id="aP" placeholder="Passwort (mind. 6 Zeichen)" autocomplete="current-password">
     <div class="err" id="aErr"></div>
-    <div class="row"><button class="btn" id="aIn">Anmelden</button><button class="btn ghost" id="aUp">Konto erstellen</button></div></div>`;
+    <div class="row"><button class="btn" id="aIn">Anmelden</button><button class="btn ghost" id="aUp">Konto erstellen</button></div>
+    <p class="meta" style="margin:14px 0 0;line-height:1.5">🔒 Deine Einträge werden mit deinem Passwort verschlüsselt. Niemand sonst kann sie lesen – auch nicht der Betreiber. Merk dir dein Passwort gut: Ohne es lassen sich die Daten nicht wiederherstellen.</p></div>`;
   const go=async up=>{const email=el.querySelector('#aE').value.trim(),password=el.querySelector('#aP').value,err=el.querySelector('#aErr');err.textContent='';
     if(!email||password.length<6){err.textContent='Bitte E-Mail und ein Passwort mit mind. 6 Zeichen eingeben.';return}
     const r=up?await SB.auth.signUp({email,password}):await SB.auth.signInWithPassword({email,password});
     if(r.error){err.textContent=r.error.message==='Invalid login credentials'?'E-Mail oder Passwort falsch.':r.error.message;return}
     if(up&&!r.data.session){err.style.color='inherit';err.textContent='Fast geschafft: Bestätige den Link in deiner E-Mail und melde dich dann an.';return}
+    CK=await deriveKey(password,r.data.session.user.id);await keyPut(r.data.session.user.id,CK);
     el.remove();document.querySelector('.app').style.display='';initCloud()};
   el.querySelector('#aIn').onclick=()=>go(false);el.querySelector('#aUp').onclick=()=>go(true);
   el.querySelector('#aP').onkeydown=e=>{if(e.key==='Enter')go(false)};
@@ -616,7 +674,7 @@ function renderNav(){
   `<div class="side-foot"><span id="sync" class="sync"></span>${SB&&cloud?'<button class="logout-side" id="logoutSide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Abmelden</button>':''}</div>`;
   n.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>{page=b.dataset.p;location.hash=page;render();window.scrollTo(0,0)});
   setSync();
-  const lo=document.getElementById('logoutSide');if(lo)lo.onclick=async()=>{await SB.auth.signOut();try{localStorage.removeItem(LKEY)}catch(e){}location.reload()};
+  const lo=document.getElementById('logoutSide');if(lo)lo.onclick=doLogout;
 }
 window.addEventListener('hashchange',()=>{const p=location.hash.slice(1);if(pages.find(x=>x[0]===p)&&p!==page){page=p;render()}});
 
@@ -840,7 +898,7 @@ function viewTag(){
 
   M.innerHTML=`
   <section class="hero">${scene(phase)}
-    <div class="hero-txt"><div class="hero-ico">${scene(phase,true)}</div><div><div class="date">${fmtDate(today())}</div><h1>${greet[phase]}, ${esc(S.name)}.</h1><p class="hq">„${esc(q[0])}“ <span>— ${esc(q[1])}</span></p></div></div>
+    <div class="hero-txt"><div class="hero-ico">${scene(phase,true)}</div><div><div class="date">${fmtDate(today())}</div><h1>${greet[phase]}${S.name?', '+esc(S.name):''}.</h1><p class="hq">„${esc(q[0])}“ <span>— ${esc(q[1])}</span></p></div></div>
   </section>
   ${!CONFIGURED?'<div class="banner">Testmodus: Deine Einträge liegen nur auf diesem Gerät. Für Login und Sync die Datei config.js ausfüllen (siehe Anleitung).</div>':''}
   ${missionCard}
@@ -1284,6 +1342,10 @@ function viewSettings(){
         <input type="text" id="sName" value="${esc(S.name)}">
       </div>
       <div class="card">
+        <h3>Tutorial</h3><p class="hint">Die kurze Einführung noch einmal ansehen.</p>
+        <button class="btn ghost" id="tourAgain">▶ Tutorial starten</button>
+      </div>
+      <div class="card">
         <h3>Datensicherung</h3><p class="hint">Einmal im Monat exportieren – die Datei ist deine Sicherung.</p>
         <div class="row" style="flex-wrap:wrap"><button class="btn" id="exp">⬇ Daten exportieren</button><label class="btn ghost" style="cursor:pointer">⬆ Importieren<input type="file" id="imp" accept="application/json" style="display:none"></label></div>
         <details style="margin-top:12px"><summary class="meta" style="cursor:pointer">Daten aus der Claude-Version übernehmen</summary>
@@ -1299,9 +1361,56 @@ function viewSettings(){
   bind('#exp',()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='erfolgsjournal-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)},'click');
   bind('#imp',el=>{const f=el.files[0];if(!f)return;f.text().then(t=>{try{const n=normalize(JSON.parse(t));S=n;markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Import erfolgreich.');render()}catch(e){toast('Datei konnte nicht gelesen werden.')}})},'change');
   bind('#impGo',()=>{try{S=normalize(JSON.parse(M.querySelector('#impTxt').value));markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Übernommen ✓');render()}catch(e){toast('Text konnte nicht gelesen werden.')}},'click');
-  bind('#logout',async()=>{await SB.auth.signOut();try{localStorage.removeItem(LKEY)}catch(e){}location.reload()},'click');
+  bind('#logout',doLogout,'click');
+  bind('#tourAgain',startTour,'click');
   bind('[data-ddel]',el=>{S.distractions=S.distractions.filter(x=>x[0]!==el.dataset.ddel);markMeta();viewSettings()},'click');
 }
+
+/* =========================================================
+   Tutorial bei der Erstanmeldung
+   ========================================================= */
+const TOUR=[
+  {t:'Willkommen im Erfolgsjournal',x:'Hier loggst du dich jeden Tag in deinen Tag ein – mit einem Ziel, das dir wirklich wichtig ist. Die Tour dauert eine Minute. Alles, was du gleich siehst, sind <b>Beispiele</b> – du passt sie danach an.',name:true},
+  {p:'tag',s:'.mission',t:'Dein Masterziel',x:'Ganz oben steht immer dein wichtigstes Ziel – mit Zeitraum, Warum und dem, was sich in deinem Leben dadurch verändert. Jeden Tag, wenn du die Seite öffnest, siehst du zuerst das.'},
+  {p:'tag',s:'.day-sec',t:'Dein Tag in drei Abschnitten',x:'<b>Morgen:</b> Fokus, deine 2 wichtigsten Aufgaben, Dankbarkeit.<br><b>Tagsüber:</b> Gewohnheiten und worauf du bewusst verzichtest.<br><b>Abend:</b> ehrliche Reflexion.<br>Je nach Uhrzeit öffnet sich, was gerade dran ist.'},
+  {p:'tag',s:'#fab',t:'Einfach einsprechen',x:'Keine Lust zu tippen? Tippe auf das Mikrofon und sprich. Am Handy geht auch immer die Mikrofon-Taste deiner Tastatur.'},
+  {p:'tag',s:'#savepill',t:'Speichert sich selbst',x:'Du musst nie auf „Speichern“ drücken. Deine Einträge werden automatisch gesichert – <b>verschlüsselt mit deinem Passwort</b>. Niemand außer dir kann sie lesen.'},
+  {p:'ideal',s:'.nav-btn[data-p="ideal"]',t:'Mein idealer Tag',x:'Wie sähe dein Tag aus, wenn dein Ziel erreicht ist? Hier legst du ihn mit Uhrzeiten an – als Bild, für das du arbeitest.'},
+  {p:'ziele',s:'.nav-btn[data-p="ziele"]',t:'Meine Ziele',x:'Ein <b>Masterziel</b> und höchstens zwei optionale Ziele – Fokus schlägt Vielfalt. Mit „<b>Bearbeiten</b>“ oben rechts passt du alles an: messbar, mit Zeitraum und einem Wenn-dann-Plan für schwache Momente.'},
+  {p:'gew',s:'.nav-btn[data-p="gew"]',t:'Gewohnheiten',x:'Was du <b>tun</b> willst (z. B. 3× pro Woche Sport) und worauf du <b>verzichtest</b> (z. B. Social Media am Abend). Ein Ausrutscher löscht keinen Fortschritt – du siehst „23 von 30 Tagen“.'},
+  {p:'report',s:'.nav-btn[data-p="report"]',t:'Reports',x:'Woche, Monat, Jahr: Was lief gut, was hat dich abgelenkt, wie viele Aufgaben für dein Ziel hast du erledigt.'},
+  {p:'settings',s:'.nav-btn[data-p="settings"]',t:'Einstellungen',x:'Layout, eigene Ablenkungen, Datensicherung – und hier kannst du diese Tour jederzeit erneut starten.'},
+  {t:'Los geht’s',x:'Am wichtigsten ist dein <b>Masterziel</b>. Leg es jetzt an – die Beispiele kannst du einfach überschreiben.',final:true}
+];
+let tourI=-1;
+function startTour(){tourI=0;showTour()}
+function endTour(){tourI=-1;['tourHole','tourCard'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove()});if(!S.settings.tutorialDone){S.settings.tutorialDone=true;markMeta()}}
+function showTour(){
+  const st=TOUR[tourI];if(!st){endTour();return}
+  if(st.p&&page!==st.p){page=st.p;location.hash=page;render()}
+  if(st.p==='tag'&&!st.s.startsWith('.nav'))window.scrollTo(0,0);
+  let hole=document.getElementById('tourHole');if(!hole){hole=document.createElement('div');hole.id='tourHole';hole.className='tour-hole';document.body.appendChild(hole)}
+  let card=document.getElementById('tourCard');if(!card){card=document.createElement('div');card.id='tourCard';card.className='tour-card';document.body.appendChild(card)}
+  const el=st.s?[...document.querySelectorAll(st.s)].find(e=>e.offsetParent!==null||getComputedStyle(e).position==='fixed'):null;
+  if(el&&el.scrollIntoView)el.scrollIntoView({block:'center',behavior:'instant'});
+  card.innerHTML=`<div class="tour-step">${tourI+1} / ${TOUR.length}</div><h3>${st.t}</h3><p>${st.x}</p>
+    ${st.name?`<input type="text" id="tourName" placeholder="Wie heißt du? (für die Begrüßung)" value="${esc(S.name||'')}" style="margin:4px 0 12px">`:''}
+    <div class="tour-btns">${st.final?`<button class="btn ghost small" id="tourDay">Erst mal umschauen</button><button class="btn" id="tourGoal">Masterziel anlegen</button>`:`${tourI>0?'<button class="btn ghost small" id="tourBack">Zurück</button>':'<button class="btn ghost small" id="tourSkip">Überspringen</button>'}<button class="btn" id="tourNext">Weiter</button>`}</div>`;
+  const place=()=>{
+    if(el){const r=el.getBoundingClientRect(),pad=6;Object.assign(hole.style,{display:'block',left:(r.left-pad)+'px',top:(r.top-pad)+'px',width:(r.width+pad*2)+'px',height:(r.height+pad*2)+'px'});
+      const below=r.top+r.height/2<innerHeight/2;card.style.top=below?Math.min(innerHeight-card.offsetHeight-16,r.bottom+16)+'px':'';card.style.bottom=below?'':Math.max(16,innerHeight-r.top+16)+'px'}
+    else{Object.assign(hole.style,{display:'block',left:'50%',top:'45%',width:'0px',height:'0px'});card.style.top=Math.max(16,(innerHeight-card.offsetHeight)/2)+'px';card.style.bottom=''}
+  };
+  setTimeout(place,60);
+  const q=id=>card.querySelector('#'+id);
+  const saveName=()=>{const n=q('tourName');if(n){S.name=n.value.trim();markMeta();renderNav();if(page==='tag')render()}};
+  if(q('tourNext'))q('tourNext').onclick=()=>{saveName();tourI++;showTour()};
+  if(q('tourBack'))q('tourBack').onclick=()=>{tourI--;showTour()};
+  if(q('tourSkip'))q('tourSkip').onclick=()=>{saveName();endTour();page='tag';location.hash='tag';render()};
+  if(q('tourDay'))q('tourDay').onclick=()=>{endTour();page='tag';location.hash='tag';render()};
+  if(q('tourGoal'))q('tourGoal').onclick=()=>{endTour();editing.ziele=true;page='ziele';location.hash='ziele';render();window.scrollTo(0,0)};
+}
+addEventListener('resize',()=>{if(tourI>=0)showTour()});
 
 /* =========================================================
    Sprach-Fenster (Button unten rechts)
