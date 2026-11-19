@@ -363,6 +363,8 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .tour-card p{font-size:14.5px;line-height:1.55;margin:0 0 14px}
 .tour-step{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tour-btns{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.sec-head.static{cursor:default}
+.day-sec.plan .sec-head{border-color:transparent;background:transparent;padding-left:0}
 </style>
 </head>
 <body>
@@ -668,7 +670,7 @@ const icons={
 icons.settings='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>';
 icons.ideal='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 const pages=[['tag','Mein Tag'],['ideal','Mein idealer Tag'],['ziele','Meine Ziele'],['gew','Gewohnheiten'],['report','Reports'],['settings','Einstellungen']];
-let page=(location.hash||'#tag').slice(1);if(page==='werte')page='tag';if(!pages.find(p=>p[0]===page))page='tag';
+let page='tag';try{if(location.hash&&location.hash!=='#tag')history.replaceState(null,'',location.pathname+location.search+'#tag')}catch(e){}
 function renderNav(){
   const n=document.getElementById('nav');
   n.innerHTML=`<div class="brand"><div class="brand-mark">${scene(phase,true)}</div><div><b>Erfolgsjournal</b><small>Log dich in deinen Tag ein</small></div></div>`+
@@ -873,7 +875,7 @@ function viewTag(){
       <div class="goal-line">${esc(main.title)}</div>
       ${main.start&&main.deadline?`<div class="tbar"><i style="width:${timePct(main)}%"></i></div><div class="tstat">${timeStatus(main)}</div>`:''}
       ${main.why?`<div class="why" style="margin:10px 0 0">Warum: ${esc(main.why)}</div>`:''}
-      ${visionLines(main).length?`<div class="vision" style="margin-top:12px"><span>Dadurch ändert sich mein Leben wie folgt:</span><ul>${visionLines(main).map(v=>`<li>${esc(v)}</li>`).join('')}</ul></div>`:''}
+      ${visionLines(main).length?`<div class="vision" style="margin-top:12px"><span>Das gewinne ich, wenn ich dranbleibe:</span><ul>${visionLines(main).map(v=>`<li>${esc(v)}</li>`).join('')}</ul></div>`:''}
     </div>`:'';
   const taskCardV=taskCard.replace('%%VERDICT%%',`<p class="verdict ${vcls}" style="margin:6px 0 14px;font-size:14px">${verdict}</p>`);
 
@@ -884,33 +886,25 @@ function viewTag(){
   const avLogged=avH.filter(h=>d.habits[h.id]!==undefined).length;
   const eDone=[!!d.win.trim(),!!(d.good.trim()||d.learn.trim()),!!d.mood];
   const eveningDone=eDone.every(Boolean);
-  const secs=[
-    {k:'morgen',t:'Morgen',cards:[focusCard,taskCardV,gratCard],done:morningDone,
-     sum:morningDone?'✓ Erledigt – Fokus, Aufgaben, Dankbarkeit':`${mDone.filter(Boolean).length}/3 ausgefüllt`,
-     open:!morningDone&&!isEve},
-    {k:'tag',t:'Tagsüber',cards:[doCard,avoidCard,proudCard],done:false,
-     sum:`Gewohnheiten ${doneDo}/${doH.length} · Verzicht ${avOk}/${avH.length}`,
-     open:morningDone&&!isEve},
-    {k:'abend',t:'Abend',cards:[checkCard,avoidCard,winCard,reflectCard],done:eveningDone,
-     sum:eveningDone?'✓ Tag abgeschlossen':isEve?'Jetzt dran':`öffnet ab ${eve}:00 Uhr`,
-     open:isEve&&!eveningDone}
-  ];
-  // manuelles Auf-/Zuklappen für heute merken
-  secs.forEach(x=>{const key=today()+x.k;if(secManual[key]!==undefined)x.open=secManual[key]});
-  if(!secs.some(x=>x.open)&&!eveningDone)secs[isEve?2:1].open=true;
-
+  const closeKey=today()+'abschluss';
+  const closeOpen=secManual[closeKey]!==undefined?secManual[closeKey]:(isEve&&!eveningDone);
+  const closeSum=eveningDone?'✓ Tag abgeschlossen':isEve?'Jetzt dran':`öffnet ab ${eve}:00 Uhr`;
   M.innerHTML=`
   <section class="hero">${scene(phase)}
     <div class="hero-txt"><div class="hero-ico">${scene(phase,true)}</div><div><div class="date">${fmtDate(today())}</div><h1>${greet[phase]}${S.name?', '+esc(S.name):''}.</h1><p class="hq">„${esc(q[0])}“ <span>— ${esc(q[1])}</span></p></div></div>
   </section>
   ${!CONFIGURED?'<div class="banner">Testmodus: Deine Einträge liegen nur auf diesem Gerät. Für Login und Sync die Datei config.js ausfüllen (siehe Anleitung).</div>':''}
   ${missionCard}
-  ${secs.map(x=>`<section class="day-sec ${x.open?'open':''} ${x.done?'done':''}">
-    <button class="sec-head" data-sec="${x.k}"><span class="t">${x.t}</span><span class="sum">${x.sum}</span><span class="chev">▾</span></button>
-    ${x.open?`<div class="grid thread sec-body">${x.cards.filter(Boolean).join('')}</div>`:''}
-  </section>`).join('')}
+  <section class="day-sec open plan">
+    <div class="sec-head static"><span class="t">Mein Plan für heute</span><span class="sum">${tasksSet.length?`${tasksDone}/${tasksSet.length} Aufgaben · `:''}Gewohnheiten ${doneDo}/${doH.length} · Verzicht ${avOk}/${avH.length}</span></div>
+    <div class="grid thread sec-body">${[focusCard,taskCardV,doCard,avoidCard,gratCard].filter(Boolean).join('')}</div>
+  </section>
+  <section class="day-sec ${closeOpen?'open':''} ${eveningDone?'done':''}">
+    <button class="sec-head" data-sec="abschluss"><span class="t">Tagesabschluss</span><span class="sum">${closeSum}</span><span class="chev">▾</span></button>
+    ${closeOpen?`<div class="grid thread sec-body">${[checkCard,proudCard,winCard,reflectCard].filter(Boolean).join('')}</div>`:''}
+  </section>
 `;
-  bind('[data-sec]',el=>{const k=el.dataset.sec,open=el.parentElement.classList.contains('open');secManual[today()+k]=!open;viewTag()},'click');
+  bind('[data-sec]',el=>{const open=el.parentElement.classList.contains('open');secManual[closeKey]=!open;viewTag()},'click');
 
   const cb=M.querySelector('#commit');if(cb)cb.onclick=()=>{
     if(!d.tasks.some(t=>t.t.trim())){toast('Leg zuerst deine 2 Aufgaben fest – dann sagst du zu.',3000);const f=M.querySelector('.task-t');if(f){const det=f.closest('details');if(det)det.open=true;f.focus()}return}
@@ -1023,7 +1017,7 @@ function goalCard(g,big){
         ${sec('Zeitraum',g.start&&g.deadline?`${fd(g.start)} – ${fd(g.deadline)}`:g.deadline?`bis ${fd(g.deadline)}`:'')}
       </div>
       ${sec('Warum',g.why?esc(g.why):'')}
-      ${sec('Dadurch ändert sich mein Leben wie folgt',visionLines(g).length?`<ul>${visionLines(g).map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`:'')}
+      ${sec('Das gewinne ich, wenn ich dranbleibe',visionLines(g).length?`<ul>${visionLines(g).map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`:'')}
       ${sec('Zielerreichung',`<div class="bar" style="margin:4px 0 6px"><i style="width:${p}%"></i></div>
         <div style="font-size:13.5px;opacity:.8">${p} % erreicht · ${done.length} Aufgaben in den letzten 30 Tagen erledigt</div>
         ${monthly&&ms.length?`<div class="months" style="margin-top:10px">${ms.map(m=>{const v=(g.months||{})[m];const fut=m>curMonth();return `<label class="mcell ${v!=null&&v!==''?(+v>=+g.target?'met':'miss'):''}"><span>${monLabel(m)}</span><input type="number" inputmode="decimal" data-mv="${g.id}|${m}" value="${v??''}" placeholder="${fut?'–':'?'}" ${fut?'disabled':''}></label>`}).join('')}</div><div style="font-size:12.5px;opacity:.6;margin-top:6px">Am Monatsende Ergebnis eintragen (${esc(g.unit||'')}).</div>`:''}
@@ -1043,7 +1037,7 @@ function goalCard(g,big){
         <select data-f="${g.id}|rhythm" style="width:130px"><option value="monat" ${g.rhythm==='monat'?'selected':''}>pro Monat</option><option value="gesamt" ${g.rhythm!=='monat'?'selected':''}>insgesamt</option></select></div>
       ${!measurable(g)?`<div class="row" style="margin:8px 0 0"><span class="meta">Nicht messbar? Fortschritt per Hand:</span><input type="range" min="0" max="100" step="5" value="${g.progress||0}" data-g="${g.id}" style="flex:1"><span class="meta" id="p-${g.id}">${g.progress||0} %</span></div>`:''}</div>
     <div><label class="l">A/R – Warum ist mir das wichtig?</label>${f('why','z. B. Freiheit über meine Zeit')}</div>
-    ${big?`<div><label class="l">Dadurch ändert sich mein Leben wie folgt: <span class="meta">(eine Zeile pro Punkt)</span></label><textarea data-f="${g.id}|vision" placeholder="z. B. Ich bestimme selbst über meine Zeit …">${esc(g.vision||'')}</textarea></div>`:''}
+    ${big?`<div><label class="l">Das gewinne ich, wenn ich dranbleibe: <span class="meta">(eine Zeile pro Punkt)</span></label><textarea data-f="${g.id}|vision" placeholder="z. B. Ich bestimme selbst über meine Zeit …">${esc(g.vision||'')}</textarea></div>`:''}
     <div><label class="l">T – Zeitraum</label><div class="row" style="margin:0;flex-wrap:wrap"><span class="meta">von</span><input type="date" data-f="${g.id}|start" value="${esc(g.start||'')}" style="width:auto"><span class="meta">bis</span><input type="date" data-f="${g.id}|deadline" value="${esc(g.deadline||'')}" style="width:auto"></div></div>
     <div class="woop-edit"><label class="l">Was wird mich am ehesten davon abhalten?</label>${f('obstacle','z. B. Abends Bier und Shorts – am nächsten Morgen unkonzentriert')}
       <label class="l" style="margin-top:10px">Wenn-dann-Plan</label>${f('plan','Wenn … dann … – z. B. Wenn ich abends Lust auf Bier habe, trinke ich Alkoholfreies und lege das Handy in die Küche.')}</div>
@@ -1375,7 +1369,7 @@ function viewSettings(){
 const TOUR=[
   {t:'Willkommen im Erfolgsjournal',x:'Hier loggst du dich jeden Tag in deinen Tag ein – mit einem Ziel, das dir wirklich wichtig ist. Die Tour dauert eine Minute. Alles, was du gleich siehst, sind <b>Beispiele</b> – du passt sie danach an.',name:true},
   {p:'tag',s:'.mission',t:'Dein Masterziel',x:'Ganz oben steht immer dein wichtigstes Ziel – mit Zeitraum, Warum und dem, was sich in deinem Leben dadurch verändert. Jeden Tag, wenn du die Seite öffnest, siehst du zuerst das.'},
-  {p:'tag',s:'.day-sec',t:'Dein Tag in drei Abschnitten',x:'<b>Morgen:</b> Fokus, deine 2 wichtigsten Aufgaben, Dankbarkeit.<br><b>Tagsüber:</b> Gewohnheiten und worauf du bewusst verzichtest.<br><b>Abend:</b> ehrliche Reflexion.<br>Je nach Uhrzeit öffnet sich, was gerade dran ist.'},
+  {p:'tag',s:'.day-sec',t:'Dein Tag in zwei Teilen',x:'<b>Mein Plan für heute</b> bleibt den ganzen Tag offen: dein Fokus, die 2 Aufgaben, die dich deinem Ziel am nächsten bringen, Gewohnheiten und worauf du bewusst verzichtest.<br><b>Tagesabschluss:</b> Am Abend öffnet sich die ehrliche Reflexion – was lief gut, was hat dich abgelenkt.'},
   {p:'tag',s:'#fab',t:'Einfach einsprechen',x:'Keine Lust zu tippen? Tippe auf das Mikrofon und sprich. Am Handy geht auch immer die Mikrofon-Taste deiner Tastatur.'},
   {p:'tag',s:'#savepill',t:'Speichert sich selbst',x:'Du musst nie auf „Speichern“ drücken. Deine Einträge werden automatisch gesichert – <b>verschlüsselt mit deinem Passwort</b>. Niemand außer dir kann sie lesen.'},
   {p:'ideal',s:'.nav-btn[data-p="ideal"]',t:'Mein idealer Tag',x:'Wie sähe dein Tag aus, wenn dein Ziel erreicht ist? Hier legst du ihn mit Uhrzeiten an – als Bild, für das du arbeitest.'},
