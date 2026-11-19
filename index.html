@@ -548,7 +548,7 @@ function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'
 const today=()=>iso(new Date());
 const addDays=(ds,n)=>{const d=new Date(ds+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
 const uid=()=>Math.random().toString(36).slice(2,9);
-const DISTR_SEED=[['alk','🍺 Alkohol'],['shorts','📱 Shorts / Social Media'],['suess','🍫 Süßes / Snacks'],['spaet','🌙 Zu spät ins Bett'],['prok','⏳ Aufgeschoben'],['couch','🛋️ Keine Bewegung']];
+const DISTR_SEED=[['shorts','📱 Shorts / Social Media'],['suess','🍫 Süßes / Snacks'],['spaet','🌙 Zu spät ins Bett'],['prok','⏳ Aufgeschoben'],['couch','🛋️ Keine Bewegung'],['alk','🍺 Alkohol']];
 
 function addMonths(ds,n){const d=new Date(ds+'T12:00');d.setMonth(d.getMonth()+n);return iso(d)}
 function firstOfNextMonth(){const d=new Date();return iso(new Date(d.getFullYear(),d.getMonth()+1,1))}
@@ -591,6 +591,7 @@ const DAY_DEFAULT=()=>({committed:'',goal:'',grat:['','',''],tasks:[{t:'',done:f
 function normalize(s){
   s.goals=s.goals||[];s.values=s.values||[];s.habits=s.habits||[];s.days=s.days||{};
   s.distractions=s.distractions||DISTR_SEED.map(x=>[...x]);
+  if(!s.settings||!s.settings.distrOrder1){const L=s.distractions,ai=L.findIndex(x=>x[0]==='alk'),ci=L.findIndex(x=>x[0]==='couch');if(ai>-1&&ci>-1&&ai<ci){const [x]=L.splice(ai,1);L.splice(L.findIndex(y=>y[0]==='couch')+1,0,x)}s.settings=s.settings||{};s.settings.distrOrder1=true}
   s.settings=Object.assign({layout:'verbindlich',evening:17},s.settings||{});
   if((s.settings.v||0)<2){s.settings.layout='verbindlich'}
   if((s.settings.v||0)<3){
