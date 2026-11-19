@@ -15,3 +15,6 @@ create policy "eigene Daten lesen"   on public.journal for select using (auth.ui
 create policy "eigene Daten anlegen" on public.journal for insert with check (auth.uid() = user_id);
 create policy "eigene Daten ändern"  on public.journal for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "eigene Daten löschen" on public.journal for delete using (auth.uid() = user_id);
+
+-- Zugriff nur für angemeldete Nutzer (die Regeln oben begrenzen auf die eigenen Daten)
+grant select, insert, update, delete on public.journal to authenticated;
