@@ -741,7 +741,7 @@ function lpMockDay(){return `
           <small style="margin-top:10px">DAS GEWINNE ICH, WENN ICH DRANBLEIBE</small><ul><li>Ein finanzielles Polster und weniger Druck</li><li>Ein Projekt, das mich begeistert</li></ul></div>
         <div class="m-sec">Mein Plan für heute <span>1/2 Aufgaben · Gewohnheiten 2/4 · Verzicht 2/3</span></div>
         <div class="m-grid">
-          <div class="m-card full"><b>Mein Fokus heute</b><div class="m-input">Heute stelle ich die ersten drei Produkte online.</div></div>
+          <div class="m-card full"><b>Tagesfokus</b><div class="m-input">Heute stelle ich die ersten drei Produkte online.</div></div>
           <div class="m-card full"><b>Diese 2 Aufgaben bringen mich meinen Zielen heute am nächsten</b>
             <div class="m-task done"><i></i><s>Produktfotos für den Shop machen</s> <em>🎯 Nebeneinkommen</em></div><div class="m-task"><i></i>3 Kunden-Anfragen beantworten <em>🎯 Nebeneinkommen</em></div></div>
           <div class="m-card"><b>Das tue ich heute</b><div class="m-pills"><span class="ok">🏃 30 Min. Bewegung 2/4</span><span class="ok">💧 2 Liter Wasser 5/7</span><span>📖 10 Min. lesen 3/5</span></div></div>
@@ -1004,7 +1004,7 @@ Text des Nutzers:
   try{
     const r=await aiSample.json(prompt,{max_tokens:1200});
     const applied=[];
-    if(r.focus){d.goal=r.focus;applied.push('Fokus')}
+    if(r.focus){d.goal=r.focus;applied.push('Tagesfokus')}
     if(Array.isArray(r.gratitude)&&r.gratitude.length){
       r.gratitude.slice(0,3).forEach(g=>{let i=d.grat.findIndex(x=>!x.trim());if(i<0)i=d.grat.length-1;d.grat[i]=g});applied.push('Dankbarkeit')}
     if(Array.isArray(r.tasks)&&r.tasks.length){
@@ -1022,7 +1022,7 @@ Text des Nutzers:
     if(r.mood>=1&&r.mood<=5)d.mood=Math.round(r.mood);
     if(/^\d{1,2}:\d{2}$/.test(r.bed||''))d.bed=r.bed.padStart(5,'0');
     if(/^\d{1,2}:\d{2}$/.test(r.phoneOff||''))d.phoneOff=r.phoneOff.padStart(5,'0');
-    voiceText='';lastApplied=applied.length?'Eingetragen: '+applied.join(', ')+'. Schau kurz drüber – du kannst alles ändern.':'Ich konnte nichts Passendes finden. Sag z. B. „Mein Fokus heute …“';
+    voiceText='';lastApplied=applied.length?'Eingetragen: '+applied.join(', ')+'. Schau kurz drüber – du kannst alles ändern.':'Ich konnte nichts Passendes finden. Sag z. B. „Mein Tagesfokus ist …“';
     markDay();
     if(applied.length){sheetOpen=false;toast(lastApplied,4500);lastApplied=''}
   }catch(e){
@@ -1054,7 +1054,7 @@ function viewTag(){
 
   const focusCard=`
     <div class="card full">
-      <h3>☀️ Mein Fokus heute</h3>
+      <h3>☀️ Tagesfokus</h3>
       <p class="hint">Worauf kommt es heute an? Ein Satz – klar und machbar.</p>
       <input type="text" id="goal" placeholder="z. B. Heute laufe ich 5 km und lasse abends das Bier weg." value="${esc(d.goal)}">
     </div>`;
@@ -1076,7 +1076,7 @@ function viewTag(){
       <h3>🎯 Diese 2 Aufgaben bringen mich meinen Zielen heute am nächsten</h3>
       %%VERDICT%%
       ${d.tasks.map((t,i)=>`<div class="task"><input type="checkbox" class="chk task-c" data-i="${i}" ${t.done?'checked':''}><input type="text" class="task-t" data-i="${i}" value="${esc(t.t)}" placeholder="Aufgabe ${i+1}"><select class="task-g" data-i="${i}">${goalOpts(t.goal)}</select></div>`).join('')}
-      <div class="row" style="margin-top:6px;flex-wrap:wrap"><button class="btn ghost small" id="toTT">📋 Für TickTick kopieren</button><a class="meta" href="https://ticktick.com/webapp" target="_blank" rel="noopener">TickTick öffnen ↗</a></div>
+      <div class="row" style="margin-top:6px;flex-wrap:wrap">${d.tasks.filter(t=>t.t.trim()).length?d.tasks.map((t,i)=>t.t.trim()?`<button class="btn ghost small" data-tt="${i}">↗ ${i+1}. Aufgabe an TickTick</button>`:'').join(''):'<span class="meta">Sobald du deine Aufgaben einträgst, kannst du sie an TickTick senden.</span>'}</div>
     </div>`;
 
   const doCard=`
@@ -1202,13 +1202,16 @@ function viewTag(){
   bind('.grat',el=>{d.grat[+el.dataset.i]=el.value;markDay()});
   bind('#gratMore',()=>{gratMore=true;viewTag()},'click');
   bind('.task-t',el=>{d.tasks[+el.dataset.i].t=el.value;markDay()});
+  bind('.task-t',el=>{const had=!!M.querySelector('[data-tt="'+el.dataset.i+'"]');if(!!el.value.trim()!==had)viewTag()},'change');
   bind('.task-g',el=>{d.tasks[+el.dataset.i].goal=el.value;markDay()},'change');
   bind('.task-c',el=>{d.tasks[+el.dataset.i].done=el.checked;markDay();if(el.checked)toast('Stark – deinem Ziel ein Stück näher 💪')},'change');
-  M.querySelector('#toTT').onclick=async()=>{
-    const lines=d.tasks.filter(t=>t.t.trim()).map(t=>`${t.t.trim()} heute #Erfolgsjournal${t.goal&&goalById(t.goal)?' #'+goalById(t.goal).title.replace(/\s+/g,'-'):''}`);
-    if(!lines.length){toast('Erst die 2 Aufgaben eintragen.');return}
-    try{await navigator.clipboard.writeText(lines.join('\n'));toast('Kopiert – in TickTick einfügen.',2500)}catch(e){toast('Kopieren nicht möglich in dieser Ansicht.',2500)}
-  };
+  bind('[data-tt]',async el=>{
+    const t=d.tasks[+el.dataset.tt];if(!t||!t.t.trim())return;
+    const g=goalById(t.goal);
+    const title=t.t.trim(),text=`${title}\n\nAus dem Erfolgsjournal · Tagesaufgabe vom ${new Date().toLocaleDateString('de-DE')}${g?`\nZiel: ${g.title}`:''}\n#Erfolgsjournal`;
+    if(navigator.share){try{await navigator.share({title,text});toast('In TickTick: Fälligkeit „heute“ setzen – fertig.',3500)}catch(e){if(e&&e.name!=='AbortError')toast('Teilen nicht möglich.')}}
+    else{try{await navigator.clipboard.writeText(title+' heute #Erfolgsjournal');toast('Kopiert – in TickTick einfügen (Strg + V).',3500)}catch(e){toast('Kopieren hier nicht möglich.')}}
+  },'click');
   bind('[data-h]',el=>{const id=el.dataset.h;d.habits[id]=d.habits[id]===true?undefined:true;if(d.habits[id]===undefined)delete d.habits[id];markDay();viewTag()},'click');
   bind('[data-a]',el=>{const id=el.dataset.a,v=d.habits[id];
     if(v===undefined){d.habits[id]=true;toast('Stark geblieben 🛡️')}else if(v===true){d.habits[id]=false;toast('Passiert. Morgen ist ein neuer Tag.',2200)}else delete d.habits[id];
@@ -1661,7 +1664,7 @@ function viewSettings(){
 const TOUR=[
   {t:'Willkommen im Erfolgsjournal',x:'Hier loggst du dich jeden Tag in deinen Tag ein – mit einem Ziel, das dir wirklich wichtig ist. Die Tour dauert eine Minute. Alles, was du gleich siehst, sind <b>Beispiele</b> – du passt sie danach an.',name:true},
   {p:'tag',s:'.mission',t:'Dein Masterziel',x:'Ganz oben steht immer dein wichtigstes Ziel – mit Zeitraum, Warum und dem, was sich in deinem Leben dadurch verändert. Jeden Tag, wenn du die Seite öffnest, siehst du zuerst das.'},
-  {p:'tag',s:'.day-sec',t:'Dein Tag in zwei Teilen',x:'<b>Mein Plan für heute</b> bleibt den ganzen Tag offen: dein Fokus, die 2 Aufgaben, die dich deinem Ziel am nächsten bringen, Gewohnheiten und worauf du bewusst verzichtest.<br><b>Tagesabschluss:</b> Am Abend öffnet sich die ehrliche Reflexion – was lief gut, was hat dich abgelenkt.'},
+  {p:'tag',s:'.day-sec',t:'Dein Tag in zwei Teilen',x:'<b>Mein Plan für heute</b> bleibt den ganzen Tag offen: dein Tagesfokus, die 2 Aufgaben, die dich deinem Ziel am nächsten bringen, Gewohnheiten und worauf du bewusst verzichtest.<br><b>Tagesabschluss:</b> Am Abend öffnet sich die ehrliche Reflexion – was lief gut, was hat dich abgelenkt.'},
   {p:'tag',s:'#fab',t:'Einfach einsprechen',x:'Keine Lust zu tippen? Tippe auf das Mikrofon und sprich. Am Handy geht auch immer die Mikrofon-Taste deiner Tastatur.'},
   {p:'tag',s:'#savepill',t:'Speichert sich selbst',x:'Du musst nie auf „Speichern“ drücken. Deine Einträge werden automatisch gesichert – <b>verschlüsselt mit deinem Passwort</b>. Niemand außer dir kann sie lesen.'},
   {p:'ziele',s:'.nav-btn[data-p="ziele"]',t:'Meine Ziele',x:'Ein <b>Masterziel</b> und höchstens zwei optionale Ziele – Fokus schlägt Vielfalt. Mit „<b>Bearbeiten</b>“ oben rechts passt du alles an: messbar, mit Zeitraum und einem Wenn-dann-Plan für schwache Momente.'},
@@ -1714,7 +1717,7 @@ function renderSheet(){
   if(!bg){bg=document.createElement('div');bg.id='sheet';bg.className='sheet-bg';bg.onclick=e=>{if(e.target===bg){sheetOpen=false;renderSheet()}};document.body.appendChild(bg)}
   bg.innerHTML=`<div class="card voice sheet">
       <div style="display:flex;justify-content:space-between;align-items:center"><h3>🎙️ Sprich deinen Tag ein</h3><button class="x" id="sheetX" style="color:#cfc4b6">×</button></div>
-      <p class="hint">Einfach drauflos: „Mein Fokus heute ist … Dankbar bin ich für … Die zwei Aufgaben für mein Ziel sind … Auf Bier habe ich verzichtet …“ – ich trage alles an die richtige Stelle ein.</p>
+      <p class="hint">Einfach drauflos: „Mein Tagesfokus ist … Dankbar bin ich für … Die zwei Aufgaben für mein Ziel sind … Auf Bier habe ich verzichtet …“ – ich trage alles an die richtige Stelle ein.</p>
       <textarea id="voice" placeholder="${dictation?'Tippe auf „Einsprechen“ oder schreib hier …':'Hier schreiben – oder am Handy die Mikrofon-Taste der Tastatur nutzen …'}">${esc(voiceText)}</textarea>
       <div class="row" style="margin:12px 0 0;flex-wrap:wrap">
         ${dictation?`<button class="btn ${recording?'rec':''}" id="mic">${recording?'⏹ Stopp':'🎙️ Einsprechen'}</button>`:''}
