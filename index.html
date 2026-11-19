@@ -350,8 +350,9 @@ body.t-verbindlich .edit-btn{border-radius:4px}
 .savepill.saving i{background:var(--accent);animation:pulse 1s infinite}
 .savepill.error{color:#8a3a30;border-color:#e2928a}.savepill.error i{background:#c0392b}
 .savepill.local i{background:#9a958c}
-.logout-side{all:unset;cursor:pointer;color:#a99f93;font-size:12.5px;margin-top:8px;display:inline-block}
-.logout-side:hover{color:#fff}
+.logout-side{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;font-size:14.5px;font-weight:500;transition:.15s}
+body.t-verbindlich .logout-side{border-radius:4px}
+.logout-side:hover{filter:brightness(1.1)}
 @media (max-width:860px){.savepill{top:10px;right:10px;font-size:11.5px;padding:5px 9px}}
 </style>
 </head>
@@ -612,7 +613,7 @@ function renderNav(){
   n.innerHTML=`<div class="brand"><div class="brand-mark">${scene(phase,true)}</div><div><b>Erfolgsjournal</b><small>Log dich in deinen Tag ein</small></div></div>`+
   pages.map((p,i)=>(i===1?'<div class="nav-label">Mein Kompass</div>':'')+(i===4?'<div class="nav-label">Auswertung</div>':'')+(i===5?'<div style="height:14px"></div>':'')+
    `<button class="nav-btn ${page===p[0]?'active':''}" data-p="${p[0]}">${icons[p[0]]}<span>${p[1]}</span></button>`).join('')+
-  `<div class="side-foot"><span id="sync" class="sync"></span>${SB&&cloud?'<br><button class="logout-side" id="logoutSide">⎋ Abmelden</button>':''}</div>`;
+  `<div class="side-foot"><span id="sync" class="sync"></span>${SB&&cloud?'<button class="logout-side" id="logoutSide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Abmelden</button>':''}</div>`;
   n.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>{page=b.dataset.p;location.hash=page;render();window.scrollTo(0,0)});
   setSync();
   const lo=document.getElementById('logoutSide');if(lo)lo.onclick=async()=>{await SB.auth.signOut();try{localStorage.removeItem(LKEY)}catch(e){}location.reload()};
