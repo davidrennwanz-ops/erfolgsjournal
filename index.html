@@ -493,6 +493,17 @@ body.t-verbindlich .logout-side{border-radius:4px}
   .mock-body{padding:16px}
   .m-gt-h,.m-gt{grid-template-columns:86px 1fr}.m-gt-h{grid-template-columns:86px repeat(6,1fr)}
 }
+
+.fold{margin-bottom:14px}
+.fold-head{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+.fold-head .t{font-family:Fraunces,serif;font-size:19px;font-weight:600;white-space:nowrap}
+.fold-head .t small{font-family:Inter;font-size:12px;color:var(--muted);font-weight:500;margin-left:4px}
+.fold-head .sum{flex:1;text-align:right;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fold-head .chev{color:var(--muted);transition:.2s}
+.fold.open>.fold-head{background:transparent;border-color:transparent;padding-left:0}
+.fold.open>.fold-head .chev{transform:rotate(180deg)}
+.fold-body{margin-top:4px}
+body.t-verbindlich .fold-head{border-radius:6px}
 </style>
 </head>
 <body>
@@ -1120,8 +1131,8 @@ function viewTag(){
   const avLogged=avH.filter(h=>d.habits[h.id]!==undefined).length;
   const eDone=[!!d.win.trim(),!!(d.good.trim()||d.learn.trim()),!!d.mood];
   const eveningDone=eDone.every(Boolean);
-  const closeKey=today()+'abschluss';
-  const closeOpen=secManual[closeKey]!==undefined?secManual[closeKey]:(isEve&&!eveningDone);
+  const closeKey='abschluss:'+today();
+  const closeOpen=uiOpen(closeKey,isEve&&!eveningDone);
   const closeSum=eveningDone?'✓ Tag abgeschlossen':isEve?'Jetzt dran':`öffnet ab ${eve}:00 Uhr`;
   M.innerHTML=`
   <section class="hero">${scene(phase)}
@@ -1138,7 +1149,7 @@ function viewTag(){
     ${closeOpen?`<div class="grid thread sec-body">${[checkCard,proudCard,winCard,reflectCard].filter(Boolean).join('')}</div>`:''}
   </section>
 `;
-  bind('[data-sec]',el=>{const open=el.parentElement.classList.contains('open');secManual[closeKey]=!open;viewTag()},'click');
+  bind('[data-sec]',el=>{const open=el.parentElement.classList.contains('open');setUi(closeKey,!open);viewTag()},'click');
 
   const cb=M.querySelector('#commit');if(cb)cb.onclick=()=>{
     if(!d.tasks.some(t=>t.t.trim())){toast('Leg zuerst deine 2 Aufgaben fest – dann sagst du zu.',3000);const f=M.querySelector('.task-t');if(f){const det=f.closest('details');if(det)det.open=true;f.focus()}return}
@@ -1283,21 +1294,22 @@ function viewZiele(){
   M.innerHTML=`
   <div class="section-head"><div><h1>Meine Ziele</h1><p>Ein Ziel, das alles verändert. Dazu höchstens zwei, die es tragen.</p></div>${editBtn('ziele')}</div>
   ${editing.ziele?`<p class="info-msg" style="margin:-6px 0 18px">Formuliere jedes Ziel nach <b>SMART</b> (spezifisch, messbar, attraktiv, realistisch, terminiert) – und ergänze ein <b>Hindernis mit Wenn-dann-Plan</b>. Diese Kombination ist wissenschaftlich am besten belegt.</p>`:''}
-  ${m?goalCard(m,true):'<div class="card">Noch kein Masterziel – leg über „Bearbeiten“ eins an.</div>'}
-  <div class="section-head" style="margin-top:28px"><div><h1 style="font-size:22px">Zeitstrahl</h1><p>Alle Ziele auf einen Blick – wo du stehst und was vor dir liegt.</p></div></div>
-  ${goalTimeline()}
-  <div class="section-head" style="margin-top:28px"><div><h1 style="font-size:22px">Optionale Ziele</h1><p>Empfehlung: maximal 2. Fokus schlägt Vielfalt.</p></div></div>
-  ${opt.length>2?`<p class="slip-msg" style="margin:-8px 0 16px">Du hast ${opt.length} optionale Ziele. Jedes weitere Ziel zieht Energie von deinem Masterziel ab – überleg, welches du parken kannst.</p>`:''}
-  <div class="grid">${opt.map(g=>goalCard(g,false)).join('')}
+  ${fold('ziele:master','Mein Masterziel',m?`${esc(m.title)} · ${goalProgress(m)} %`:'noch keins',
+     m?goalCard(m,true).replace('<span class="label" style="display:block">Mein Masterziel</span>',''):'<div class="card">Noch kein Masterziel – leg über „Bearbeiten“ eins an.</div>')}
+  ${fold('ziele:optional',`Optionale Ziele <small>${opt.length}/2</small>`,opt.map(g=>`${esc(g.title)} ${goalProgress(g)} %`).join(' · ')||'keine',
+    `${opt.length>2?`<p class="slip-msg" style="margin:0 0 16px">Du hast ${opt.length} optionale Ziele. Jedes weitere Ziel zieht Energie von deinem Masterziel ab – überleg, welches du parken kannst.</p>`:''}
+    <div class="grid">${opt.map(g=>goalCard(g,false)).join('')}
     ${!editing.ziele&&!opt.length?'<p class="empty">Noch keine optionalen Ziele – über „Bearbeiten“ anlegen.</p>':''}
     ${editing.ziele?`<div class="card">
       <h3>${m?'Neues optionales Ziel':'Masterziel anlegen'}</h3><p class="hint">${opt.length>=2&&m?'Du hast schon 2 optionale Ziele. Brauchst du wirklich ein drittes?':'Titel eingeben – den Rest füllst du danach in der Karte aus.'}</p>
       <input type="text" id="gT" placeholder="z. B. Gesund ernähren" style="margin-bottom:12px">
       <button class="btn" id="gAdd">Ziel hinzufügen</button>
     </div>`:''}
-  </div>`;
-  bindEdit('ziele',viewZiele);
-  if(editing.ziele)M.querySelector('#gAdd').onclick=()=>{const t=M.querySelector('#gT').value.trim();if(!t)return;
+    </div>`,true,'Empfehlung: höchstens 2 – Fokus schlägt Vielfalt')}
+  ${fold('ziele:zeitstrahl','Zeitstrahl',(()=>{const G=S.goals.filter(g=>g.start&&g.deadline);if(!G.length)return 'noch keine Zeiträume';const a=G.map(g=>g.start).sort()[0],b=G.map(g=>g.deadline).sort().slice(-1)[0];return monLabel(a.slice(0,7))+' – '+monLabel(b.slice(0,7))})(),goalTimeline(),true,'Alle Ziele im Zeitverlauf')}
+`;
+  bindEdit('ziele',viewZiele);bindFolds(viewZiele);
+  if(editing.ziele&&M.querySelector('#gAdd'))M.querySelector('#gAdd').onclick=()=>{const t=M.querySelector('#gT').value.trim();if(!t)return;
     S.goals.push({id:uid(),master:!S.goals.length,title:t,why:'',start:today(),deadline:'',progress:0,rhythm:'gesamt',months:{}});markMeta();viewZiele()};
   bind('[data-f]',el=>{const [id,k]=el.dataset.f.split('|');const g=goalById(id);g[k]=el.type==='number'?(el.value===''?'':+el.value):el.value;markMeta();if(el.tagName==='SELECT'||el.type==='date'||k==='target'||k==='metric')viewZiele()},'change');
   bind('input[data-f],textarea[data-f]',el=>{const [id,k]=el.dataset.f.split('|');if(el.type==='date'||el.type==='number')return;goalById(id)[k]=el.value;markMeta()});
@@ -1429,6 +1441,10 @@ function viewWerte(){
 /* =========================================================
    Reports + KI-Rückblick
    ========================================================= */
+function uiOpen(k,def){const u=(S.settings&&S.settings.ui)||{};return u[k]!==undefined?u[k]:def}
+function setUi(k,v){S.settings.ui=S.settings.ui||{};const t=today();Object.keys(S.settings.ui).forEach(x=>{const m=x.match(/^abschluss:(\d{4}-\d{2}-\d{2})$/);if(m&&m[1]<t)delete S.settings.ui[x]});S.settings.ui[k]=v;markMeta()}
+function fold(k,title,sum,body,def=true,sub=''){const open=uiOpen(k,def);return `<section class="fold ${open?'open':''}"><button class="fold-head" data-fold="${k}"><span class="t">${title}</span><span class="sum">${open?sub:sum}</span><span class="chev">▾</span></button>${open?`<div class="fold-body">${body}</div>`:''}</section>`}
+function bindFolds(fn){M.querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{setUi(b.dataset.fold,!b.parentElement.classList.contains('open'));fn()})}
 let secManual={},gratMore=false;
 const editing={};
 const editBtn=k=>`<button class="edit-btn ${editing[k]?'on':''}" data-edit="${k}">${editing[k]?'✓ Fertig':'✎ Bearbeiten'}</button>`;
