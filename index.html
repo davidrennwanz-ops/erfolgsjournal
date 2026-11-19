@@ -900,7 +900,7 @@ const quotes=[
  ['Fortschritt, nicht Perfektion.','unbekannt'],
  ['Ein Ausrutscher ist ein Tag. Kein Weg.','unbekannt']
 ];
-let qOffset=0;const quoteOfDay=()=>quotes[(Math.floor(Date.now()/864e5)+qOffset)%quotes.length];
+let qOffset=0;const quoteOfDay=()=>quotes[(Math.floor(new Date(today()+'T12:00')/864e5)+qOffset)%quotes.length];
 
 /* =========================================================
    Navigation
