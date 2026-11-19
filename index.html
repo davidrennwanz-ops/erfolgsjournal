@@ -353,6 +353,8 @@ body.t-verbindlich .edit-btn{border-radius:4px}
 .logout-side{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;font-size:14.5px;font-weight:500;transition:.15s}
 body.t-verbindlich .logout-side{border-radius:4px}
 .logout-side:hover{filter:brightness(1.1)}
+.logout-mobile{display:none}
+@media (max-width:860px){.logout-mobile{all:unset;display:flex;align-items:center;gap:6px;position:fixed;top:10px;left:10px;z-index:25;background:var(--accent);color:#fff;font-size:12px;font-weight:500;padding:6px 11px;border-radius:999px;cursor:pointer;box-shadow:0 4px 14px -8px rgba(0,0,0,.4)}body.t-verbindlich .logout-mobile{border-radius:4px}}
 @media (max-width:860px){.savepill{top:10px;right:10px;font-size:11.5px;padding:5px 9px}}
 
 .tour-hole{position:fixed;z-index:60;border-radius:10px;box-shadow:0 0 0 9999px rgba(15,18,25,.62);transition:all .25s;pointer-events:none;outline:2px solid var(--accent)}
@@ -473,7 +475,8 @@ let UID=null, cloud=false, dictation=null;
 const dirty=new Set(), pend={}, inflight={};
 let saveT,saveSt={st:'ok',t:''};
 function setSave(st){if(st==='ok'){const n=new Date();saveSt={st,t:String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')}}else saveSt={st,t:saveSt.t};renderSave()}
-function renderSave(){let el=document.getElementById('savepill');if(!el){el=document.createElement('div');el.id='savepill';document.body.appendChild(el)}
+function renderLogoutMobile(){let b=document.getElementById('logoutMobile');if(!(SB&&cloud)){if(b)b.remove();return}if(!b){b=document.createElement('button');b.id='logoutMobile';b.className='logout-mobile';b.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Abmelden';b.onclick=doLogout;document.body.appendChild(b)}}
+function renderSave(){renderLogoutMobile();let el=document.getElementById('savepill');if(!el){el=document.createElement('div');el.id='savepill';document.body.appendChild(el)}
   const st=!cloud?'local':saveSt.st;el.className='savepill '+st;
   el.innerHTML='<i></i>'+(st==='local'?(CONFIGURED?'Nicht verbunden – nur auf diesem Gerät':'Testmodus – nur auf diesem Gerät'):st==='saving'?'Speichert …':st==='error'?'⚠ Nicht gespeichert – wird erneut versucht':'✓ Gespeichert'+(saveSt.t?' · '+saveSt.t:''))}
 function markDay(d=today()){dirty.add('d-'+d);schedule()}
