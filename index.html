@@ -763,7 +763,7 @@ function lpMockAvoid(){return `
   <div class="mock small"><div class="mock-bar"><i></i><i></i><i></i><span>Gewohnheiten</span></div><div class="mock-body">
     <div class="m-av"><span>📵 Kein Social Media nach 21 Uhr</span><em><b>23</b> von 30 Tagen<br>🔥 6 Tage ohne Ausrutscher<br>Gewonnen: 17 Std.</em></div>
     <div class="m-av"><span>🥤 Keine Süßgetränke</span><em><b>26</b> von 30 Tagen<br>Gewonnen: 52 €</em></div>
-    <div class="m-note">Ein Ausrutscher löscht nichts. Morgen zählt wieder.</div>
+    <div class="m-note">Passiert. Morgen zählt wieder.</div>
   </div></div>`}
 function lpMockReview(){return `
   <div class="mock small"><div class="mock-bar"><i></i><i></i><i></i><span>Reports</span></div><div class="mock-body">
@@ -809,7 +809,7 @@ function landingHTML(){return `
   </div></section>
 
   <section class="lp-feature alt"><div class="lp-wrap lp-row rev">
-    <div class="lp-txt"><span class="lp-kicker">Gewohnheiten ohne Druck</span><h2>Ein Ausrutscher ist ein Tag. Kein Weg.</h2><p>Andere Apps setzen deine Serie bei einem Fehler auf null. Wir zeigen dir „23 von 30 Tagen“ – und wie viel Zeit und Geld du schon gewonnen hast. Wochenziele statt Täglich-Zwang.</p></div>
+    <div class="lp-txt"><span class="lp-kicker">Gewohnheiten ohne Druck</span><h2>Ein Ausrutscher löscht keinen Fortschritt.</h2><p>Andere Apps setzen deine Serie bei einem Fehler auf null. Wir zeigen dir „23 von 30 Tagen“ – und wie viel Zeit und Geld du schon gewonnen hast. Wochenziele statt Täglich-Zwang.</p></div>
     ${lpMockAvoid()}
   </div></section>
 
@@ -942,7 +942,7 @@ const quotes=[
  ['Ein Ziel ohne Plan ist nur ein Wunsch.','Antoine de Saint-Exupéry (zugeschrieben)'],
  ['Tu heute etwas, wofür dir dein zukünftiges Ich dankbar ist.','unbekannt'],
  ['Fortschritt, nicht Perfektion.','unbekannt'],
- ['Ein Ausrutscher ist ein Tag. Kein Weg.','unbekannt']
+ ['Fallen ist keine Schande. Liegenbleiben schon.','Sprichwort']
 ];
 let qOffset=0;const quoteOfDay=()=>quotes[(Math.floor(new Date(today()+'T12:00')/864e5)+qOffset)%quotes.length];
 
