@@ -422,7 +422,7 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .m-task{display:flex;align-items:center;gap:9px;padding:4px 0}
 .m-task i{width:15px;height:15px;border:2px solid #dcd5c6;border-radius:4px}
 .m-task.done i{background:#2f6b4a;border-color:#2f6b4a}
-.m-task.done{color:var(--muted);text-decoration:line-through}
+.m-task.done{color:var(--muted)}
 .m-pills{display:flex;flex-wrap:wrap;gap:6px}
 .m-pills span{border:1.5px solid #dcd5c6;border-radius:4px;padding:5px 9px;font-size:12px;background:#fff}
 .m-pills span.ok{background:#2f6b4a;border-color:#2f6b4a;color:#fff}
@@ -508,6 +508,28 @@ body.t-verbindlich .fold-head{border-radius:6px}
 /* Überschriften ruhiger: mittleres Schriftgewicht */
 h1,h2,h3,.brand b,.gtitle,.goal-line,.sec-head .t,.fold-head .t,.lp h1,.lp h2,.lp h3,.lp-logo,.plan .price,.kpi b,.m-h,.m-mission b,.m-card b,.tl-time,.manifest{font-weight:500!important}
 .brand b{letter-spacing:.01em}
+
+.mock.wide{max-width:1040px}
+.mock-app{display:grid;grid-template-columns:190px 1fr;background:#f3f0e8}
+.m-side{background:#1c2230;color:#d9d0c5;padding:16px 10px;display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.m-brand{display:flex;gap:8px;align-items:center;padding:2px 6px 14px}
+.m-brand svg{width:24px;height:24px;flex-shrink:0}
+.m-brand b{display:block;color:#f4ede4;font-family:Newsreader,Georgia,serif;font-size:14px;font-weight:500}
+.m-brand small{display:block;color:#a99f93;font-size:9.5px}
+.m-nav{padding:7px 9px;border-radius:4px}
+.m-nav.on{background:#b08d3c;color:#fff}
+.m-lbl{font-size:9px;letter-spacing:.1em;color:#8f857a;padding:10px 9px 3px}
+.m-sync{margin-top:auto;padding:14px 9px 2px;font-size:10.5px;color:#8f857a}
+.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.m-grid .m-card{margin:0}
+.m-card.full{grid-column:1/-1}
+.m-input{border:1px solid #dcd5c6;border-radius:5px;padding:8px 10px;background:#fff;font-size:12.5px;color:#3b3f4a}
+.m-qq{font-family:Newsreader,Georgia,serif;font-style:italic;font-size:12.5px;color:#6f6a60;margin:-2px 0 8px}
+.m-task em{font-style:normal;font-size:10.5px;color:#6f6a60;margin-left:auto;border:1px solid #dcd5c6;border-radius:4px;padding:1px 6px;text-decoration:none;display:inline-block}
+.m-task.done em{text-decoration:none}
+.m-close{margin-top:12px;background:#fffdf8;border:1px solid #dcd5c6;border-radius:6px;padding:10px 14px;font-family:Newsreader,Georgia,serif;font-size:14.5px;display:flex;justify-content:space-between}
+.m-close span{font-family:Inter;font-size:11.5px;color:#6f6a60}
+@media (max-width:900px){.mock-app{grid-template-columns:1fr}.m-side{display:none}.m-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -699,18 +721,35 @@ function showUnlock(email,msg){
    ========================================================= */
 const LP_SUN='<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#1c2230"/><path d="M14 40a18 18 0 0 1 36 0z" fill="#b08d3c"/><rect x="10" y="42" width="44" height="3" rx="1.5" fill="#f3f0e8"/><g stroke="#b08d3c" stroke-width="3" stroke-linecap="round"><path d="M32 12v5M15 20l3.5 3.5M49 20l-3.5 3.5M8 33h4M52 33h4"/></g></svg>';
 function lpMockDay(){return `
-  <div class="mock">
-    <div class="mock-bar"><i></i><i></i><i></i><span>Mein Tag</span></div>
-    <div class="mock-body">
-      <div class="m-date">DONNERSTAG, 19. NOVEMBER</div>
-      <div class="m-h">Guten Morgen, Lena.</div>
-      <div class="m-q">„Fortschritt, nicht Perfektion.“</div>
-      <div class="m-mission"><small>MEIN MASTERZIEL</small><b>Nebeneinkommen aufbauen</b><div class="m-tb"><i style="width:34%"></i></div><span>Monat 2 von 6 · Dezember: 320 / 500 €</span>
-        <small style="margin-top:10px">DAS GEWINNE ICH, WENN ICH DRANBLEIBE</small><ul><li>Ein finanzielles Polster und weniger Druck</li><li>Ein Projekt, das mich begeistert</li></ul></div>
-      <div class="m-sec">Mein Plan für heute <span>1/2 Aufgaben · Verzicht 2/3</span></div>
-      <div class="m-card"><b>Diese 2 Aufgaben bringen mich meinen Zielen heute am nächsten</b>
-        <div class="m-task done"><i></i>Produktfotos für den Shop machen</div><div class="m-task"><i></i>3 Kunden-Anfragen beantworten</div></div>
-      <div class="m-card"><b>Darauf verzichte ich bewusst</b><div class="m-pills"><span class="ok">📵 Kein Social Media nach 21 Uhr ✓</span><span class="ok">🥤 Keine Süßgetränke ✓</span><span>🍔 Kein Fast Food</span></div></div>
+  <div class="mock wide">
+    <div class="mock-bar"><i></i><i></i><i></i><span>erfolgsjournal · Mein Tag</span></div>
+    <div class="mock-app">
+      <aside class="m-side">
+        <div class="m-brand">${LP_SUN}<div><b>Erfolgsjournal</b><small>Log dich in deinen Tag ein</small></div></div>
+        <div class="m-nav on">☀ Mein Tag</div>
+        <div class="m-lbl">MEIN KOMPASS</div>
+        <div class="m-nav">◎ Meine Ziele</div><div class="m-nav">▦ Gewohnheiten</div><div class="m-nav">◷ Mein idealer Tag</div>
+        <div class="m-lbl">AUSWERTUNG</div>
+        <div class="m-nav">▮ Reports</div><div class="m-nav" style="margin-top:14px">⚙ Einstellungen</div>
+        <div class="m-sync">● Synchronisiert</div>
+      </aside>
+      <div class="mock-body">
+        <div class="m-date">DONNERSTAG, 19. NOVEMBER</div>
+        <div class="m-h">Guten Morgen, Lena.</div>
+        <div class="m-q">„Fortschritt, nicht Perfektion.“</div>
+        <div class="m-mission"><small>MEIN MASTERZIEL</small><b>Nebeneinkommen aufbauen</b><div class="m-tb"><i style="width:34%"></i></div><span>Monat 2 von 6 · Dezember: 320 / 500 €</span>
+          <small style="margin-top:10px">DAS GEWINNE ICH, WENN ICH DRANBLEIBE</small><ul><li>Ein finanzielles Polster und weniger Druck</li><li>Ein Projekt, das mich begeistert</li></ul></div>
+        <div class="m-sec">Mein Plan für heute <span>1/2 Aufgaben · Gewohnheiten 2/4 · Verzicht 2/3</span></div>
+        <div class="m-grid">
+          <div class="m-card full"><b>Mein Fokus heute</b><div class="m-input">Heute stelle ich die ersten drei Produkte online.</div></div>
+          <div class="m-card full"><b>Diese 2 Aufgaben bringen mich meinen Zielen heute am nächsten</b>
+            <div class="m-task done"><i></i><s>Produktfotos für den Shop machen</s> <em>🎯 Nebeneinkommen</em></div><div class="m-task"><i></i>3 Kunden-Anfragen beantworten <em>🎯 Nebeneinkommen</em></div></div>
+          <div class="m-card"><b>Das tue ich heute</b><div class="m-pills"><span class="ok">🏃 30 Min. Bewegung 2/4</span><span class="ok">💧 2 Liter Wasser 5/7</span><span>📖 10 Min. lesen 3/5</span></div></div>
+          <div class="m-card"><b>Darauf verzichte ich bewusst</b><div class="m-pills"><span class="ok">📵 Kein Social Media ✓</span><span class="ok">🥤 Keine Süßgetränke ✓</span><span>🍔 Kein Fast Food</span></div></div>
+          <div class="m-card full"><b>Dafür bin ich dankbar</b><div class="m-qq">Welche Kleinigkeit hat dir heute gutgetan?</div><div class="m-input">Dass meine Schwester angerufen hat – wir haben eine Stunde gelacht.</div></div>
+        </div>
+        <div class="m-close">Tagesabschluss <span>öffnet ab 17:00 Uhr ▾</span></div>
+      </div>
     </div>
   </div>`}
 function lpMockGoals(){return `
@@ -1644,7 +1683,7 @@ function showTour(){
   const el=st.s?[...document.querySelectorAll(st.s)].find(e=>e.offsetParent!==null||getComputedStyle(e).position==='fixed'):null;
   if(el&&el.scrollIntoView)el.scrollIntoView({block:'center',behavior:'instant'});
   card.innerHTML=`<div class="tour-step">${tourI+1} / ${TOUR.length}</div><h3>${st.t}</h3><p>${st.x}</p>
-    ${st.name?`<input type="text" id="tourName" placeholder="Wie heißt du? (für die Begrüßung)" value="${esc(S.name||'')}" style="margin:4px 0 12px">`:''}
+    ${st.name?`<label class="l" for="tourName" style="margin-top:2px">Wie dürfen wir dich nennen?</label><input type="text" id="tourName" placeholder="Dein Vorname, z. B. Max" value="${esc(S.name||'')}" style="margin:0 0 6px"><div class="meta" style="margin-bottom:14px">Erscheint in deiner Begrüßung: „Guten Morgen, Max.“ – kannst du auch leer lassen.</div>`:''}
     <div class="tour-btns">${st.final?`<button class="btn ghost small" id="tourDay">Erst mal umschauen</button><button class="btn" id="tourGoal">Masterziel anlegen</button>`:`${tourI>0?'<button class="btn ghost small" id="tourBack">Zurück</button>':'<button class="btn ghost small" id="tourSkip">Überspringen</button>'}<button class="btn" id="tourNext">Weiter</button>`}</div>`;
   const place=()=>{
     if(el){const r=el.getBoundingClientRect(),pad=6;Object.assign(hole.style,{display:'block',left:(r.left-pad)+'px',top:(r.top-pad)+'px',width:(r.width+pad*2)+'px',height:(r.height+pad*2)+'px'});
