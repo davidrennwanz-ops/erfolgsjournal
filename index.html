@@ -585,6 +585,7 @@ function normalize(s){
     s.goals.forEach(g=>{if(g.id==='g1'&&!g.start)g.start='2026-11-01';if(g.id==='g3'&&!g.start){g.start='2026-12-01';g.deadline=g.deadline||'2027-05-31'}});
   }
   s.settings.v=4;
+  if(s.settings.layout==='ruhig'||s.settings.layout==='dunkel')s.settings.layout='verbindlich';
   if(s.goals.length&&!s.goals.some(g=>g.master))s.goals[0].master=true;
   s.idealDay=s.idealDay||seedIdeal();s.idealWhy=s.idealWhy||'';
   s.habits.forEach(h=>{h.type=h.type||'do';if(h.type==='do'&&!h.target)h.target=7;if(h.type==='avoid'){if(h.cost==null)h.cost=0;h.unit=h.unit||'€'}});
@@ -1566,9 +1567,7 @@ function viewReport(){
 function viewSettings(){
   const L=[
     ['verbindlich','Verbindlich','Klar und ernst, ohne Spielerei. Ein goldener Faden führt durch deinen Tag.'],
-    ['tageszeit','Tageszeit','Szene und Farben wechseln mit Sonnenaufgang, Tag, Abend und Nacht.'],
-    ['ruhig','Ruhig','Kleine, blasse Szene, weniger Farbe – nur das Wesentliche.'],
-    ['dunkel','Dunkel','Dunkler Hintergrund, angenehm am Abend und im Bett.']
+    ['tageszeit','Tageszeit','Szene und Farben wechseln mit Sonnenaufgang, Tag, Abend und Nacht.']
   ];
   M.innerHTML=`
   <div class="section-head"><div><h1>Einstellungen</h1><p>Mach die Seite zu deiner.</p></div></div>
