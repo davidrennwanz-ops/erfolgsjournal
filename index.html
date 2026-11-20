@@ -530,6 +530,18 @@ h1,h2,h3,.brand b,.gtitle,.goal-line,.sec-head .t,.fold-head .t,.lp h1,.lp h2,.l
 .m-close{margin-top:12px;background:#fffdf8;border:1px solid #dcd5c6;border-radius:6px;padding:10px 14px;font-family:Newsreader,Georgia,serif;font-size:14.5px;display:flex;justify-content:space-between}
 .m-close span{font-family:Inter;font-size:11.5px;color:#6f6a60}
 @media (max-width:900px){.mock-app{grid-template-columns:1fr}.m-side{display:none}.m-grid{grid-template-columns:1fr}}
+
+.mc .mc-group{margin-top:14px}
+.mc .mc-gh{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px;display:flex;gap:10px;align-items:baseline}
+.mc .mc-gh b{color:var(--accent);font-size:13px;letter-spacing:0;text-transform:none}
+.mc-row{display:grid;grid-template-columns:190px 1fr 26px;gap:10px;align-items:center;padding:4px 0;font-size:14px}
+.mc-row em{font-style:normal;font-size:11.5px;color:var(--muted);text-align:center}
+.mc-scale{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.mc-scale button{all:unset;cursor:pointer;text-align:center;font-size:12.5px;padding:6px 0;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--muted)}
+.mc-scale button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.mc-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mc-banner .btn{margin-left:auto}
+@media (max-width:860px){.mc-row{grid-template-columns:1fr 22px}.mc-row .mc-scale{grid-column:1/-1;order:3}.mc-scale button{padding:7px 0;font-size:12px}}
 </style>
 </head>
 <body>
@@ -587,10 +599,11 @@ function seed(){return{
   days:{}
 }}
 const dl=()=>S.distractions;
-const DAY_DEFAULT=()=>({committed:'',goal:'',grat:['','',''],tasks:[{t:'',done:false,goal:''},{t:'',done:false,goal:''}],habits:{},good:'',learn:'',mood:0,win:'',bed:'',phoneOff:'',distr:[],distrNote:''});
+const DAY_DEFAULT=()=>({committed:'',goal:'',goalDone:false,joy:'',relax:[{t:'',done:false},{t:'',done:false}],grat:['','',''],tasks:[{t:'',done:false,goal:''},{t:'',done:false,goal:''}],habits:{},good:'',learn:'',mood:0,win:'',bed:'',phoneOff:'',distr:[],distrNote:''});
 function normalize(s){
   s.goals=s.goals||[];s.values=s.values||[];s.habits=s.habits||[];s.days=s.days||{};
   s.distractions=s.distractions||DISTR_SEED.map(x=>[...x]);
+  s.monthly=s.monthly||{};
   if(!s.settings||!s.settings.distrOrder1){const L=s.distractions,ai=L.findIndex(x=>x[0]==='alk'),ci=L.findIndex(x=>x[0]==='couch');if(ai>-1&&ci>-1&&ai<ci){const [x]=L.splice(ai,1);L.splice(L.findIndex(y=>y[0]==='couch')+1,0,x)}s.settings=s.settings||{};s.settings.distrOrder1=true}
   s.settings=Object.assign({layout:'verbindlich',evening:17},s.settings||{});
   if((s.settings.v||0)<2){s.settings.layout='verbindlich'}
@@ -619,7 +632,7 @@ let S;
 try{S=JSON.parse(localStorage.getItem(LKEY))}catch(e){}
 S=normalize(S||seed());
 function day(d=today()){if(!S.days[d])S.days[d]=DAY_DEFAULT();return S.days[d]}
-const metaObj=()=>({distractions:S.distractions,idealDay:S.idealDay,idealWhy:S.idealWhy,name:S.name,goals:S.goals,habits:S.habits,values:S.values,settings:S.settings});
+const metaObj=()=>({monthly:S.monthly||{},distractions:S.distractions,idealDay:S.idealDay,idealWhy:S.idealWhy,name:S.name,goals:S.goals,habits:S.habits,values:S.values,settings:S.settings});
 
 /* --- Verschlüsselung: Daten werden im Browser mit dem Passwort verschlüsselt --- */
 const TE=new TextEncoder(),TD=new TextDecoder();
@@ -996,7 +1009,7 @@ ${S.habits.filter(h=>h.type==='avoid').map(h=>h.id+': '+h.name).join('\n')||'(ke
 Ablenkungs-Kategorien (key: Name): ${dl().map(x=>x[0]+': '+x[1].replace(/^\S+\s/,'')).join(', ')}
 
 Antworte NUR mit JSON in genau dieser Form (alle Felder optional):
-{"focus":"Tagesfokus in einem Satz","gratitude":["…"],"tasks":[{"text":"…","goal":"Ziel-id oder leer"}],"done":["id von erledigten TUN-Gewohnheiten"],"avoided":["id von Verzicht-Gewohnheiten, bei denen er standhaft blieb"],"slipped":["id von Verzicht-Gewohnheiten, bei denen er schwach wurde"],"distractions":["key"],"distractionNote":"Auswirkung/Auslöser","win":"heutiger Erfolg","good":"was war gut","learn":"was morgen besser","mood":1-5,"bed":"HH:MM","phoneOff":"HH:MM"}
+{"focus":"Tagesfokus in einem Satz","gratitude":["…"],"tasks":[{"text":"…","goal":"Ziel-id oder leer"}],"done":["id von erledigten TUN-Gewohnheiten"],"avoided":["id von Verzicht-Gewohnheiten, bei denen er standhaft blieb"],"slipped":["id von Verzicht-Gewohnheiten, bei denen er schwach wurde"],"distractions":["key"],"distractionNote":"Auswirkung/Auslöser","joy":"worauf er sich heute freut","relax":["geplante Erholung"],"win":"heutiger Erfolg","good":"was war gut","learn":"was morgen besser","mood":1-5,"bed":"HH:MM","phoneOff":"HH:MM"}
 
 Regeln: höchstens 3 Dankbarkeiten, höchstens 2 Aufgaben (die wichtigsten, die auf ein Ziel einzahlen). Wenn er z. B. sagt, er habe Bier getrunken, dann slipped = Alkohol-id UND distractions enthält "alk". Shorts/YouTube/Instagram im Bett = "shorts".
 
@@ -1017,6 +1030,8 @@ Text des Nutzers:
     (r.distractions||[]).forEach(k=>{if(dl().find(x=>x[0]===k)&&!d.distr.includes(k))d.distr.push(k)});
     if((r.distractions||[]).length)applied.push('Ablenkungen');
     if(r.distractionNote){d.distrNote=d.distrNote?d.distrNote+' '+r.distractionNote:r.distractionNote}
+    if(r.joy){d.joy=r.joy;applied.push('Vorfreude')}
+    if(Array.isArray(r.relax)&&r.relax.length){r.relax.slice(0,2).forEach(t=>{let i=d.relax.findIndex(x=>!x.t.trim());if(i<0)i=1;d.relax[i]={t,done:false}});applied.push('Entspannung')}
     if(r.win){d.win=r.win;applied.push('Erfolg')}
     if(r.good){d.good=d.good?d.good+'\n'+r.good:r.good;applied.push('Reflexion')}
     if(r.learn){d.learn=d.learn?d.learn+'\n'+r.learn:r.learn}
@@ -1056,13 +1071,25 @@ function viewTag(){
   const focusCard=`
     <div class="card full">
       <h3>☀️ Tagesfokus</h3>
-      <p class="hint">Worauf kommt es heute an? Ein Satz – klar und machbar.</p>
-      <input type="text" id="goal" placeholder="z. B. Heute laufe ich 5 km und lasse abends das Bier weg." value="${esc(d.goal)}">
+      <p class="hint">Das Wichtigste heute – ist das geschafft, war der Tag ein Erfolg.</p>
+      <div class="row" style="margin:0"><input type="checkbox" class="chk" id="goalDone" ${d.goalDone?'checked':''} ${d.goal.trim()?'':'disabled style="opacity:.35"'} title="Tagesfokus erreicht"><input type="text" id="goal" placeholder="z. B. Heute stelle ich die ersten drei Produkte online." value="${esc(d.goal)}"></div>
     </div>`;
 
   const GQ=['Wofür bist du heute dankbar – konkret, und warum?','Welcher Mensch hat dir zuletzt geholfen – und wie genau?','Was hast du heute, das du vor einem Jahr noch nicht hattest?','Welche Kleinigkeit hat dir heute gutgetan?','Was an deinem Körper oder deiner Gesundheit schätzt du gerade?','Welcher Rückschlag hat dich am Ende weitergebracht?','Wofür könntest du jemandem heute Danke sagen?'];
   const gq=GQ[Math.floor(Date.now()/864e5)%GQ.length];
   const gratShow=gratMore||d.grat[1].trim()||d.grat[2].trim();
+  const joyCard=`
+    <div class="card">
+      <h3>🌅 Darauf freue ich mich heute</h3>
+      <p class="hint">Eine Sache, auf die du dich heute freust – groß oder klein.</p>
+      <input type="text" id="joy" value="${esc(d.joy)}" placeholder="z. B. Abendessen mit der Familie">
+    </div>`;
+  const relaxCard=`
+    <div class="card">
+      <h3>🌿 Bewusst entspannen</h3>
+      <p class="hint">Plane deine Erholung – dann greifst du seltener aus Langeweile zu Handy oder Snacks.</p>
+      ${d.relax.map((r,i)=>`<div class="row"><input type="checkbox" class="chk relax-c" data-i="${i}" ${r.done?'checked':''}><input type="text" class="relax-t" data-i="${i}" value="${esc(r.t)}" placeholder="${i?'z. B. 20 Min. lesen auf dem Sofa':'z. B. Spaziergang ohne Handy'}"></div>`).join('')}
+    </div>`;
   const gratCard=`
     <div class="card">
       <h3>🙏 Dafür bin ich dankbar</h3>
@@ -1185,9 +1212,10 @@ function viewTag(){
   </section>
   ${!CONFIGURED?'<div class="banner">Testmodus: Deine Einträge liegen nur auf diesem Gerät. Für Login und Sync die Datei config.js ausfüllen (siehe Anleitung).</div>':''}
   ${missionCard}
+  ${(()=>{const m=mcDue();if(!m||(S.monthly[m]&&S.monthly[m].done))return '';return `<div class="banner mc-banner">🗓️ <b>Zeit für deinen Monats-Check</b> – 5 Minuten für Erfolge, Selbsteinschätzung und deine wichtigste Erkenntnis. <button class="btn small" id="goMc">Jetzt starten</button></div>`})()}
   <section class="day-sec open plan">
-    <div class="sec-head static"><span class="t">Mein Plan für heute</span><span class="sum">${tasksSet.length?`${tasksDone}/${tasksSet.length} Aufgaben · `:''}Gewohnheiten ${doneDo}/${doH.length} · Verzicht ${avOk}/${avH.length}</span></div>
-    <div class="grid thread sec-body">${[focusCard,taskCardV,doCard,avoidCard,gratCard].filter(Boolean).join('')}</div>
+    <div class="sec-head static"><span class="t">Mein Plan für heute</span><span class="sum">${d.goal.trim()?(d.goalDone?'Fokus ✓ · ':'Fokus offen · '):''}${tasksSet.length?`${tasksDone}/${tasksSet.length} Aufgaben · `:''}Gewohnheiten ${doneDo}/${doH.length} · Verzicht ${avOk}/${avH.length}</span></div>
+    <div class="grid thread sec-body">${[focusCard,taskCardV,gratCard,joyCard,doCard,avoidCard,relaxCard].filter(Boolean).join('')}</div>
   </section>
   <section class="day-sec ${closeOpen?'open':''} ${eveningDone?'done':''}">
     <button class="sec-head" data-sec="abschluss"><span class="t">Tagesabschluss</span><span class="sum">${closeSum}</span><span class="chev">▾</span></button>
@@ -1200,6 +1228,12 @@ function viewTag(){
     if(!d.tasks.some(t=>t.t.trim())){toast('Leg zuerst deine 2 Aufgaben fest – dann sagst du zu.',3000);const f=M.querySelector('.task-t');if(f){const det=f.closest('details');if(det)det.open=true;f.focus()}return}
     const n=new Date();d.committed=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');markDay();toast('Zugesagt. Dein Wort gilt.',2500);viewTag()};
   bind('#goal',el=>{d.goal=el.value;markDay()});
+  bind('#joy',el=>{d.joy=el.value;markDay()});
+  bind('#goMc',()=>{range='monat';mcMonth=mcDue();page='report';location.hash='report';render();setTimeout(()=>{const e=document.getElementById('monthcheck');if(e)e.scrollIntoView({behavior:'smooth'})},50)},'click');
+  bind('.relax-t',el=>{d.relax[+el.dataset.i].t=el.value;markDay()});
+  bind('.relax-c',el=>{d.relax[+el.dataset.i].done=el.checked;markDay();if(el.checked)toast('Gut für dich gesorgt 🌿')},'change');
+  bind('#goal',el=>{const c=M.querySelector('#goalDone');if(c){c.disabled=!el.value.trim();c.style.opacity=el.value.trim()?'':'.35'}});
+  bind('#goalDone',el=>{d.goalDone=el.checked;markDay();if(el.checked)toast('Tagesfokus erreicht – stark! 💪',2500);viewTag()},'change');
   bind('.grat',el=>{d.grat[+el.dataset.i]=el.value;markDay()});
   bind('#gratMore',()=>{gratMore=true;viewTag()},'click');
   bind('.task-t',el=>{d.tasks[+el.dataset.i].t=el.value;markDay()});
@@ -1519,7 +1553,7 @@ async function runReview(){
   if(reviewBusy)return;
   if(!SB||!cloud){toast(aiMsg({code:'no_ai'}),4000);return}
   const {past}=rangeDates();
-  const data=past.filter(filled).map(d=>{const x=S.days[d];return{datum:d,zusage:x.committed?('um '+x.committed+(kept(d)?' – gehalten':' – nicht gehalten')):'keine',fokus:x.goal,dankbar:x.grat.filter(Boolean),aufgaben:x.tasks.filter(t=>t.t).map(t=>({schritt:t.t,erledigt:t.done,ziel:goalById(t.goal)?.title||''})),
+  const data=past.filter(filled).map(d=>{const x=S.days[d];return{datum:d,fokus:x.goal,fokusErreicht:!!x.goalDone,vorfreude:x.joy,entspannung:(x.relax||[]).filter(r=>r.t).map(r=>r.t+(r.done?' ✓':'')),dankbar:x.grat.filter(Boolean),aufgaben:x.tasks.filter(t=>t.t).map(t=>({schritt:t.t,erledigt:t.done,ziel:goalById(t.goal)?.title||''})),
     gewohnheiten:Object.fromEntries(S.habits.filter(h=>x.habits?.[h.id]!==undefined).map(h=>[h.name,h.type==='avoid'?(x.habits[h.id]?'verzichtet':'Ausrutscher'):'erledigt'])),
     ablenkungen:x.distr.map(k=>dl().find(z=>z[0]===k)?.[1]),notiz:x.distrNote,imBett:x.bed,handyWeg:x.phoneOff,erfolg:x.win,gut:x.good,besser:x.learn,stimmung:x.mood||null}});
   if(!data.length){toast('Für diesen Zeitraum gibt es noch keine Einträge.');return}
@@ -1530,6 +1564,7 @@ async function runReview(){
 Ziele: ${JSON.stringify(S.goals.map(g=>({masterziel:!!g.master,ziel:g.title,warum:g.why,fortschritt:g.progress+'%'})))}
 Gewohnheiten: ${JSON.stringify(S.habits.map(h=>({name:h.name,art:h.type==='avoid'?'verzichten':'tun',wochenziel:h.target})))}
 Tageseinträge: ${JSON.stringify(data)}
+Monats-Checks (Selbsteinschätzung 1–10): ${JSON.stringify(S.monthly||{})}
 
 Schreibe kurz (max. 220 Wörter) in genau diesen Abschnitten mit "### " als Überschrift:
 ### Was richtig gut lief
@@ -1544,6 +1579,43 @@ Ausrutscher sachlich benennen, nie beschämen.`;
   }catch(e){aiReview[range]='';toast(aiMsg(e),4000)}
   reviewBusy=false;viewReport();
 }
+
+/* Monats-Check (wie im 6-Minuten-Erfolgsjournal) */
+const MC_GROUPS=[
+  ['Produktivität',[['fokus','Fokus & Konzentration'],['sinn','Sinn & Motivation'],['kreativ','Kreativität & Inspiration']]],
+  ['Achtsamkeit',[['dank','Dankbarkeit'],['gesund','Gesundheit'],['ruhe','Ruhe & Gelassenheit']]],
+  ['Lebensbereiche',[['gewohn','Gute Gewohnheiten'],['spass','Spaß'],['finanzen','Finanzen'],['familie','Familie'],['bez','Beziehungen'],['stimmung','Gesamtstimmung']]]
+];
+let mcMonth=null;
+function mcDue(){const t=new Date(),d=t.getDate();if(d>=25)return today().slice(0,7);if(d<=5){const p=new Date(t.getFullYear(),t.getMonth()-1,1);return iso(p).slice(0,7)}return null}
+function mcGet(m){S.monthly=S.monthly||{};if(!S.monthly[m])S.monthly[m]={wins:['','',''],r:{},lesson:'',done:false};return S.monthly[m]}
+const mcAvg=(x,keys)=>{const v=keys.map(k=>x.r[k]).filter(Boolean);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length*10)/10:null};
+function monthCheckCard(){
+  const m=mcMonth||mcDue()||today().slice(0,7);const x=mcGet(m);
+  const label=new Date(m+'-15T12:00').toLocaleDateString('de-DE',{month:'long',year:'numeric'});
+  const months=Object.keys(S.monthly||{}).filter(k=>S.monthly[k].done).sort();
+  const prevKey=months.filter(k=>k<m).slice(-1)[0],prev=prevKey?S.monthly[prevKey]:null;
+  return `<div class="card mc" id="monthcheck">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h3>🗓️ Monats-Check · ${label}</h3>
+      <select id="mcSel" style="width:auto">${[...new Set([m,...Object.keys(S.monthly||{}),today().slice(0,7)])].sort().reverse().map(k=>`<option value="${k}" ${k===m?'selected':''}>${new Date(k+'-15T12:00').toLocaleDateString('de-DE',{month:'long',year:'numeric'})}</option>`).join('')}</select></div>
+    <p class="hint">5 Minuten am Monatsende: Was hast du erreicht, wie ging es dir – und was nimmst du mit?</p>
+    <label class="l">Erfolge des Monats – auf diese Meilensteine bin ich stolz:</label>
+    ${x.wins.map((w,i)=>`<div class="row"><span class="num">${i+1}</span><input type="text" class="mc-win" data-i="${i}" value="${esc(w)}" placeholder="Meilenstein ${i+1}"></div>`).join('')}
+    ${MC_GROUPS.map(([g,items])=>{const a=mcAvg(x,items.map(i=>i[0]));return `<div class="mc-group"><div class="mc-gh">${g}${g!=='Lebensbereiche'&&a?` <b>Ø ${String(a).replace('.',',')}</b>`:''}</div>
+      ${items.map(([k,l])=>`<div class="mc-row"><span>${l}</span><div class="mc-scale">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="${x.r[k]===n?'on':''}" data-mc="${k}|${n}">${n}</button>`).join('')}</div>${prev&&prev.r[k]?`<em title="Vormonat">${prev.r[k]}</em>`:'<em></em>'}</div>`).join('')}</div>`}).join('')}
+    <label class="l" style="margin-top:14px">Fortschritt – diese Erkenntnis nehme ich mit in den nächsten Monat:</label>
+    <textarea id="mcLesson" placeholder="z. B. Wenn ich abends das Handy weglege, läuft der nächste Morgen deutlich besser.">${esc(x.lesson)}</textarea>
+    <div class="row" style="margin-top:12px;justify-content:space-between;flex-wrap:wrap"><span class="meta">${prev?'Kleine Zahl rechts = dein Wert im Vormonat':''}</span><button class="btn" id="mcDone">${x.done?'✓ Abgeschlossen':'Monats-Check abschließen'}</button></div>
+  </div>`;
+}
+function bindMonthCheck(rerender){
+  const m=mcMonth||mcDue()||today().slice(0,7),x=mcGet(m);
+  bind('#mcSel',el=>{mcMonth=el.value;rerender()},'change');
+  bind('.mc-win',el=>{x.wins[+el.dataset.i]=el.value;markMeta()});
+  bind('[data-mc]',el=>{const [k,n]=el.dataset.mc.split('|');x.r[k]=x.r[k]===+n?undefined:+n;markMeta();rerender()},'click');
+  bind('#mcLesson',el=>{x.lesson=el.value;markMeta()});
+  bind('#mcDone',()=>{x.done=true;markMeta();toast('Monats-Check gespeichert ✓',2500);rerender()},'click');
+}
 function viewReport(){
   const {cols,past}=rangeDates(),now=new Date();
   const journaled=past.filter(filled).length;
@@ -1557,7 +1629,8 @@ function viewReport(){
   <div class="section-head"><div><h1>Report</h1><p>${range==='woche'?'Diese Woche':range==='monat'?now.toLocaleDateString('de-DE',{month:'long',year:'numeric'}):'Jahr '+now.getFullYear()} auf einen Blick.</p></div>
     <div class="tabs">${[['woche','Woche'],['monat','Monat'],['jahr','Jahr']].map(r=>`<button class="${range===r[0]?'on':''}" data-r="${r[0]}">${r[1]}</button>`).join('')}</div></div>
 
-  <div class="card proud" style="margin-bottom:20px">
+  ${range!=='woche'||mcDue()?monthCheckCard():''}
+  <div class="card proud" style="margin:20px 0">
     <h3>✨ KI-Rückblick</h3>
     <p class="hint">Die KI liest deine Einträge und zeigt dir, was gut lief, welche Muster es gibt und worauf du dich als Nächstes konzentrierst.</p>
     <div class="ai-out" id="aiOut">${aiReview[range]?md(aiReview[range]):''}</div>
@@ -1565,7 +1638,7 @@ function viewReport(){
   </div>
 
   <div class="kpis">
-    <div class="kpi"><small>Wort gehalten</small><b>${past.filter(kept).length}<span style="font-size:15px;color:var(--muted)"> / ${past.filter(d=>S.days[d]?.committed).length} Zusagen</span></b></div>
+    <div class="kpi"><small>Tagesfokus erreicht</small><b>${past.filter(d=>S.days[d]?.goalDone).length}<span style="font-size:15px;color:var(--muted)"> / ${past.filter(d=>S.days[d]?.goal?.trim()).length} Tage</span></b></div>
     <div class="kpi"><small>Ziel-Aufgaben erledigt</small><b>${stepsDone}<span style="font-size:15px;color:var(--muted)"> / ${steps.length}</span></b></div>
     <div class="kpi"><small>Durch Verzicht gewonnen</small><b style="font-size:20px">${euro?euro+' €':''}${euro&&mins?' · ':''}${mins?fmtSaved(mins,'Min.'):''}${!euro&&!mins?'–':''}</b></div>
     <div class="kpi"><small>Ø Stimmung</small><b>${moodAvg?['😞','😕','😐','🙂','😄'][Math.round(moodAvg)-1]:'–'}</b></div>
@@ -1598,6 +1671,7 @@ function viewReport(){
     </div>
   </div>`;
   bind('[data-r]',el=>{range=el.dataset.r;viewReport()},'click');
+  if(M.querySelector('#monthcheck'))bindMonthCheck(viewReport);
   M.querySelector('#aiRev').onclick=runReview;
 }
 
