@@ -542,6 +542,40 @@ h1,h2,h3,.brand b,.gtitle,.goal-line,.sec-head .t,.fold-head .t,.lp h1,.lp h2,.l
 .mc-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .mc-banner .btn{margin-left:auto}
 @media (max-width:860px){.mc-row{grid-template-columns:1fr 22px}.mc-row .mc-scale{grid-column:1/-1;order:3}.mc-scale button{padding:7px 0;font-size:12px}}
+
+/* Kacheln */
+.t-progress{display:flex;align-items:center;gap:12px;margin:2px 0 6px}
+.t-progress .bar{flex:1;height:7px}
+.t-progress span{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.t-verdict{font-size:14px;line-height:1.5;color:var(--muted);margin:4px 0 14px}
+.t-verdict.alert{color:#8a5a2b}.t-verdict.good{color:var(--ok)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tile{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 17px;transition:background .25s,border-color .25s;min-width:0}
+.tile.wide{grid-column:1/-1}
+.tile.half{background:#f4f9f5;border-color:#d3e6da}
+.tile.done{background:#e7f1ea;border-color:#a9cdb5}
+.t-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.t-head h3{font-size:17px;flex:1;margin:0;line-height:1.3}
+.t-ic{font-size:16px}
+.t-badge{font-size:11px;font-weight:600;color:var(--ok);background:#fff;border:1px solid #a9cdb5;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.tile.half .t-badge{color:#6b8f78;border-color:#d3e6da}
+.t-badge.plain{color:var(--muted);border-color:var(--line);font-weight:500}
+.t-pen{all:unset;cursor:pointer;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--muted)}
+.t-pen:hover{background:rgba(0,0,0,.06);color:var(--ink)}
+.t-q{font-size:12.5px;color:var(--muted);margin:0 0 10px;line-height:1.45}
+.tile input[type=text]{margin-bottom:8px}
+.t-row{display:grid;grid-template-columns:1fr 190px;gap:8px}
+.t-row select{margin-bottom:8px}
+.t-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:2px}
+.logged{display:flex;align-items:flex-start;gap:10px;font-family:Newsreader,Georgia,serif;font-size:17px;line-height:1.4;padding:3px 0}
+.logged.big{font-size:20px}
+.logged .chk{margin-top:3px}
+.struck{text-decoration:line-through;opacity:.6}
+.goal-tag{font-family:Inter,sans-serif;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:2px 7px;margin-left:auto;white-space:nowrap;background:#fff;align-self:center}
+.tt{all:unset;cursor:pointer;font-family:Inter,sans-serif;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:2px 7px;background:#fff;align-self:center;white-space:nowrap}
+.tt:hover{color:var(--ink)}
+.add{all:unset;cursor:pointer;font-size:12.5px;color:var(--muted);display:inline-block;margin-bottom:8px}
+@media (max-width:860px){.tiles{grid-template-columns:1fr}.t-row{grid-template-columns:1fr}.t-row select{margin-top:-4px}.logged{flex-wrap:wrap}.goal-tag{margin-left:30px}}
 </style>
 </head>
 <body>
@@ -1203,6 +1237,51 @@ function viewTag(){
   const avLogged=avH.filter(h=>d.habits[h.id]!==undefined).length;
   const eDone=[!!d.win.trim(),!!(d.good.trim()||d.learn.trim()),!!d.mood];
   const eveningDone=eDone.every(Boolean);
+  /* ---------- Kacheln „Mein Plan für heute“ ---------- */
+  const PEN='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  const tk=id=>today()+':'+id, isEd=id=>!!tileEdit[tk(id)];
+  const filledTasks=d.tasks.map((t,i)=>({...t,i})).filter(t=>t.t.trim());
+  const gratFilled=d.grat.filter(g=>g.trim());
+  const relaxFilled=d.relax.map((r,i)=>({...r,i})).filter(r=>r.t.trim());
+  const doAll=doH.length&&doH.every(h=>d.habits[h.id]===true), avAll=avH.length&&avH.every(h=>d.habits[h.id]===true);
+  const TL=[
+    {id:'focus',wide:1,icon:'☀️',title:'Tagesfokus',q:'Das Wichtigste heute – ist das geschafft, war der Tag ein Erfolg.',
+     filled:!!d.goal.trim(),stage:!d.goal.trim()?0:d.goalDone?2:1,two:1},
+    {id:'tasks',wide:1,icon:'🎯',title:'Diese 2 Aufgaben bringen mich meinen Zielen heute am nächsten',q:'Nur das, was wirklich zählt. Alles andere steht in TickTick.',
+     filled:filledTasks.length>0,stage:!filledTasks.length?0:filledTasks.every(t=>t.done)?2:1,two:1},
+    {id:'grat',icon:'🙏',title:'Dafür bin ich dankbar',q:gq,filled:gratFilled.length>0,stage:gratFilled.length?2:0},
+    {id:'joy',icon:'🌅',title:'Darauf freue ich mich heute',q:'Eine Sache – groß oder klein.',filled:!!d.joy.trim(),stage:d.joy.trim()?2:0},
+    {id:'do',icon:'✅',title:'Das tue ich heute',q:'Antippen, wenn erledigt.',pills:1,stage:doAll?2:0,count:`${doneDo}/${doH.length}`},
+    {id:'avoid',icon:'🛡️',title:'Darauf verzichte ich bewusst',q:'1× = standhaft · 2× = schwach geworden',pills:1,stage:avAll?2:0,count:`${avOk}/${avH.length}`},
+    {id:'relax',icon:'🌿',title:'Bewusst entspannen',q:'Geplante Erholung statt Handy aus Langeweile.',filled:relaxFilled.length>0,stage:relaxFilled.length?2:0}
+  ];
+  const goalSel=(i,sel)=>`<select data-k="taskgoal:${i}" class="t-goal"><option value="">– Ziel –</option>${S.goals.map(g=>`<option value="${g.id}" ${sel===g.id?'selected':''}>🎯 ${esc(g.title)}</option>`).join('')}</select>`;
+  const saveBtn=id=>`<div class="t-actions"><span class="meta">Enter = eintragen</span><button class="btn small" data-save="${id}">Eintragen</button></div>`;
+  function tileBody(t){
+    const edit=!t.pills&&(!t.filled||isEd(t.id));
+    if(t.id==='focus')return edit?`<input type="text" data-k="goal" value="${esc(d.goal)}" placeholder="z. B. Heute stelle ich die ersten drei Produkte online.">${saveBtn('focus')}`
+      :`<div class="logged big"><input type="checkbox" class="chk" data-ck="goal" ${d.goalDone?'checked':''}><span class="${d.goalDone?'struck':''}">${esc(d.goal)}</span></div>`;
+    if(t.id==='tasks')return edit?d.tasks.map((x,i)=>`<div class="t-row"><input type="text" data-k="task:${i}" value="${esc(x.t)}" placeholder="Aufgabe ${i+1}">${goalSel(i,x.goal)}</div>`).join('')+saveBtn('tasks')
+      :filledTasks.map(x=>{const g=goalById(x.goal);return `<div class="logged"><input type="checkbox" class="chk" data-ck="task:${x.i}" ${x.done?'checked':''}><span class="${x.done?'struck':''}">${esc(x.t)}</span>${g?`<span class="goal-tag">🎯 ${esc(g.title)}</span>`:''}<button class="tt" data-tt="${x.i}" title="An TickTick senden">↗ TickTick</button></div>`}).join('');
+    if(t.id==='grat'){const n=edit?(gratMore||d.grat[1].trim()||d.grat[2].trim()?3:1):0;
+      return edit?d.grat.slice(0,n).map((g,i)=>`<input type="text" data-k="grat:${i}" value="${esc(g)}" placeholder="${i?'Noch etwas (optional)':'Ich bin dankbar, dass … – weil …'}">`).join('')+(n<3?'<button class="add" id="gratMore">＋ noch etwas</button>':'')+saveBtn('grat')
+      :gratFilled.map(g=>`<div class="logged">${esc(g)}</div>`).join('')}
+    if(t.id==='joy')return edit?`<input type="text" data-k="joy" value="${esc(d.joy)}" placeholder="z. B. Abendessen mit der Familie">${saveBtn('joy')}`:`<div class="logged">${esc(d.joy)}</div>`;
+    if(t.id==='relax')return edit?d.relax.map((r,i)=>`<input type="text" data-k="relax:${i}" value="${esc(r.t)}" placeholder="${i?'z. B. 20 Min. lesen auf dem Sofa':'z. B. Spaziergang ohne Handy'}">`).join('')+saveBtn('relax')
+      :relaxFilled.map(r=>`<div class="logged"><input type="checkbox" class="chk" data-ck="relax:${r.i}" ${r.done?'checked':''}><span class="${r.done?'struck':''}">${esc(r.t)}</span></div>`).join('');
+    if(t.id==='do')return `<div class="pills">${doH.map(h=>{const c=weekCount(h);return `<button class="pill ${d.habits[h.id]===true?'done':''}" data-h="${h.id}">${h.icon} ${esc(h.name)} <span style="opacity:.7;font-size:12px">${c}/${h.target}</span></button>`}).join('')||'<span class="empty">Noch keine Gewohnheiten.</span>'}</div>`;
+    if(t.id==='avoid')return `<div class="pills">${avH.map(h=>{const v=d.habits[h.id];return `<button class="pill ${v===true?'done':v===false?'slip':''}" data-a="${h.id}">${h.icon} ${esc(h.name)}${v===true?' ✓':v===false?' ✗':''}</button>`}).join('')||'<span class="empty">Lege unter Gewohnheiten etwas an.</span>'}</div>`;
+  }
+  const tileHTML=t=>{const st=t.stage,edit=!t.pills&&(!t.filled||isEd(t.id));
+    const badge=st===1?'Eingetragen – noch offen':st===2?(t.two?'✓ Geschafft':t.pills?'✓ Alles erledigt':'✓ Eingetragen'):t.count?t.count:'';
+    return `<div class="tile ${t.wide?'wide':''} ${['','half','done'][st]}" data-tile="${t.id}">
+      <div class="t-head"><span class="t-ic">${t.icon}</span><h3>${t.title}</h3>${badge?`<span class="t-badge ${st?'':'plain'}">${badge}</span>`:''}${t.filled&&!edit?`<button class="t-pen" data-pen="${t.id}" title="Bearbeiten">${PEN}</button>`:''}</div>
+      ${edit||t.pills||st===0?`<div class="t-q">${t.q}</div>`:''}
+      ${tileBody(t)}</div>`};
+  const tilesDone=TL.filter(t=>t.stage===2).length;
+  const tilesHTML=`<div class="t-progress"><div class="bar"><i style="width:${Math.round(tilesDone/TL.length*100)}%;background:var(--ok)"></i></div><span>${tilesDone} von ${TL.length} erledigt</span></div>
+    <p class="t-verdict ${vcls}">${verdict}</p>
+    <div class="tiles">${TL.map(tileHTML).join('')}</div>`;
   const closeKey='abschluss:'+today();
   const closeOpen=uiOpen(closeKey,isEve&&!eveningDone);
   const closeSum=eveningDone?'✓ Tag abgeschlossen':isEve?'Jetzt dran':`öffnet ab ${eve}:00 Uhr`;
@@ -1215,7 +1294,7 @@ function viewTag(){
   ${(()=>{const m=mcDue();if(!m||(S.monthly[m]&&S.monthly[m].done))return '';return `<div class="banner mc-banner">🗓️ <b>Zeit für deinen Monats-Check</b> – 5 Minuten für Erfolge, Selbsteinschätzung und deine wichtigste Erkenntnis. <button class="btn small" id="goMc">Jetzt starten</button></div>`})()}
   <section class="day-sec open plan">
     <div class="sec-head static"><span class="t">Mein Plan für heute</span><span class="sum">${d.goal.trim()?(d.goalDone?'Fokus ✓ · ':'Fokus offen · '):''}${tasksSet.length?`${tasksDone}/${tasksSet.length} Aufgaben · `:''}Gewohnheiten ${doneDo}/${doH.length} · Verzicht ${avOk}/${avH.length}</span></div>
-    <div class="grid thread sec-body">${[focusCard,taskCardV,gratCard,joyCard,doCard,avoidCard,relaxCard].filter(Boolean).join('')}</div>
+    <div class="sec-body">${tilesHTML}</div>
   </section>
   <section class="day-sec ${closeOpen?'open':''} ${eveningDone?'done':''}">
     <button class="sec-head" data-sec="abschluss"><span class="t">Tagesabschluss</span><span class="sum">${closeSum}</span><span class="chev">▾</span></button>
@@ -1228,6 +1307,20 @@ function viewTag(){
     if(!d.tasks.some(t=>t.t.trim())){toast('Leg zuerst deine 2 Aufgaben fest – dann sagst du zu.',3000);const f=M.querySelector('.task-t');if(f){const det=f.closest('details');if(det)det.open=true;f.focus()}return}
     const n=new Date();d.committed=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');markDay();toast('Zugesagt. Dein Wort gilt.',2500);viewTag()};
   bind('#goal',el=>{d.goal=el.value;markDay()});
+  /* Kacheln: Eingaben, Eintragen, Bearbeiten, Abhaken */
+  const setK=(k,v)=>{const [a,i]=k.split(':');
+    if(a==='goal')d.goal=v;else if(a==='joy')d.joy=v;else if(a==='task')d.tasks[+i].t=v;else if(a==='taskgoal')d.tasks[+i].goal=v;else if(a==='grat')d.grat[+i]=v;else if(a==='relax')d.relax[+i].t=v;markDay()};
+  M.querySelectorAll('.tile [data-k]').forEach(el=>{
+    el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>setK(el.dataset.k,el.value));
+    if(el.tagName==='INPUT')el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const id=el.closest('[data-tile]').dataset.tile;tileEdit[tk(id)]=false;viewTag()}});
+  });
+  M.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{tileEdit[tk(b.dataset.save)]=false;viewTag()});
+  M.querySelectorAll('[data-pen]').forEach(b=>b.onclick=()=>{const id=b.dataset.pen;tileEdit[tk(id)]=true;viewTag();const f=M.querySelector(`[data-tile="${id}"] [data-k]`);if(f){f.focus();if(f.select)f.select()}});
+  M.querySelectorAll('[data-ck]').forEach(c=>c.onchange=()=>{const [a,i]=c.dataset.ck.split(':');
+    if(a==='goal'){d.goalDone=c.checked;if(c.checked)toast('Tagesfokus erreicht – stark! 💪',2500)}
+    else if(a==='task'){d.tasks[+i].done=c.checked;if(c.checked)toast('Deinem Ziel ein Stück näher 💪')}
+    else if(a==='relax'){d.relax[+i].done=c.checked;if(c.checked)toast('Gut für dich gesorgt 🌿')}
+    markDay();viewTag()});
   bind('#joy',el=>{d.joy=el.value;markDay()});
   bind('#goMc',()=>{range='monat';mcMonth=mcDue();page='report';location.hash='report';render();setTimeout(()=>{const e=document.getElementById('monthcheck');if(e)e.scrollIntoView({behavior:'smooth'})},50)},'click');
   bind('.relax-t',el=>{d.relax[+el.dataset.i].t=el.value;markDay()});
@@ -1527,7 +1620,7 @@ function uiOpen(k,def){const u=(S.settings&&S.settings.ui)||{};return u[k]!==und
 function setUi(k,v){S.settings.ui=S.settings.ui||{};const t=today();Object.keys(S.settings.ui).forEach(x=>{const m=x.match(/^abschluss:(\d{4}-\d{2}-\d{2})$/);if(m&&m[1]<t)delete S.settings.ui[x]});S.settings.ui[k]=v;markMeta()}
 function fold(k,title,sum,body,def=true,sub=''){const open=uiOpen(k,def);return `<section class="fold ${open?'open':''}"><button class="fold-head" data-fold="${k}"><span class="t">${title}</span><span class="sum">${open?sub:sum}</span><span class="chev">▾</span></button>${open?`<div class="fold-body">${body}</div>`:''}</section>`}
 function bindFolds(fn){M.querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>{setUi(b.dataset.fold,!b.parentElement.classList.contains('open'));fn()})}
-let secManual={},gratMore=false;
+let secManual={},gratMore=false,tileEdit={};
 const editing={};
 const editBtn=k=>`<button class="edit-btn ${editing[k]?'on':''}" data-edit="${k}">${editing[k]?'✓ Fertig':'✎ Bearbeiten'}</button>`;
 function bindEdit(k,fn){M.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{editing[k]=!editing[k];fn()})}
@@ -1629,8 +1722,7 @@ function viewReport(){
   <div class="section-head"><div><h1>Report</h1><p>${range==='woche'?'Diese Woche':range==='monat'?now.toLocaleDateString('de-DE',{month:'long',year:'numeric'}):'Jahr '+now.getFullYear()} auf einen Blick.</p></div>
     <div class="tabs">${[['woche','Woche'],['monat','Monat'],['jahr','Jahr']].map(r=>`<button class="${range===r[0]?'on':''}" data-r="${r[0]}">${r[1]}</button>`).join('')}</div></div>
 
-  ${range!=='woche'||mcDue()?monthCheckCard():''}
-  <div class="card proud" style="margin:20px 0">
+  <div class="card proud" style="margin:0 0 20px">
     <h3>✨ KI-Rückblick</h3>
     <p class="hint">Die KI liest deine Einträge und zeigt dir, was gut lief, welche Muster es gibt und worauf du dich als Nächstes konzentrierst.</p>
     <div class="ai-out" id="aiOut">${aiReview[range]?md(aiReview[range]):''}</div>
@@ -1669,7 +1761,8 @@ function viewReport(){
     <div class="card"><h3>Dankbarkeit</h3><p class="hint">Deine letzten Einträge</p>
       ${past.flatMap(d=>(S.days[d]?.grat||[]).filter(Boolean).map(g=>({d,g}))).slice(-6).reverse().map(x=>`<div class="row" style="align-items:flex-start"><span class="meta" style="width:46px;flex-shrink:0">${short(x.d)}</span><span style="font-size:14px">${esc(x.g)}</span></div>`).join('')||'<p class="empty">Noch keine Einträge.</p>'}
     </div>
-  </div>`;
+  </div>
+  ${range!=='woche'||mcDue()?`<div style="margin-top:20px">${monthCheckCard()}</div>`:''}`;
   bind('[data-r]',el=>{range=el.dataset.r;viewReport()},'click');
   if(M.querySelector('#monthcheck'))bindMonthCheck(viewReport);
   M.querySelector('#aiRev').onclick=runReview;
