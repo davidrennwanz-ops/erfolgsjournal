@@ -473,6 +473,7 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .lp-end-sub{opacity:.75;font-size:17px;margin:-10px 0 26px}
 @media(max-width:900px){.lp-steps{grid-template-columns:1fr 1fr}.lp-why h2{font-size:32px}}
 @media(max-width:560px){.lp-steps{grid-template-columns:1fr;gap:22px}.lp-why{padding:56px 0}.lp-why h2{font-size:28px}.lp-why blockquote{font-size:21px}}
+.lp-beta{display:inline-block;margin-top:12px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:5px 10px}
 .lp-three{background:#1c2230;color:#f3f0e8;padding:64px 0}
 .lp-three .lp-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
 .lp-three span{font-size:28px}
@@ -847,7 +848,7 @@ function landingHTML(){return `
 <div class="lp">
   <header class="lp-nav"><div class="lp-wrap">
     <a class="lp-logo" href="#" onclick="return false">${LP_SUN}<span>Erfolgsjournal</span></a>
-    <nav><a href="#lp-features" class="lp-link">Funktionen</a><a href="#lp-price" class="lp-link">Preise</a><button class="lp-btn ghost" data-go="login">Anmelden</button></nav>
+    <nav><a href="#lp-features" class="lp-link">Funktionen</a><button class="lp-btn ghost" data-go="login">Anmelden</button></nav>
   </div></header>
 
   <section class="lp-hero"><div class="lp-wrap lp-hero-grid">
@@ -855,15 +856,16 @@ function landingHTML(){return `
       <span class="lp-kicker">Raus aus dem Hamsterrad</span>
       <h1>Eine Sache.<br>Die alles verändert.</h1>
       <p class="lp-sub">Der Alltag zieht dich in hundert Richtungen. Das Erfolgsjournal macht dein <b>Masterziel</b> zum Zentrum deines Tages: Du siehst es jeden Morgen zuerst, gehst täglich zwei Schritte darauf zu – und erkennst, wie weit du schon gekommen bist.</p>
-      <div class="lp-cta"><button class="lp-btn" data-go="signup">Kostenlos starten</button><button class="lp-btn ghost" data-go="login">Ich habe schon ein Konto</button></div>
+      <div class="lp-cta"><button class="lp-btn" data-go="signup">Konto erstellen</button><button class="lp-btn ghost" data-go="login">Ich habe schon ein Konto</button></div>
       <div class="lp-trust">🔒 Ende-zu-Ende verschlüsselt · Server in Deutschland · Keine Werbung</div>
+      <div class="lp-beta">Private Beta – nur auf Einladung</div>
     </div>
     <div class="lp-auth card" id="lpAuth">
       <div class="lp-tabs"><button data-tab="signup" class="on">Konto erstellen</button><button data-tab="login">Anmelden</button></div>
       <input type="email" id="aE" placeholder="E-Mail" autocomplete="email">
       <input type="password" id="aP" placeholder="Passwort (mind. 6 Zeichen)" autocomplete="new-password">
       <div class="err" id="aErr"></div>
-      <button class="lp-btn full" id="aUp">Kostenlos starten</button>
+      <button class="lp-btn full" id="aUp">Konto erstellen</button>
       <button class="lp-btn full" id="aIn" style="display:none">Anmelden</button>
       <p class="lp-fine">Deine Einträge werden mit deinem Passwort verschlüsselt. Niemand sonst kann sie lesen – auch wir nicht. Merk dir dein Passwort gut: Ohne es lassen sich die Daten nicht wiederherstellen.</p>
     </div>
@@ -906,19 +908,13 @@ function landingHTML(){return `
 
   <section class="lp-privacy"><div class="lp-wrap">
     <h2>Deine Gedanken gehören dir.</h2>
-    <div class="lp-pgrid"><div><b>🔒 Verschlüsselt</b><p>Jeder Eintrag wird auf deinem Gerät mit deinem Passwort verschlüsselt.</p></div><div><b>🇩🇪 Server in Frankfurt</b><p>Deine Daten liegen in der EU, nach europäischem Datenschutz.</p></div><div><b>🚫 Keine Werbung</b><p>Wir verkaufen keine Daten. Unser Geschäftsmodell ist ein faires Abo.</p></div></div>
+    <div class="lp-pgrid"><div><b>🔒 Verschlüsselt</b><p>Jeder Eintrag wird auf deinem Gerät mit deinem Passwort verschlüsselt.</p></div><div><b>🇩🇪 Server in Frankfurt</b><p>Deine Daten liegen in der EU, nach europäischem Datenschutz.</p></div><div><b>🚫 Keine Werbung</b><p>Kein Tracking, keine Analyse-Tools. Wir verkaufen keine Daten.</p></div></div>
   </div></section>
 
-  <section class="lp-price" id="lp-price"><div class="lp-wrap">
-    <h2>Fair. Ohne Abo-Falle.</h2><p class="lp-sub" style="margin:8px auto 0;text-align:center">Jederzeit kündbar, keine versteckten Kosten. <b>Während der Beta ist alles kostenlos.</b></p>
-    <div class="lp-plans">
-      <div class="plan"><h3>Basis</h3><div class="price">0 €</div><div class="per">für immer</div><ul><li>Mein Tag mit Plan & Tagesabschluss</li><li>Masterziel, Zeitstrahl, idealer Tag</li><li>Gewohnheiten & Verzicht</li><li>Wochen-, Monats- und Jahresreports</li><li>Verschlüsselte Synchronisation</li></ul><button class="lp-btn ghost full" data-go="signup">Kostenlos starten</button></div>
-      <div class="plan pro"><span class="badge">Beliebt</span><h3>Pro</h3><div class="price">4,99 €</div><div class="per">pro Monat · oder 39 € im Jahr</div><ul><li>Alles aus Basis</li><li>🎙️ Einsprechen mit KI-Eintrag</li><li>✨ KI-Wochenrückblick</li><li>🔔 Erinnerungen im richtigen Moment</li><li>Export & Backup</li></ul><button class="lp-btn full" data-go="signup">In der Beta kostenlos testen</button></div>
-    </div>
-  </div></section>
+  
 
   <section class="lp-end"><div class="lp-wrap"><h2>Welche eine Sache würde dein Leben verändern?</h2><p class="lp-end-sub">Leg sie heute fest. Der erste Schritt dauert fünf Minuten.</p><button class="lp-btn" data-go="signup">Mein Masterziel festlegen</button></div></section>
-  <footer class="lp-foot"><div class="lp-wrap"><span>${LP_SUN} Erfolgsjournal · Beta</span><span>© ${new Date().getFullYear()} · Impressum · Datenschutz</span></div></footer>
+  <footer class="lp-foot"><div class="lp-wrap"><span>${LP_SUN} Erfolgsjournal · Private Beta</span><span>Private Testversion – kein öffentliches Angebot</span></div></footer>
 </div>`}
 
 function showLogin(){
