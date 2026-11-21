@@ -60,6 +60,7 @@ main{flex:1;min-width:0;padding:26px 34px 60px;max-width:1100px}
 .tag{font-family:Inter;font-size:11px;font-weight:600;background:var(--accent-soft);color:var(--accent);padding:3px 8px;border-radius:999px}
 input[type=text],input[type=number],textarea,select,input[type=date],input[type=time]{width:100%;font:inherit;font-size:14.5px;border:1px solid var(--line);background:#fffdfb;border-radius:10px;padding:10px 12px;color:var(--ink);outline:none;transition:.15s}
 textarea{resize:vertical;min-height:70px}
+.ag{min-height:0!important;resize:none!important;overflow:hidden;line-height:1.45;display:block;field-sizing:content}
 input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .row{display:flex;gap:10px;align-items:center;margin-bottom:9px}
 .num{width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:13px;display:grid;place-items:center;flex-shrink:0}
@@ -563,7 +564,7 @@ h1,h2,h3,.brand b,.gtitle,.goal-line,.sec-head .t,.fold-head .t,.lp h1,.lp h2,.l
 .t-pen{all:unset;cursor:pointer;width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--muted)}
 .t-pen:hover{background:rgba(0,0,0,.06);color:var(--ink)}
 .t-q{font-size:12.5px;color:var(--muted);margin:0 0 10px;line-height:1.45}
-.tile input[type=text]{margin-bottom:8px}
+.tile input[type=text],.tile textarea.ag{margin-bottom:8px}
 .t-row{display:grid;grid-template-columns:1fr 190px;gap:8px}
 .t-row select{margin-bottom:8px}
 .t-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:2px}
@@ -938,6 +939,21 @@ function setSync(){const el=document.getElementById('sync');if(el){el.className=
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=1800){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),ms)}
 const M=document.getElementById('main');
+
+/* Eingabezeilen wachsen mit: einzeilige Textfelder werden zu Textfeldern, die bei langem Text umbrechen */
+function agFit(t){t.style.height='auto';if(t.scrollHeight)t.style.height=t.scrollHeight+2+'px'}
+function agUpgrade(root){root.querySelectorAll('input[type=text]:not(.no-ag)').forEach(inp=>{
+  const t=document.createElement('textarea');t.rows=1;
+  for(const a of inp.attributes){if(a.name!=='type'&&a.name!=='value')t.setAttribute(a.name,a.value)}
+  t.classList.add('ag');t.value=inp.value;inp.replaceWith(t);
+  t.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey)e.preventDefault()});
+  t.addEventListener('input',()=>{if(/\n/.test(t.value)){const p=t.selectionStart;t.value=t.value.replace(/\s*\n\s*/g,' ');t.selectionStart=t.selectionEnd=Math.min(p,t.value.length)}agFit(t)});
+  t.addEventListener('focus',()=>agFit(t));
+});requestAnimationFrame(()=>root.querySelectorAll('textarea.ag').forEach(agFit))}
+(()=>{const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+  Object.defineProperty(M,'innerHTML',{get(){return d.get.call(this)},set(h){d.set.call(this,h);agUpgrade(this)}})})();
+addEventListener('resize',()=>document.querySelectorAll('textarea.ag').forEach(agFit));
+document.addEventListener('click',()=>requestAnimationFrame(()=>M.querySelectorAll('textarea.ag').forEach(t=>{if(t.offsetParent)agFit(t)})),true);
 function bind(sel,fn,ev='input'){M.querySelectorAll(sel).forEach(el=>el.addEventListener(ev,e=>fn(el,e)))}
 const fmtDate=d=>new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 const short=d=>d.slice(8)+'.'+d.slice(5,7)+'.';
@@ -1312,7 +1328,7 @@ function viewTag(){
     if(a==='goal')d.goal=v;else if(a==='joy')d.joy=v;else if(a==='task')d.tasks[+i].t=v;else if(a==='taskgoal')d.tasks[+i].goal=v;else if(a==='grat')d.grat[+i]=v;else if(a==='relax')d.relax[+i].t=v;markDay()};
   M.querySelectorAll('.tile [data-k]').forEach(el=>{
     el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>setK(el.dataset.k,el.value));
-    if(el.tagName==='INPUT')el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const id=el.closest('[data-tile]').dataset.tile;tileEdit[tk(id)]=false;viewTag()}});
+    if(el.tagName!=='SELECT')el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const id=el.closest('[data-tile]').dataset.tile;tileEdit[tk(id)]=false;viewTag()}});
   });
   M.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>{tileEdit[tk(b.dataset.save)]=false;viewTag()});
   M.querySelectorAll('[data-pen]').forEach(b=>b.onclick=()=>{const id=b.dataset.pen;tileEdit[tk(id)]=true;viewTag();const f=M.querySelector(`[data-tile="${id}"] [data-k]`);if(f){f.focus();if(f.select)f.select()}});
@@ -1549,6 +1565,7 @@ function viewIdeal(){
 /* =========================================================
    Gewohnheiten
    ========================================================= */
+const HICONS=['✨','🏃','🌳','💧','🍺','🍬','📖','🧘','😴','🥗','💪','📵','🚬','✍️','🍷','📱','🎯','💰','🙏','🚶'];
 function viewGew(){
   const wk=weekDays(),t=today();
   const head=`<div></div>${wk.map(d=>`<div class="h" style="${d===t?'color:var(--accent);font-weight:600':''}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'})}<br>${+d.slice(8)}.</div>`).join('')}`;
@@ -1569,13 +1586,13 @@ function viewGew(){
   </div>
   ${editing.gew?`<div class="card">
     <h3>Gewohnheiten verwalten</h3><p class="hint">Beim Verzicht kannst du angeben, was dich ein Ausrutscher kostet – dann siehst du, was du gewinnst.</p>
-    ${S.habits.map(h=>`<div class="row" style="flex-wrap:wrap"><span style="font-size:20px;width:26px">${h.icon}</span><span style="flex:1;min-width:140px">${esc(h.name)}</span>
+    ${S.habits.map(h=>`<div class="row" style="flex-wrap:wrap"><select data-hicon="${h.id}" style="width:66px">${[...new Set([h.icon,...HICONS])].map(i=>`<option ${i===h.icon?'selected':''}>${i}</option>`).join('')}</select><input type="text" data-hname="${h.id}" value="${esc(h.name)}" style="flex:1;min-width:140px">
       ${h.type==='do'?`<span class="meta">Ziel/Woche</span><select data-tgt="${h.id}" style="width:70px">${[1,2,3,4,5,6,7].map(n=>`<option ${h.target===n?'selected':''}>${n}</option>`).join('')}</select>`
        :`<span class="meta">Kostet</span><input type="number" min="0" data-cost="${h.id}" value="${h.cost||0}" style="width:76px"><select data-unit="${h.id}" style="width:80px"><option ${h.unit==='€'?'selected':''}>€</option><option ${h.unit==='Min.'?'selected':''}>Min.</option></select>`}
       <span class="tag">${h.type==='avoid'?'Verzichten':'Tun'}</span><button class="x" data-hdel="${h.id}">×</button></div>`).join('')}
     <div class="row" style="margin-top:14px;flex-wrap:wrap">
       <select id="hT" style="width:130px"><option value="do">Tun</option><option value="avoid">Verzichten</option></select>
-      <select id="hI" style="width:72px">${['✨','🏃','🌳','💧','🍺','🍬','📖','🧘','😴','🥗','💪','📵','🚬','✍️'].map(i=>`<option>${i}</option>`).join('')}</select>
+      <select id="hI" style="width:72px">${HICONS.map(i=>`<option>${i}</option>`).join('')}</select>
       <input type="text" id="hN" placeholder="z. B. 10 Min. meditieren" style="flex:1;min-width:160px">
       <button class="btn" id="hAdd">+</button>
     </div>
@@ -1583,6 +1600,8 @@ function viewGew(){
   bindEdit('gew',viewGew);
   bind('[data-hd]',el=>{const [h,d]=el.dataset.hd.split('|');if(el.checked)day(d).habits[h]=true;else delete day(d).habits[h];markDay(d);viewGew()},'change');
   bind('[data-ad]',el=>{const [h,d]=el.dataset.ad.split('|');const x=day(d),v=x.habits[h];if(v===undefined)x.habits[h]=true;else if(v===true)x.habits[h]=false;else delete x.habits[h];markDay(d);viewGew()},'click');
+  bind('[data-hname]',el=>{const v=el.value.trim();if(v){S.habits.find(h=>h.id===el.dataset.hname).name=v;markMeta()}});
+  bind('[data-hicon]',el=>{S.habits.find(h=>h.id===el.dataset.hicon).icon=el.value;markMeta()},'change');
   bind('[data-tgt]',el=>{S.habits.find(h=>h.id===el.dataset.tgt).target=+el.value;markMeta();viewGew()},'change');
   bind('[data-cost]',el=>{S.habits.find(h=>h.id===el.dataset.cost).cost=Math.max(0,+el.value||0);markMeta()});
   bind('[data-unit]',el=>{S.habits.find(h=>h.id===el.dataset.unit).unit=el.value;markMeta()},'change');
