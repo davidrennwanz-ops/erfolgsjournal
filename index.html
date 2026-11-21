@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Erfolgsjournal</title>
 <meta name="theme-color" content="#1c2230">
@@ -457,6 +458,21 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .m-ai b{display:block;font-family:Newsreader,serif;margin:4px 0}
 .m-ai p{margin:0;line-height:1.5;color:#3b3f4a}
 /* Sektionen */
+.lp-why{background:#fffdf8;padding:84px 0;border-bottom:1px solid #e3dccd}
+.lp-why h2{font-size:42px;line-height:1.15;max-width:820px;margin:0 0 18px}
+.lp-why-lead{font-size:18px;line-height:1.65;color:var(--muted);max-width:720px;margin:0 0 44px}
+.lp-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.lp-steps>div{border-left:2px solid var(--gold);padding:2px 0 2px 16px}
+.lp-steps>div:first-child{border-left-color:#c9c1b1;opacity:.8}
+.lp-steps small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px}
+.lp-steps>div:first-child small{color:var(--muted)}
+.lp-steps b{display:block;font-family:Newsreader,serif;font-weight:500;font-size:21px;line-height:1.25;margin-bottom:8px}
+.lp-steps p{margin:0;font-size:15px;line-height:1.6;color:var(--muted)}
+.lp-why blockquote{margin:64px auto 0;max-width:820px;text-align:center;font-family:Newsreader,serif;font-style:italic;font-size:27px;line-height:1.45;color:var(--ink)}
+.lp-why blockquote:before{content:'';display:block;width:56px;height:2px;background:var(--gold);margin:0 auto 22px}
+.lp-end-sub{opacity:.75;font-size:17px;margin:-10px 0 26px}
+@media(max-width:900px){.lp-steps{grid-template-columns:1fr 1fr}.lp-why h2{font-size:32px}}
+@media(max-width:560px){.lp-steps{grid-template-columns:1fr;gap:22px}.lp-why{padding:56px 0}.lp-why h2{font-size:28px}.lp-why blockquote{font-size:21px}}
 .lp-three{background:#1c2230;color:#f3f0e8;padding:64px 0}
 .lp-three .lp-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
 .lp-three span{font-size:28px}
@@ -836,9 +852,9 @@ function landingHTML(){return `
 
   <section class="lp-hero"><div class="lp-wrap lp-hero-grid">
     <div>
-      <span class="lp-kicker">Das Journal für Menschen mit einem Ziel</span>
-      <h1>Ein Ziel.<br>Jeden Tag ein Schritt.</h1>
-      <p class="lp-sub">Das Erfolgsjournal hält dich auf Kurs: dein Masterziel immer im Blick, zwei Aufgaben pro Tag, die wirklich zählen – und ein ehrlicher Tagesabschluss gegen Handy, Couch und Ausreden.</p>
+      <span class="lp-kicker">Raus aus dem Hamsterrad</span>
+      <h1>Eine Sache.<br>Die alles verändert.</h1>
+      <p class="lp-sub">Der Alltag zieht dich in hundert Richtungen. Das Erfolgsjournal macht dein <b>Masterziel</b> zum Zentrum deines Tages: Du siehst es jeden Morgen zuerst, gehst täglich zwei Schritte darauf zu – und erkennst, wie weit du schon gekommen bist.</p>
       <div class="lp-cta"><button class="lp-btn" data-go="signup">Kostenlos starten</button><button class="lp-btn ghost" data-go="login">Ich habe schon ein Konto</button></div>
       <div class="lp-trust">🔒 Ende-zu-Ende verschlüsselt · Server in Deutschland · Keine Werbung</div>
     </div>
@@ -854,6 +870,19 @@ function landingHTML(){return `
   </div>
   <div class="lp-wrap lp-shot">${lpMockDay()}</div></section>
 
+  <section class="lp-why"><div class="lp-wrap">
+    <span class="lp-kicker">Warum es das Erfolgsjournal gibt</span>
+    <h2>Jeden Tag im Hamsterrad.<br>Und das große Ziel bleibt liegen.</h2>
+    <p class="lp-why-lead">Arbeit, Termine, Nachrichten, Shorts bis Mitternacht. Wir sind ständig beschäftigt – aber selten mit dem, was unser Leben wirklich verändern würde. Genau aus diesem Gefühl ist das Erfolgsjournal entstanden.</p>
+    <div class="lp-steps">
+      <div><small>Vorher</small><b>Viele Ziele, wenig Fortschritt</b><p>Zehn Vorsätze, fünf Apps – und am Monatsende ist keins davon wirklich weiter.</p></div>
+      <div><small>Die Entscheidung</small><b>Ein Masterziel</b><p>Du legst die eine Sache fest, die alles verändert. Sie steht jeden Morgen ganz oben, vor allem anderen.</p></div>
+      <div><small>Jeden Tag</small><b>Zwei Schritte darauf zu</b><p>Zwei Aufgaben für dein Ziel. Abends ein ehrlicher Blick: Was hat mich weitergebracht, was hat mich abgelenkt?</p></div>
+      <div><small>Mit der Zeit</small><b>Fortschritt, den du siehst</b><p>Woche für Woche, Monat für Monat siehst du, wie weit du gekommen bist. Das hält dich dran.</p></div>
+    </div>
+    <blockquote>An einer Sache dranzubleiben bringt mehr als an zehn Sachen ein bisschen.<br>Vor allem, wenn es die eine Sache ist, die alles verändert.</blockquote>
+  </div></section>
+
   <section class="lp-three"><div class="lp-wrap">
     <div><span>🎯</span><h3>Fokus statt To-do-Chaos</h3><p>Ein Masterziel, höchstens zwei Nebenziele – und jeden Tag nur die zwei Aufgaben, die dich wirklich voranbringen.</p></div>
     <div><span>🛡️</span><h3>Verzicht sichtbar machen</h3><p>Social Media, Süßes, das Feierabendbier: Sieh schwarz auf weiß, was du gewinnst, wenn du standhaft bleibst.</p></div>
@@ -861,7 +890,7 @@ function landingHTML(){return `
   </div></section>
 
   <section class="lp-feature" id="lp-features"><div class="lp-wrap lp-row">
-    <div class="lp-txt"><span class="lp-kicker">Masterziel & Zeitstrahl</span><h2>Ein Ziel, das alles verändert.</h2><p>Formuliere dein Ziel messbar und mit Zeitraum, halte fest, was du gewinnst, wenn du dranbleibst – und plane schon heute, was du tust, wenn die Motivation fehlt. Der Zeitstrahl zeigt dir Monat für Monat, wo du stehst.</p></div>
+    <div class="lp-txt"><span class="lp-kicker">Masterziel & Zeitstrahl</span><h2>Dein Ziel. Messbar und mit Plan.</h2><p>Formuliere dein Ziel messbar und mit Zeitraum, halte fest, was du gewinnst, wenn du dranbleibst – und plane schon heute, was du tust, wenn die Motivation fehlt. Der Zeitstrahl zeigt dir Monat für Monat, wo du stehst.</p></div>
     ${lpMockGoals()}
   </div></section>
 
@@ -888,7 +917,7 @@ function landingHTML(){return `
     </div>
   </div></section>
 
-  <section class="lp-end"><div class="lp-wrap"><h2>Dein Ziel wartet nicht.</h2><button class="lp-btn" data-go="signup">Jetzt kostenlos starten</button></div></section>
+  <section class="lp-end"><div class="lp-wrap"><h2>Welche eine Sache würde dein Leben verändern?</h2><p class="lp-end-sub">Leg sie heute fest. Der erste Schritt dauert fünf Minuten.</p><button class="lp-btn" data-go="signup">Mein Masterziel festlegen</button></div></section>
   <footer class="lp-foot"><div class="lp-wrap"><span>${LP_SUN} Erfolgsjournal · Beta</span><span>© ${new Date().getFullYear()} · Impressum · Datenschutz</span></div></footer>
 </div>`}
 
