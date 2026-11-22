@@ -479,14 +479,20 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .b-legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
 .b-legend i{display:block;width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,#fff,#e7f1ea,#a9cdb5,#5ea67a,#2f7d4f);border:1px solid var(--line)}
 .b-svg{width:100%;height:auto;display:block}
-.b-big .b-svg{max-height:560px}
+.b-big .b-svg{max-height:600px}
 .b-zone{transition:fill .35s ease;stroke:#1c2230;stroke-width:1.2;cursor:pointer}
 .b-zone.off{fill:none!important;stroke:#c9c1b1;stroke-dasharray:3 3;cursor:default}
 .b-zone.sel{stroke:#b08d3c;stroke-width:3}
-.b-out{fill:none;stroke:#1c2230;stroke-width:2;stroke-linejoin:round;pointer-events:none}
+.b-out{fill:none;stroke:#1c2230;stroke-width:1.7;stroke-linejoin:round;pointer-events:none}
 .b-geo{fill:none;stroke:#b08d3c;stroke-width:1.3;opacity:.75}
 .b-geo2{stroke:#b08d3c;stroke-width:.8;opacity:.35;stroke-dasharray:4 5}
+.b-habtile{display:grid;grid-template-columns:170px 1fr;gap:22px;align-items:center}
+.b-habtile .b-hf{text-align:center}.b-habtile .b-hf .b-svg{max-height:300px;margin:0 auto}.b-hcap{font-size:13px;color:var(--muted);margin-top:6px}.b-hcap b{color:var(--ink);font-weight:600}
+.b-habtile .b-hc{display:grid;gap:12px}.b-habtile .b-hc .tile{border:0;padding:0;background:none;box-shadow:none}
+.b-habtile .b-hc .tile+.tile{border-top:1px solid var(--line);padding-top:14px}
+@media(max-width:760px){.b-habtile{grid-template-columns:1fr}.b-habtile .b-hf .b-svg{max-height:240px}}
 .b-fill{stroke:none;transition:fill .4s ease}
+.b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.4}.b-line.on{stroke-width:2.6}
 .b-dot{fill:#c29a2e;stroke:#fff;stroke-width:1.5}
 .b-lbl{cursor:pointer}.b-lbl.on .b-ln{fill:#9a7420;font-weight:600}
@@ -520,7 +526,7 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .b-ctab table{width:100%;border-collapse:collapse;font-size:14px}.b-ctab td{padding:7px 4px;border-top:1px solid var(--line)}
 .b-ctab td:nth-child(n+2){text-align:right;white-space:nowrap}.b-ctab tr:first-child td{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b08d3c;border-top:0}
 .b-verdict{margin-top:10px;font-family:Newsreader,serif;font-style:italic;font-size:17px;line-height:1.4}
-@media(max-width:760px){.card:has(> .week){overflow-x:auto}.b-lbls{display:none}.b-dot{r:8px}.b-list{display:block}.b-big .b-svg{max-width:340px;margin:0 auto}
+@media(max-width:760px){.card:has(> .week){overflow-x:auto}.b-lbls{display:none}.b-dot{r:8px}.b-list{display:block}.b-big .b-svg{max-width:220px;margin:0 auto}
   .b-mini{grid-template-columns:84px 1fr;gap:12px}.b-mini .b-mt{font-size:18px}.b-mini .b-ml{font-size:13.5px}.b-cgrid{grid-template-columns:1fr 1fr}.b-ctab{grid-column:1/-1}}
 .lp-beta{display:inline-block;margin-top:12px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:5px 10px}
 .lp-three{background:#1c2230;color:#f3f0e8;padding:64px 0}
@@ -1379,7 +1385,8 @@ function viewTag(){
   const tilesDone=TL.filter(t=>t.stage===2).length;
   const tilesHTML=`<div class="t-progress"><div class="bar"><i style="width:${Math.round(tilesDone/TL.length*100)}%;background:var(--ok)"></i></div><span>${tilesDone} von ${TL.length} erledigt</span></div>
     <p class="t-verdict ${vcls}">${verdict}</p>
-    <div class="tiles">${TL.map(tileHTML).join('')}</div>`;
+    <div class="tiles">${(()=>{const dt=TL.find(t=>t.id==='do'),at=TL.find(t=>t.id==='avoid');if(!S.habits.length)return TL.map(tileHTML).join('');
+      return TL.filter(t=>t.id!=='do'&&t.id!=='avoid'&&t.id!=='relax').map(tileHTML).join('')+bodyHabTile(tileHTML(dt)+tileHTML(at))+tileHTML(Object.assign({},TL.find(t=>t.id==='relax'),{wide:1}))})()}</div>`;
   const closeKey='abschluss:'+today();
   const closeOpen=uiOpen(closeKey,isEve&&!eveningDone);
   const closeSum=eveningDone?'✓ Tag abgeschlossen':isEve?'Jetzt dran':`öffnet ab ${eve}:00 Uhr`;
@@ -1392,7 +1399,7 @@ function viewTag(){
   ${(()=>{const m=mcDue();if(!m||(S.monthly[m]&&S.monthly[m].done))return '';return `<div class="banner mc-banner">🗓️ <b>Zeit für deinen Monats-Check</b> – 5 Minuten für Erfolge, Selbsteinschätzung und deine wichtigste Erkenntnis. <button class="btn small" id="goMc">Jetzt starten</button></div>`})()}
   <section class="day-sec open plan">
     <div class="sec-head static"><span class="t">Mein Plan für heute</span><span class="sum">${d.goal.trim()?(d.goalDone?'Fokus ✓ · ':'Fokus offen · '):''}${tasksSet.length?`${tasksDone}/${tasksSet.length} Aufgaben · `:''}Gewohnheiten ${doneDo}/${doH.length} · Verzicht ${avOk}/${avH.length}</span></div>
-    <div class="sec-body">${tilesHTML}${bodyMiniCard()}</div>
+    <div class="sec-body">${tilesHTML}</div>
   </section>
   <section class="day-sec ${closeOpen?'open':''} ${eveningDone?'done':''}">
     <button class="sec-head" data-sec="abschluss"><span class="t">Tagesabschluss</span><span class="sum">${closeSum}</span><span class="chev">▾</span></button>
@@ -1655,14 +1662,14 @@ const HICONS=['✨','🏃','🌳','💧','🍺','🍬','📖','🧘','😴','�
    ========================================================= */
 const BCX=530;
 const BZ={
-  kopf:{name:'Kopf & Geist',ax:BCX,ay:100,side:'r'},
-  lunge:{name:'Lunge',ax:BCX-16,ay:220,side:'l'},
-  herz:{name:'Herz',ax:BCX+12,ay:238,side:'r'},
-  arme:{name:'Arme & Oberkörper',ax:BCX-170,ay:182,side:'l'},
-  leber:{name:'Leber',ax:BCX-18,ay:288,side:'l'},
-  magen:{name:'Magen',ax:BCX+18,ay:292,side:'r'},
-  beine:{name:'Beine',ax:BCX+56,ay:520,side:'r'},
-  koerper:{name:'Ganzer Körper',ax:BCX,ay:372,side:'x'}
+  kopf:{name:'Kopf & Geist',ax:BCX,ay:68,side:'r'},
+  lunge:{name:'Lunge',ax:BCX-24,ay:186,side:'l'},
+  herz:{name:'Herz',ax:BCX+16,ay:204,side:'r'},
+  arme:{name:'Arme & Oberkörper',ax:BCX-82,ay:236,side:'l'},
+  leber:{name:'Leber',ax:BCX-24,ay:236,side:'l'},
+  magen:{name:'Magen',ax:BCX+22,ay:242,side:'r'},
+  beine:{name:'Beine',ax:BCX+40,ay:430,side:'r'},
+  koerper:{name:'Ganzer Körper',ax:BCX,ay:292,side:'x'}
 };
 const B_GAIN={kopf:'Klarer Kopf, besserer Schlaf, mehr Fokus für dein Masterziel.',lunge:'Freier atmen, mehr Ausdauer.',herz:'Mehr Ausdauer, weniger Stress.',
   arme:'Kraft, gute Haltung, weniger Rückenschmerzen.',leber:'Besserer Schlaf und ein klarer Kopf am Morgen.',magen:'Mehr Energie über den Tag, weniger Heißhunger.',
@@ -1685,37 +1692,42 @@ const bodyTotal=days=>S.habits.length?S.habits.reduce((a,h)=>a+habitRate(h,days)
 const B_STOPS=[[0,[255,255,255]],[.25,[231,241,234]],[.5,[169,205,181]],[.75,[94,166,122]],[1,[47,125,79]]];
 function bodyCol(t){for(let i=1;i<B_STOPS.length;i++){if(t<=B_STOPS[i][0]){const[a,ca]=B_STOPS[i-1],[b,cb]=B_STOPS[i];const f=(t-a)/(b-a);return`rgb(${ca.map((v,k)=>Math.round(v+(cb[k]-v)*f)).join(',')})`}}return'rgb(47,125,79)'}
 const bTrend=(now,prev)=>{const d=Math.round((now-prev)*100);return d>=5?`↑ ${d} %`:d<=-5?`↓ ${-d} %`:'→ gleich'};
-const B_HALF=[[13,138],[14,156],[40,166],[90,170],[170,172],[240,173],[272,171],[286,178],[280,188],[262,191],[200,192],[120,194],[72,198],[54,214],[52,260],[50,320],[46,356],[54,396],[64,460],[74,540],[84,612],[104,632],[100,642],[60,642],[60,616],[46,540],[30,460],[12,420],[0,414]];
-const B_BODY=(()=>{const p=[...B_HALF.slice(0,-1).map(([dx,y])=>[BCX-dx,y]),[BCX,414],...B_HALF.slice(0,-1).reverse().map(([dx,y])=>[BCX+dx,y])];
+const B_L=[[15,106],[16,128],[36,140],[58,147],[76,155],[86,170],[88,192],[90,215],[90,240],[89,262],[93,285],[94,312],[90,336],[93,350],[95,370],[95.5,388],[94.5,396],[92.5,399],[90.5,397],[89.5,380],[89.5,398],[88.5,406],[86,409],[83.5,407],[83,381],[82.5,400],[81.5,409],[79,412],[76.5,410],[76,381],[75.5,397],[74.5,404],[72,406],[70,403],[69.5,384],[68,372],[65,380],[62.5,386],[60.5,384],[60.5,376],[64,362],[69,350],[72,334],[70,308],[67,284],[66,264],[66,240],[65,216],[62,200],[60,214],[56,240],[47,272],[47,292],[55,318],[58,342],[60,368],[57,410],[51,446],[46,474],[45,494],[50,522],[47,552],[38,588],[31,614],[36,630],[42,641],[16,643],[15,628],[17,612],[16,580],[20,546],[18,512],[16,482],[14,440],[11,400],[6,366]];
+const B_PTS=(()=>{const ai=B_L.findIndex(q=>q[0]===62&&q[1]===200),hi=B_L.findIndex(q=>q[0]===58&&q[1]===342);
+  const arm=B_L.slice(0,ai+1).map(([dx,y],i)=>[dx,i<2?y:y+3]).reverse();
+  const torso=B_L.slice(ai+1,hi).reverse();
+  const leg=B_L.slice(hi).reverse().map(([dx,y])=>{const t=Math.max(0,Math.min(1,(y-350)/290));return[dx+4*t,y+10*t]});
+  return[...B_L.map(([dx,y])=>[BCX-dx,y]),[BCX,354],...leg.map(([dx,y])=>[BCX+dx,y]),...torso.map(([dx,y])=>[BCX+dx,y]),...arm.map(([dx,y])=>[BCX+dx,y])]})();
+const B_BODY=(()=>{const p=B_PTS;
   let d=`M${p[0][0]},${p[0][1]}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
   d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]},${p2[1]}`}return d})();
 let bodySel=null;
 /* Figur: rate = Gesamtwert (0–1) für die Färbung; items = [{h, ok, goal, r, prev}] für Beschriftungen */
 function bodyFigure(rate,{items=null,mini=false,sel=null}={}){
   const C=BCX,fill=bodyCol(rate);
-  let s=`<rect x="${C-285}" y="70" width="570" height="570" class="b-geo"/><circle cx="${C}" cy="330" r="310" class="b-geo"/>`;
-  if(!mini)s+=`<line x1="${C}" y1="70" x2="${C}" y2="640" class="b-geo2"/><line x1="${C-285}" y1="414" x2="${C+285}" y2="414" class="b-geo2"/>`;
-  s+=`<g class="b-fill" style="fill:${fill}"><circle cx="${C}" cy="102" r="36"/><path d="${B_BODY}"/></g>`;
-  s+=`<circle class="b-out" cx="${C}" cy="102" r="36"/><path class="b-out" d="${B_BODY}"/>`;
+  let s=``;
+    s+=`<g class="b-fill" style="fill:${fill}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
+  s+=`<ellipse class="b-out" cx="${C}" cy="74" rx="27" ry="36"/><path class="b-out" d="${B_BODY}"/>`;
+  s+=`<g class="b-anat"><path d="M${C-3},214 q-26,10 -50,-14 M${C+3},214 q26,10 50,-11"/><path d="M${C},220 V302"/><path d="M${C-4},238 q-11,2 -20,-1 M${C+4},238 q11,2 20,-1 M${C-4},258 q-11,2 -20,-1 M${C+4},258 q11,2 20,-1 M${C-4},278 q-10,2 -18,-1 M${C+4},278 q10,2 18,-1"/><path d="M${C-26},224 q-6,40 -2,78 M${C+26},226 q6,40 2,78"/><path d="M${C-42},304 q12,24 34,40 M${C+42},306 q-12,24 -34,40"/></g>`;
   if(items&&items.length){
     // Seiten verteilen: feste Seite je Bereich, "Ganzer Körper" auf die leerere Seite
     const L=[],R=[];items.forEach(it=>{const z=BZ[zoneOf(it.h)];(z.side==='l'?L:z.side==='r'?R:null)?.push(it)});
     items.filter(it=>BZ[zoneOf(it.h)].side==='x').forEach(it=>(L.length<=R.length?L:R).push(it));
     let lines='',dots='',txt='';const seen={};
     const place=(arr,side)=>{const step=62,ay=it=>BZ[zoneOf(it.h)].ay;arr.sort((a,b)=>ay(a)-ay(b));
-      const total=arr.length*step;let y=Math.max(40,Math.min(330-total/2+20,640-total));
+      const total=arr.length*step;let y=Math.max(40,Math.min(300-total/2+20,640-total));
       arr.forEach(it=>{const z=BZ[zoneOf(it.h)],ly=y;y+=step;
-        const tx=side==='l'?190:870,ex=side==='l'?198:862,an=side==='l'?'end':'start',on=sel===it.h.id;
+        const tx=side==='l'?C-150:C+150,ex=side==='l'?C-142:C+142,an=side==='l'?'end':'start',on=sel===it.h.id;
         lines+=`<polyline points="${z.ax},${z.ay} ${ex},${ly+6}" class="b-line ${on?'on':''}"/>`;
         if(!seen[zoneOf(it.h)]){seen[zoneOf(it.h)]=1;const hot=items.some(o=>o.h.id===sel&&zoneOf(o.h)===zoneOf(it.h));dots+=`<circle cx="${z.ax}" cy="${z.ay}" r="${hot?9:5.5}" class="b-dot"/>`}
-        txt+=`<g class="b-lbl ${on?'on':''}" data-bh="${it.h.id}"><rect x="${side==='l'?tx-250:tx-6}" y="${ly-14}" width="256" height="54" fill="transparent"/>`+
+        txt+=`<g class="b-lbl ${on?'on':''}" data-bh="${it.h.id}"><rect x="${side==='l'?tx-270:tx-6}" y="${ly-14}" width="276" height="54" fill="transparent"/>`+
           `<text class="b-ln" x="${tx}" y="${ly+10}" text-anchor="${an}">${it.h.icon} ${esc(it.h.name)}</text>`+
           `<text class="b-lv" x="${tx}" y="${ly+30}" text-anchor="${an}">${it.ok} von ${it.goal} ${it.h.type==='avoid'?'Tagen verzichtet':'erledigt'} · ${bTrend(it.r,it.prev)}</text></g>`})};
     place(L,'l');place(R,'r');
-    s+=`<g class="b-lbls">${lines}${txt}</g>${dots}`;
+    s+=mini?dots:`<g class="b-lbls">${lines}${txt}</g>${dots}`;
   }
   const narrow=matchMedia('(max-width:760px)').matches;
-  return`<svg class="b-svg" viewBox="${mini||narrow?`${C-315} 15 630 640`:'-110 0 1280 670'}" role="img" aria-label="Körperfigur">${s}</svg>`;
+  return`<svg class="b-svg" viewBox="${mini||narrow?`${C-125} 28 250 632`:`${C-430} 28 860 632`}" role="img" aria-label="Körperfigur">${s}</svg>`;
 }
 function bodyItems(cur,prv){return S.habits.map(h=>{const x=habitRate(h,cur);return{h,ok:x.ok,goal:x.goal,r:x.r,prev:habitRate(h,prv).r}})}
 function bodyCard(){
@@ -1757,6 +1769,15 @@ function bodyMiniCard(){
     ${items.length>1&&low.r<best.r?`<div class="b-ml">Noch offen: <b>${low.h.icon} ${esc(low.h.name)}</b> · ${low.ok}/${low.goal}</div>`:''}
     <button class="b-link" id="goBody">Zur Körper-Ansicht →</button></div></div>`;
 }
+
+/* Tagesergebnis für Mein Tag: Wochenziele zählen nur, wenn heute erledigt oder Wochenziel schon erreicht */
+function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forEach(h=>{const v=S.days[t]?.habits?.[h.id];
+    if(h.type==='avoid')items.push({h,r:v===true?1:0,done:v===true});
+    else if((h.target||7)>=7)items.push({h,r:v===true?1:0,done:v===true});
+    else{const c=wk.filter(d=>d<t&&S.days[d]?.habits?.[h.id]===true).length;if(v===true||c>=h.target)items.push({h,r:1,done:true})}});
+  return{items,rate:items.length?items.reduce((a,i)=>a+i.r,0)/items.length:0}}
+function bodyHabTile(inner){const {items,rate}=bodyToday();const n=items.filter(i=>i.done).length;
+  return`<div class="tile wide b-habtile"><div class="b-hf">${bodyFigure(rate,{mini:true,items})}<div class="b-hcap"><b>Heute ${n} von ${items.length}</b> Gewohnheiten</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
 function monthDaysUpTo(m){const t=today(),last=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();const out=[];for(let i=1;i<=last;i++){const d=m+'-'+String(i).padStart(2,'0');if(d<=t)out.push(d)}return out}
 function bodyCompareHTML(m){
   if(!S.habits.length)return'';
