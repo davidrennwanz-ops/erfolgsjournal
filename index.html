@@ -491,6 +491,27 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .b-habtile .b-hc{display:grid;gap:12px}.b-habtile .b-hc .tile{border:0;padding:0;background:none;box-shadow:none}
 .b-habtile .b-hc .tile+.tile{border-top:1px solid var(--line);padding-top:14px}
 @media(max-width:760px){.b-habtile{grid-template-columns:1fr}.b-habtile .b-hf .b-svg{max-height:240px}}
+/* Gewohnheiten: Liste + Fenster */
+.h-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.h-name{all:unset;cursor:pointer;line-height:1.3}.h-name:hover{color:var(--accent)}
+.h-name small{display:block;font-size:11.5px;color:var(--muted)}.h-av{color:#9a7420}
+.week .nd{color:#cfc6b4}
+.hm-ov{position:fixed;inset:0;background:rgba(20,24,34,.45);display:grid;place-items:center;z-index:200;padding:16px}
+.hm{background:var(--panel);border-radius:12px;width:100%;max-width:480px;max-height:92vh;overflow:auto;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.hm-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.hm-head h3{margin:0}
+.hm-x{all:unset;cursor:pointer;font-size:24px;color:var(--muted);padding:0 4px}
+.hm-row{display:flex;gap:10px}.hm-icon{width:70px;font-size:18px}.hm-row input{flex:1}
+.hm-l{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:14px 0 6px}.hm-l span{font-weight:400}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button,.hm-days button{all:unset;cursor:pointer;padding:8px 12px;border-radius:8px;border:1.5px solid var(--line);font-size:14px;background:#fff}
+.seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.hm-days{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.hm-days button{width:34px;padding:7px 0;text-align:center}
+.hm-days button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.hm-inline{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px}.hm-inline select{width:70px}
+.hm-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hm-foot{display:flex;align-items:center;gap:8px;margin-top:20px}.hm-foot span{flex:1}
+.hm-del{all:unset;cursor:pointer;color:#9b3a31;font-size:14px}
+@media(max-width:560px){.hm-two{grid-template-columns:1fr}}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.4}.b-line.on{stroke-width:2.6}
@@ -1347,7 +1368,7 @@ function viewTag(){
   const filledTasks=d.tasks.map((t,i)=>({...t,i})).filter(t=>t.t.trim());
   const gratFilled=d.grat.filter(g=>g.trim());
   const relaxFilled=d.relax.map((r,i)=>({...r,i})).filter(r=>r.t.trim());
-  const doAll=doH.length&&doH.every(h=>d.habits[h.id]===true), avAll=avH.length&&avH.every(h=>d.habits[h.id]===true);
+  const dueH=S.habits.filter(h=>isDue(h,today())),habDone=dueH.filter(h=>d.habits[h.id]===true).length,habAll=dueH.length&&habDone===dueH.length;
   const TL=[
     {id:'focus',wide:1,icon:'☀️',title:'Tagesfokus',q:'Das Wichtigste heute – ist das geschafft, war der Tag ein Erfolg.',
      filled:!!d.goal.trim(),stage:!d.goal.trim()?0:d.goalDone?2:1,two:1},
@@ -1355,8 +1376,7 @@ function viewTag(){
      filled:filledTasks.length>0,stage:!filledTasks.length?0:filledTasks.every(t=>t.done)?2:1,two:1},
     {id:'grat',icon:'🙏',title:'Dafür bin ich dankbar',q:gq,filled:gratFilled.length>0,stage:gratFilled.length?2:0},
     {id:'joy',icon:'🌅',title:'Darauf freue ich mich heute',q:'Eine Sache – groß oder klein.',filled:!!d.joy.trim(),stage:d.joy.trim()?2:0},
-    {id:'do',icon:'✅',title:'Das tue ich heute',q:'Antippen, wenn erledigt.',pills:1,stage:doAll?2:0,count:`${doneDo}/${doH.length}`},
-    {id:'avoid',icon:'🛡️',title:'Darauf verzichte ich bewusst',q:'1× = standhaft · 2× = schwach geworden',pills:1,stage:avAll?2:0,count:`${avOk}/${avH.length}`},
+    {id:'hab',icon:'✅',title:'Meine Gewohnheiten heute',q:'Antippen, wenn erledigt. Bei Verzicht: 2× tippen = Ausrutscher.',pills:1,stage:habAll?2:0,count:`${habDone}/${dueH.length}`},
     {id:'relax',icon:'🌿',title:'Bewusst entspannen',q:'Geplante Erholung statt Handy aus Langeweile.',filled:relaxFilled.length>0,stage:relaxFilled.length?2:0}
   ];
   const goalSel=(i,sel)=>`<select data-k="taskgoal:${i}" class="t-goal"><option value="">– Ziel –</option>${S.goals.map(g=>`<option value="${g.id}" ${sel===g.id?'selected':''}>🎯 ${esc(g.title)}</option>`).join('')}</select>`;
@@ -1373,8 +1393,9 @@ function viewTag(){
     if(t.id==='joy')return edit?`<input type="text" data-k="joy" value="${esc(d.joy)}" placeholder="z. B. Abendessen mit der Familie">${saveBtn('joy')}`:`<div class="logged">${esc(d.joy)}</div>`;
     if(t.id==='relax')return edit?d.relax.map((r,i)=>`<input type="text" data-k="relax:${i}" value="${esc(r.t)}" placeholder="${i?'z. B. 20 Min. lesen auf dem Sofa':'z. B. Spaziergang ohne Handy'}">`).join('')+saveBtn('relax')
       :relaxFilled.map(r=>`<div class="logged"><input type="checkbox" class="chk" data-ck="relax:${r.i}" ${r.done?'checked':''}><span class="${r.done?'struck':''}">${esc(r.t)}</span></div>`).join('');
-    if(t.id==='do')return `<div class="pills">${doH.map(h=>{const c=weekCount(h);return `<button class="pill ${d.habits[h.id]===true?'done':''}" data-h="${h.id}">${h.icon} ${esc(h.name)} <span style="opacity:.7;font-size:12px">${c}/${h.target}</span></button>`}).join('')||'<span class="empty">Noch keine Gewohnheiten.</span>'}</div>`;
-    if(t.id==='avoid')return `<div class="pills">${avH.map(h=>{const v=d.habits[h.id];return `<button class="pill ${v===true?'done':v===false?'slip':''}" data-a="${h.id}">${h.icon} ${esc(h.name)}${v===true?' ✓':v===false?' ✗':''}</button>`}).join('')||'<span class="empty">Lege unter Gewohnheiten etwas an.</span>'}</div>`;
+    if(t.id==='hab')return `<div class="pills">${dueH.map(h=>{const v=d.habits[h.id];
+      if(h.type==='avoid')return `<button class="pill ${v===true?'done':v===false?'slip':''}" data-a="${h.id}">${h.icon} ${esc(h.name)}${v===true?' ✓':v===false?' ✗':''}</button>`;
+      const c=weekCount(h);return `<button class="pill ${v===true?'done':''}" data-h="${h.id}">${h.icon} ${esc(h.name)}${hFreq(h)==='weekly'?` <span style="opacity:.7;font-size:12px">${c}/${h.target}</span>`:''}</button>`}).join('')||'<span class="empty">Heute steht keine Gewohnheit an.</span>'}</div>`;
   }
   const tileHTML=t=>{const st=t.stage,edit=!t.pills&&(!t.filled||isEd(t.id));
     const badge=st===1?'Eingetragen – noch offen':st===2?(t.two?'✓ Geschafft':t.pills?'✓ Alles erledigt':'✓ Eingetragen'):t.count?t.count:'';
@@ -1385,8 +1406,8 @@ function viewTag(){
   const tilesDone=TL.filter(t=>t.stage===2).length;
   const tilesHTML=`<div class="t-progress"><div class="bar"><i style="width:${Math.round(tilesDone/TL.length*100)}%;background:var(--ok)"></i></div><span>${tilesDone} von ${TL.length} erledigt</span></div>
     <p class="t-verdict ${vcls}">${verdict}</p>
-    <div class="tiles">${(()=>{const dt=TL.find(t=>t.id==='do'),at=TL.find(t=>t.id==='avoid');if(!S.habits.length)return TL.map(tileHTML).join('');
-      return TL.filter(t=>t.id!=='do'&&t.id!=='avoid'&&t.id!=='relax').map(tileHTML).join('')+bodyHabTile(tileHTML(dt)+tileHTML(at))+tileHTML(Object.assign({},TL.find(t=>t.id==='relax'),{wide:1}))})()}</div>`;
+    <div class="tiles">${(()=>{const ht=TL.find(t=>t.id==='hab');if(!S.habits.length)return TL.map(tileHTML).join('');
+      return TL.filter(t=>t.id!=='hab'&&t.id!=='relax').map(tileHTML).join('')+bodyHabTile(tileHTML(ht))+tileHTML(Object.assign({},TL.find(t=>t.id==='relax'),{wide:1}))})()}</div>`;
   const closeKey='abschluss:'+today();
   const closeOpen=uiOpen(closeKey,isEve&&!eveningDone);
   const closeSum=eveningDone?'✓ Tag abgeschlossen':isEve?'Jetzt dran':`öffnet ab ${eve}:00 Uhr`;
@@ -1663,32 +1684,30 @@ const HICONS=['✨','🏃','🌳','💧','🍺','🍬','📖','🧘','😴','�
 const BCX=530;
 const BZ={
   kopf:{name:'Kopf & Geist',ax:BCX,ay:68,side:'r'},
-  lunge:{name:'Lunge',ax:BCX-24,ay:186,side:'l'},
-  herz:{name:'Herz',ax:BCX+16,ay:204,side:'r'},
-  arme:{name:'Arme & Oberkörper',ax:BCX-82,ay:236,side:'l'},
-  leber:{name:'Leber',ax:BCX-24,ay:236,side:'l'},
-  magen:{name:'Magen',ax:BCX+22,ay:242,side:'r'},
-  beine:{name:'Beine',ax:BCX+40,ay:430,side:'r'},
-  koerper:{name:'Ganzer Körper',ax:BCX,ay:292,side:'x'}
+  koerper:{name:'Ganzer Körper',ax:BCX,ay:200,side:'x'},
+  arme:{name:'Arme',ax:BCX-82,ay:236,side:'l'},
+  beine:{name:'Beine',ax:BCX+40,ay:430,side:'r'}
 };
-const B_GAIN={kopf:'Klarer Kopf, besserer Schlaf, mehr Fokus für dein Masterziel.',lunge:'Freier atmen, mehr Ausdauer.',herz:'Mehr Ausdauer, weniger Stress.',
-  arme:'Kraft, gute Haltung, weniger Rückenschmerzen.',leber:'Besserer Schlaf und ein klarer Kopf am Morgen.',magen:'Mehr Energie über den Tag, weniger Heißhunger.',
-  beine:'Mehr Bewegung, mehr Ausdauer, Abstand vom Bildschirm.',koerper:'Mehr Energie, Kraft und Ausdauer – für den ganzen Körper.'};
+const B_GAIN={kopf:'Klarer Kopf, besserer Schlaf, mehr Fokus für dein Masterziel.',koerper:'Mehr Energie und ein Körper, der mitzieht.',
+  arme:'Kraft, gute Haltung, weniger Rückenschmerzen.',beine:'Mehr Bewegung, mehr Ausdauer, Abstand vom Bildschirm.'};
 function guessZone(name){const n=(name||'').toLowerCase();
-  if(/wasser/.test(n))return'magen';
-  if(/bier|alkohol|wein|schnaps|sekt|cocktail|saufen/.test(n))return'leber';
-  if(/rauch|zigarett|vape|nikotin|shisha|frische luft/.test(n))return'lunge';
   if(/lauf|jogg|spazier|schritt|rad|wander|gehen|walk/.test(n))return'beine';
-  if(/kraft|liegestütz|hantel|klimmzug/.test(n))return'arme';
-  if(/sport|training|workout|fitness|gym|yoga|bewegung|dehn|mobil|schwimm/.test(n))return'koerper';
-  if(/ausdauer|cardio|puls|stress|atem/.test(n))return'herz';
-  if(/ess|ernähr|süß|zucker|fast ?food|koch|obst|gemüse|snack|fasten|kalorie|chips|naschen/.test(n))return'magen';
+  if(/gym|fitness|studio|kraft|hantel|liegestütz|klimmzug|pump/.test(n))return'arme';
+  if(/sport|training|workout|yoga|bewegung|dehn|mobil|schwimm|bier|alkohol|wein|schnaps|rauch|zigarett|wasser|ess|ernähr|süß|zucker|fast ?food|koch|obst|gemüse|snack|fasten|chips|naschen/.test(n))return'koerper';
   return'kopf'}
 const zoneOf=h=>h.zone&&BZ[h.zone]?h.zone:guessZone(h.name);
+const wdIdx=d=>(new Date(d+'T12:00').getDay()+6)%7;
+const WD=['Mo','Di','Mi','Do','Fr','Sa','So'];
+function hFreq(h){return h.freq||(h.type==='do'&&(h.target||7)<7?'weekly':'daily')}
+const hStarted=(h,d)=>!h.start||d>=h.start;
+function isDue(h,d){if(!hStarted(h,d))return false;return hFreq(h)!=='days'||(h.days||[]).includes(wdIdx(d))}
+function freqLabel(h){const f=hFreq(h);return f==='weekly'?`${h.target}× pro Woche`:f==='days'?(h.days||[]).slice().sort().map(i=>WD[i]).join(', '):'täglich'}
 const bodyDays=(end,n=7)=>[...Array(n)].map((_,i)=>addDays(end,i-n+1));
-function habitRate(h,days){const ok=days.filter(d=>S.days[d]?.habits?.[h.id]===true).length;
-  const goal=h.type==='do'?Math.max(1,Math.round((h.target||7)*days.length/7)):days.length;return{ok,goal,r:Math.min(1,ok/goal)}}
-const bodyTotal=days=>S.habits.length?S.habits.reduce((a,h)=>a+habitRate(h,days).r,0)/S.habits.length:0;
+function habitRate(h,days){const ds=days.filter(d=>hStarted(h,d)),dn=d=>S.days[d]?.habits?.[h.id]===true;let ok,goal;
+  if(hFreq(h)==='weekly'){ok=ds.filter(dn).length;goal=ds.length?Math.max(1,Math.round((h.target||1)*ds.length/7)):0}
+  else{const due=ds.filter(d=>isDue(h,d));ok=due.filter(dn).length;goal=due.length}
+  return{ok,goal,r:goal?Math.min(1,ok/goal):0,na:!goal}}
+const bodyTotal=days=>{const v=S.habits.map(h=>habitRate(h,days)).filter(x=>!x.na);return v.length?v.reduce((a,x)=>a+x.r,0)/v.length:0};
 const B_STOPS=[[0,[255,255,255]],[.25,[231,241,234]],[.5,[169,205,181]],[.75,[94,166,122]],[1,[47,125,79]]];
 function bodyCol(t){for(let i=1;i<B_STOPS.length;i++){if(t<=B_STOPS[i][0]){const[a,ca]=B_STOPS[i-1],[b,cb]=B_STOPS[i];const f=(t-a)/(b-a);return`rgb(${ca.map((v,k)=>Math.round(v+(cb[k]-v)*f)).join(',')})`}}return'rgb(47,125,79)'}
 const bTrend=(now,prev)=>{const d=Math.round((now-prev)*100);return d>=5?`↑ ${d} %`:d<=-5?`↓ ${-d} %`:'→ gleich'};
@@ -1729,7 +1748,7 @@ function bodyFigure(rate,{items=null,mini=false,sel=null}={}){
   const narrow=matchMedia('(max-width:760px)').matches;
   return`<svg class="b-svg" viewBox="${mini||narrow?`${C-125} 28 250 632`:`${C-430} 28 860 632`}" role="img" aria-label="Körperfigur">${s}</svg>`;
 }
-function bodyItems(cur,prv){return S.habits.map(h=>{const x=habitRate(h,cur);return{h,ok:x.ok,goal:x.goal,r:x.r,prev:habitRate(h,prv).r}})}
+function bodyItems(cur,prv){return S.habits.map(h=>{const x=habitRate(h,cur);return{h,ok:x.ok,goal:x.goal,r:x.r,na:x.na,prev:habitRate(h,prv).r}}).filter(i=>!i.na)}
 function bodyCard(){
   if(!S.habits.length)return'';
   const t=today(),cur=bodyDays(t),prv=bodyDays(addDays(t,-7));
@@ -1740,7 +1759,7 @@ function bodyCard(){
   if(it){const h=it.h,z=zoneOf(h);
     det=`<div class="b-detail" id="bDetail"><button class="b-x" data-bclose aria-label="Schließen">×</button><div class="b-kick">${BZ[z].name} · letzte 7 Tage</div>
       <div class="b-dh">${h.icon} ${esc(h.name)} <span class="b-tr ${it.r-it.prev>=.05?'up':''}">${bTrend(it.r,it.prev)} zur Vorwoche</span></div>
-      <div class="b-drow"><div class="b-dn">${it.ok} von ${it.goal} ${h.type==='avoid'?'Tagen verzichtet':'erledigt'}${h.type==='do'&&h.target<7?`<small>Ziel ${h.target}× pro Woche</small>`:''}</div>
+      <div class="b-drow"><div class="b-dn">${it.ok} von ${it.goal} ${h.type==='avoid'?'Tagen verzichtet':'erledigt'}<small>${freqLabel(h)}${h.type==='avoid'?' · Verzicht':''}</small></div>
         <div class="b-dots">${cur.map(d=>{const v=S.days[d]?.habits?.[h.id];return`<button class="${v===true?'on':v===false?'no':''}" data-bd="${h.id}|${d}" title="${fd2(d)}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'}).slice(0,2)}</button>`}).join('')}</div></div>
       <div class="b-gain"><b>Das gewinnst du:</b> ${B_GAIN[z]}${h.type==='avoid'&&h.cost?` Diese Woche ${it.ok*h.cost} ${h.unit==='Min.'?'Min. gewonnen':'€ gespart'} – möglich wären ${7*h.cost} ${h.unit==='Min.'?'Min.':'€'}.`:''}</div>
     </div>`}
@@ -1771,9 +1790,8 @@ function bodyMiniCard(){
 }
 
 /* Tagesergebnis für Mein Tag: Wochenziele zählen nur, wenn heute erledigt oder Wochenziel schon erreicht */
-function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forEach(h=>{const v=S.days[t]?.habits?.[h.id];
-    if(h.type==='avoid')items.push({h,r:v===true?1:0,done:v===true});
-    else if((h.target||7)>=7)items.push({h,r:v===true?1:0,done:v===true});
+function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forEach(h=>{if(!isDue(h,t))return;const v=S.days[t]?.habits?.[h.id];
+    if(hFreq(h)!=='weekly')items.push({h,r:v===true?1:0,done:v===true});
     else{const c=wk.filter(d=>d<t&&S.days[d]?.habits?.[h.id]===true).length;if(v===true||c>=h.target)items.push({h,r:1,done:true})}});
   return{items,rate:items.length?items.reduce((a,i)=>a+i.r,0)/items.length:0}}
 function bodyHabTile(inner){const {items,rate}=bodyToday();const n=items.filter(i=>i.done).length;
@@ -1786,7 +1804,7 @@ function bodyCompareHTML(m){
   const prevOk=dp.some(d=>S.habits.some(h=>S.days[d]?.habits?.[h.id]!==undefined));
   const lab=k=>new Date(k+'-15T12:00').toLocaleDateString('de-DE',{month:'long'});
   const tc=bodyTotal(dc),tp=prevOk?bodyTotal(dp):0;
-  const rows=S.habits.map(h=>({h,c:habitRate(h,dc).r,p:habitRate(h,dp).r}));
+  const rows=S.habits.map(h=>({h,c:habitRate(h,dc).r,p:habitRate(h,dp).r,na:habitRate(h,dc).na})).filter(x=>!x.na);if(!rows.length)return'';
   let verdict='';if(prevOk){const best=rows.reduce((a,x)=>x.c-x.p>a.c-a.p?x:a,rows[0]),low=rows.reduce((a,x)=>x.c<a.c?x:a,rows[0]);
     verdict=`<div class="b-verdict">${best.c-best.p>=.05?`Größter Schritt nach vorn: ${esc(best.h.name)}. `:''}Am meisten Luft nach oben: ${esc(low.h.name)}.</div>`}
   return`<div class="b-cmp"><div class="b-kick">Dein Körper im Monatsvergleich</div><div class="b-cgrid">
@@ -1799,50 +1817,77 @@ function bodyCompareHTML(m){
 
 function viewGew(){
   const wk=weekDays(),t=today();
-  const head=`<div></div>${wk.map(d=>`<div class="h" style="${d===t?'color:var(--accent);font-weight:600':''}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'})}<br>${+d.slice(8)}.</div>`).join('')}`;
-  const doH=S.habits.filter(h=>h.type==='do'),avH=S.habits.filter(h=>h.type==='avoid');
+  const head=`<div></div>${wk.map(d=>`<div class="h" style="${d===t?'color:var(--accent);font-weight:600':''}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'})}<br>${+d.slice(8)}.</div>`).join('')}<div class="h">Woche</div>`;
+  const cell=(h,d)=>{if(!hStarted(h,d)||(hFreq(h)==='days'&&!isDue(h,d)))return `<div class="cell"><span class="nd">–</span></div>`;
+    const v=S.days[d]?.habits?.[h.id];
+    if(h.type==='avoid')return `<div class="cell"><button class="tri ${v===true?'ok':v===false?'no':''}" data-ad="${h.id}|${d}" ${d>t?'disabled':''}>${v===true?'✓':v===false?'✗':''}</button></div>`;
+    return `<div class="cell"><input type="checkbox" class="chk" data-hd="${h.id}|${d}" ${v===true?'checked':''} ${d>t?'disabled style="opacity:.3"':''}></div>`};
+  const stat=h=>{const x=habitRate(h,wk.filter(d=>d<=t));if(hFreq(h)==='weekly'){const c=weekCount(h);return `<div class="rate ${c>=h.target?'hit':''}">${c}/${h.target}${c>=h.target?' ✓':''}</div>`}
+    return `<div class="rate ${!x.na&&x.ok===x.goal?'hit':''}">${x.na?'–':x.ok+'/'+x.goal}</div>`};
   M.innerHTML=`
-  <div class="section-head"><div><h1>Gewohnheiten</h1><p>Kleine Dinge, regelmäßig. Nicht perfekt – aber dranbleiben.</p></div>${editBtn('gew')}</div>
+  <div class="section-head"><div><h1>Gewohnheiten</h1><p>Kleine Dinge, regelmäßig. Nicht perfekt – aber dranbleiben.</p></div></div>
   ${bodyCard()}
   <div class="card" style="margin-bottom:20px">
-    <h3>✅ Das tue ich – diese Woche</h3><p class="hint">Jede Gewohnheit hat ein Wochenziel (z. B. 3× laufen). Rückwirkend abhaken geht auch.</p>
-    <div class="week">${head}<div class="h">Ziel</div>
-      ${doH.map(h=>{const c=weekCount(h);return `<div>${h.icon} ${esc(h.name)}</div>`+wk.map(d=>`<div class="cell"><input type="checkbox" class="chk" data-hd="${h.id}|${d}" ${S.days[d]?.habits?.[h.id]===true?'checked':''} ${d>t?'disabled style="opacity:.3"':''}></div>`).join('')+`<div class="rate ${c>=h.target?'hit':''}">${c}/${h.target}${c>=h.target?' ✓':''}</div>`}).join('')}
-    </div>
-  </div>
-  <div class="card" style="margin-bottom:20px">
-    <h3>🛡️ Darauf verzichte ich – diese Woche</h3><p class="hint">Tippen: ✓ standhaft → ✗ Ausrutscher → leer.</p>
-    <div class="week">${head}<div class="h">30 Tage</div>
-      ${avH.map(h=>{const s=avoidStats(h);return `<div>${h.icon} ${esc(h.name)}</div>`+wk.map(d=>{const v=S.days[d]?.habits?.[h.id];return `<div class="cell"><button class="tri ${v===true?'ok':v===false?'no':''}" data-ad="${h.id}|${d}" ${d>t?'disabled':''}>${v===true?'✓':v===false?'✗':''}</button></div>`}).join('')+`<div class="rate ${s.ok>=20?'hit':''}">${s.ok}/30</div>`}).join('')}
-    </div>
-  </div>
-  ${editing.gew?`<div class="card">
-    <h3>Gewohnheiten verwalten</h3><p class="hint">Beim Verzicht kannst du angeben, was dich ein Ausrutscher kostet – dann siehst du, was du gewinnst.</p>
-    ${S.habits.map(h=>`<div class="row" style="flex-wrap:wrap"><select data-hicon="${h.id}" style="width:66px">${[...new Set([h.icon,...HICONS])].map(i=>`<option ${i===h.icon?'selected':''}>${i}</option>`).join('')}</select><input type="text" data-hname="${h.id}" value="${esc(h.name)}" style="flex:1;min-width:140px">
-      ${h.type==='do'?`<span class="meta">Ziel/Woche</span><select data-tgt="${h.id}" style="width:70px">${[1,2,3,4,5,6,7].map(n=>`<option ${h.target===n?'selected':''}>${n}</option>`).join('')}</select>`
-       :`<span class="meta">Kostet</span><input type="number" min="0" data-cost="${h.id}" value="${h.cost||0}" style="width:76px"><select data-unit="${h.id}" style="width:80px"><option ${h.unit==='€'?'selected':''}>€</option><option ${h.unit==='Min.'?'selected':''}>Min.</option></select>`}
-      <span class="meta">Körper</span><select data-hzone="${h.id}" style="width:auto">${Object.entries(BZ).map(([k,z])=>`<option value="${k}" ${zoneOf(h)===k?'selected':''}>${z.name}</option>`).join('')}</select>
-      <span class="tag">${h.type==='avoid'?'Verzichten':'Tun'}</span><button class="x" data-hdel="${h.id}">×</button></div>`).join('')}
-    <div class="row" style="margin-top:14px;flex-wrap:wrap">
-      <select id="hT" style="width:130px"><option value="do">Tun</option><option value="avoid">Verzichten</option></select>
-      <select id="hI" style="width:72px">${HICONS.map(i=>`<option>${i}</option>`).join('')}</select>
-      <input type="text" id="hN" placeholder="z. B. 10 Min. meditieren" style="flex:1;min-width:160px">
-      <button class="btn" id="hAdd">+</button>
-    </div>
-  </div>`:''}`;
-  bindEdit('gew',viewGew);
+    <div class="h-top"><h3>Diese Woche</h3><button class="btn" id="hNew">＋ Neue Gewohnheit</button></div>
+    <p class="hint">Antippen, wenn erledigt. Bei Verzicht: ✓ standhaft → ✗ Ausrutscher → leer. Rückwirkend abhaken geht auch.</p>
+    ${S.habits.length?`<div class="week">${head}
+      ${S.habits.map(h=>`<button class="h-name" data-hedit="${h.id}" title="Bearbeiten">${h.icon} ${esc(h.name)}<small>${freqLabel(h)}${h.type==='avoid'?' · <span class="h-av">Verzicht</span>':''}</small></button>`+wk.map(d=>cell(h,d)).join('')+stat(h)).join('')}
+    </div>`:'<p class="empty">Noch keine Gewohnheiten. Leg deine erste an.</p>'}
+    <p class="hint" style="margin:12px 0 0">Tippe auf den Namen einer Gewohnheit, um sie zu bearbeiten.</p>
+  </div>`;
   bind('[data-hd]',el=>{const [h,d]=el.dataset.hd.split('|');if(el.checked)day(d).habits[h]=true;else delete day(d).habits[h];markDay(d);viewGew()},'change');
   bind('[data-ad]',el=>{const [h,d]=el.dataset.ad.split('|');const x=day(d),v=x.habits[h];if(v===undefined)x.habits[h]=true;else if(v===true)x.habits[h]=false;else delete x.habits[h];markDay(d);viewGew()},'click');
-  bind('[data-hname]',el=>{const v=el.value.trim();if(v){S.habits.find(h=>h.id===el.dataset.hname).name=v;markMeta()}});
-  bind('[data-hicon]',el=>{S.habits.find(h=>h.id===el.dataset.hicon).icon=el.value;markMeta()},'change');
-  bind('[data-tgt]',el=>{S.habits.find(h=>h.id===el.dataset.tgt).target=+el.value;markMeta();viewGew()},'change');
-  bind('[data-cost]',el=>{S.habits.find(h=>h.id===el.dataset.cost).cost=Math.max(0,+el.value||0);markMeta()});
-  bind('[data-unit]',el=>{S.habits.find(h=>h.id===el.dataset.unit).unit=el.value;markMeta()},'change');
-  bind('[data-hdel]',el=>{S.habits=S.habits.filter(x=>x.id!==el.dataset.hdel);markMeta();viewGew()},'click');
-  bind('[data-hzone]',el=>{S.habits.find(h=>h.id===el.dataset.hzone).zone=el.value;markMeta();viewGew()},'change');
+  bind('[data-hedit]',el=>habitModal(S.habits.find(h=>h.id===el.dataset.hedit)),'click');
+  bind('#hNew',()=>habitModal(null),'click');
   bindBody(viewGew);
-  if(editing.gew)M.querySelector('#hAdd').onclick=()=>{const n=M.querySelector('#hN').value.trim();if(!n)return;const type=M.querySelector('#hT').value;
-    S.habits.push(Object.assign({id:uid(),name:n,icon:M.querySelector('#hI').value,type,zone:guessZone(n)},type==='do'?{target:7}:{cost:0,unit:'€'}));markMeta();viewGew()};
+}
+function habitModal(h){
+  const isNew=!h;const x=h?JSON.parse(JSON.stringify(h)):{id:uid(),name:'',icon:'✨',type:'do',freq:'daily',days:[0,1,2,3,4],target:3,start:today(),cost:0,unit:'€'};
+  x.freq=hFreq(x);if(!x.days||!x.days.length)x.days=[0,1,2,3,4];if(x.freq==='weekly'&&!x.target)x.target=3;if(!x.start)x.start='';x.zone=x.zone&&BZ[x.zone]?x.zone:'';
+  const ov=document.createElement('div');ov.className='hm-ov';document.body.appendChild(ov);
+  const draw=()=>{const z=x.zone||guessZone(x.name);
+    ov.innerHTML=`<div class="hm" role="dialog" aria-label="Gewohnheit">
+      <div class="hm-head"><h3>${isNew?'Neue Gewohnheit':'Gewohnheit bearbeiten'}</h3><button class="hm-x" data-hm="close" aria-label="Schließen">×</button></div>
+      <div class="hm-row"><select id="hmI" class="hm-icon">${[...new Set([x.icon,...HICONS])].map(i=>`<option ${i===x.icon?'selected':''}>${i}</option>`).join('')}</select>
+        <input id="hmN" class="no-ag" type="text" value="${esc(x.name)}" placeholder="${x.type==='avoid'?'z. B. Abends alkoholfrei':'z. B. 30 Min. laufen'}"></div>
+      <label class="hm-l">Art</label>
+      <div class="seg">${[['do','Machen'],['avoid','Verzicht']].map(([k,l])=>`<button data-ty="${k}" class="${x.type===k?'on':''}">${l}</button>`).join('')}</div>
+      <label class="hm-l">Frequenz</label>
+      <div class="seg">${[['daily','Täglich'],['days','Bestimmte Tage'],...(x.type==='do'?[['weekly','X-mal pro Woche']]:[])].map(([k,l])=>`<button data-fr="${k}" class="${x.freq===k?'on':''}">${l}</button>`).join('')}</div>
+      ${x.freq==='days'?`<div class="hm-days">${WD.map((w,i)=>`<button data-wd="${i}" class="${x.days.includes(i)?'on':''}">${w}</button>`).join('')}</div>`:''}
+      ${x.freq==='weekly'?`<div class="hm-inline"><select id="hmT">${[1,2,3,4,5,6].map(n=>`<option ${x.target===n?'selected':''}>${n}</option>`).join('')}</select> mal pro Woche</div>`:''}
+      ${x.type==='avoid'?`<label class="hm-l">Was kostet dich ein Ausrutscher? <span>(dann siehst du, was du gewinnst)</span></label>
+        <div class="hm-inline"><input id="hmC" type="number" min="0" value="${x.cost||0}" style="width:90px"><select id="hmU" style="width:90px"><option ${x.unit!=='Min.'?'selected':''}>€</option><option ${x.unit==='Min.'?'selected':''}>Min.</option></select></div>`:''}
+      <div class="hm-two"><div><label class="hm-l">Startdatum</label><input id="hmS" type="date" value="${x.start}"></div>
+        <div><label class="hm-l">Stelle im Körper</label><select id="hmZ">${Object.entries(BZ).map(([k,v])=>`<option value="${k}" ${z===k?'selected':''}>${v.name}</option>`).join('')}</select></div></div>
+      <div class="hm-foot">${isNew?'':'<button class="hm-del" data-hm="del">Löschen</button>'}<span></span><button class="btn ghost" data-hm="close">Abbrechen</button><button class="btn" data-hm="save">Speichern</button></div>
+    </div>`;
+    const q=s=>ov.querySelector(s);
+    q('#hmN').oninput=e=>{x.name=e.target.value;if(!x.zone){const g=guessZone(x.name);q('#hmZ').value=g}};
+    q('#hmI').onchange=e=>x.icon=e.target.value;
+    q('#hmS').onchange=e=>x.start=e.target.value;
+    q('#hmZ').onchange=e=>x.zone=e.target.value;
+    if(q('#hmT'))q('#hmT').onchange=e=>x.target=+e.target.value;
+    if(q('#hmC'))q('#hmC').oninput=e=>x.cost=Math.max(0,+e.target.value||0);
+    if(q('#hmU'))q('#hmU').onchange=e=>x.unit=e.target.value;
+    ov.querySelectorAll('[data-ty]').forEach(b=>b.onclick=()=>{x.type=b.dataset.ty;if(x.type==='avoid'&&x.freq==='weekly')x.freq='daily';draw()});
+    ov.querySelectorAll('[data-fr]').forEach(b=>b.onclick=()=>{x.freq=b.dataset.fr;draw()});
+    ov.querySelectorAll('[data-wd]').forEach(b=>b.onclick=()=>{const i=+b.dataset.wd;x.days=x.days.includes(i)?x.days.filter(v=>v!==i):[...x.days,i].sort();draw()});
+    ov.querySelectorAll('[data-hm]').forEach(b=>b.onclick=()=>{const a=b.dataset.hm;
+      if(a==='close'){ov.remove();return}
+      if(a==='del'){if(!confirmDel())return;S.habits=S.habits.filter(o=>o.id!==x.id);markMeta();ov.remove();viewGew();return}
+      if(!x.name.trim()){toast('Gib deiner Gewohnheit einen Namen.',2200);q('#hmN').focus();return}
+      if(x.freq==='days'&&!x.days.length){toast('Wähle mindestens einen Tag.',2200);return}
+      const out={id:x.id,name:x.name.trim(),icon:x.icon,type:x.type,freq:x.freq,zone:x.zone||guessZone(x.name),start:x.start||''};
+      out.target=x.freq==='weekly'?x.target:x.freq==='days'?x.days.length:7;if(x.freq==='days')out.days=x.days;
+      if(x.type==='avoid'){out.cost=x.cost||0;out.unit=x.unit||'€'}
+      const i=S.habits.findIndex(o=>o.id===x.id);if(i>=0)S.habits[i]=Object.assign({},S.habits[i],out);else S.habits.push(out);
+      if(out.freq!=='days')delete (i>=0?S.habits[i]:out).days;
+      markMeta();ov.remove();toast(isNew?'Gewohnheit angelegt ✓':'Gespeichert ✓',1800);viewGew()});
+  };
+  let delArmed=false;const confirmDel=()=>{if(delArmed)return true;delArmed=true;toast('Nochmal auf „Löschen“ tippen, um die Gewohnheit zu löschen.',2600);return false};
+  ov.onclick=e=>{if(e.target===ov)ov.remove()};
+  draw();if(isNew)setTimeout(()=>ov.querySelector('#hmN').focus(),30);
 }
 
 /* =========================================================
