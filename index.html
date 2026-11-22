@@ -1293,7 +1293,7 @@ function viewTag(){
       <h3>🏆 Das hast du schon erreicht</h3>
       <p class="hint">Halt kurz inne. Das ist dein Fortschritt – den gibst du nicht für ein paar Minuten Ablenkung her.</p>
       <div class="wins">
-        ${anySince.map(h=>{const s=avoidStats(h);return `<div class="win-chip">${h.icon} <b>${s.ok}/30</b> Tage ${esc(h.name.toLowerCase())}${s.saved?` · ${fmtSaved(s.saved,h.unit)} gewonnen`:''}</div>`}).join('')}
+        ${anySince.map(h=>{const s=avoidStats(h);return `<div class="win-chip">${h.icon} ${esc(h.name)}: <b>${s.ok} von 30</b> Tagen geschafft${s.saved?` · ${fmtSaved(s.saved,h.unit)} gewonnen`:''}</div>`}).join('')}
         ${recentWins.map(k=>`<div class="win-chip">⭐ ${esc(S.days[k].win)} <span class="meta">· ${short(k)}</span></div>`).join('')}
       </div>
     </div>`:'';
