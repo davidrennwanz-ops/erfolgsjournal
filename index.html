@@ -512,6 +512,11 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .hm-foot{display:flex;align-items:center;gap:8px;margin-top:20px}.hm-foot span{flex:1}
 .hm-del{all:unset;cursor:pointer;color:#9b3a31;font-size:14px}
 @media(max-width:560px){.hm-two{grid-template-columns:1fr}}
+.hero-main{flex:1;min-width:0}.date-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.daynav{display:flex;gap:6px;align-items:center}
+.daynav button{all:unset;cursor:pointer;min-width:34px;height:34px;padding:0 10px;box-sizing:border-box;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:18px;line-height:32px;text-align:center;text-shadow:none}
+.daynav button.dn-today{font-size:13px;font-weight:600;color:var(--accent);border-color:var(--accent)}
+.daynav button[disabled]{opacity:.35;cursor:default}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.4}.b-line.on{stroke-width:2.6}
@@ -693,7 +698,7 @@ h1,h2,h3,.brand b,.gtitle,.goal-line,.sec-head .t,.fold-head .t,.lp h1,.lp h2,.l
    ========================================================= */
 const LKEY='erfolgsjournal_v1';
 function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-const today=()=>iso(new Date());
+let DAY_OVR=null,tagDate=null;const realToday=()=>iso(new Date());const today=()=>DAY_OVR||realToday();
 const addDays=(ds,n)=>{const d=new Date(ds+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
 const uid=()=>Math.random().toString(36).slice(2,9);
 const DISTR_SEED=[['shorts','📱 Shorts / Social Media'],['suess','🍫 Süßes / Snacks'],['spaet','🌙 Zu spät ins Bett'],['prok','⏳ Aufgeschoben'],['couch','🛋️ Keine Bewegung'],['alk','🍺 Alkohol']];
@@ -1356,7 +1361,7 @@ function viewTag(){
   const taskCardV=taskCard.replace('%%VERDICT%%',`<p class="verdict ${vcls}" style="margin:6px 0 14px;font-size:14px">${verdict}</p>`);
 
   // Drei Abschnitte: Morgen, Tagsüber, Abend – öffnen/schließen sich nach Uhrzeit und Erledigung
-  const hr=new Date().getHours(),eve=S.settings.evening||17,isEve=hr>=eve||hr<5;
+  const hr=new Date().getHours(),eve=S.settings.evening||17,isEve=tagDate?tagDate<realToday():(hr>=eve||hr<5);
   const mDone=[!!d.goal.trim(),d.tasks.some(t=>t.t.trim()),d.grat.some(g=>g.trim())];
   const morningDone=mDone.every(Boolean);
   const avLogged=avH.filter(h=>d.habits[h.id]!==undefined).length;
@@ -1413,7 +1418,7 @@ function viewTag(){
   const closeSum=eveningDone?'✓ Tag abgeschlossen':isEve?'Jetzt dran':`öffnet ab ${eve}:00 Uhr`;
   M.innerHTML=`
   <section class="hero">${scene(phase)}
-    <div class="hero-txt"><div class="hero-ico">${scene(phase,true)}</div><div><div class="date">${fmtDate(today())}</div><h1>${greet[phase]}${S.name?', '+esc(S.name):''}.</h1><p class="hq">„${esc(q[0])}“ <span>— ${esc(q[1])}</span></p></div></div>
+    <div class="hero-txt"><div class="hero-ico">${scene(phase,true)}</div><div class="hero-main"><div class="date-row"><div class="date">${fmtDate(today())}</div><div class="daynav"><button data-dn="-1" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</button>${tagDate?'<button data-dn="0" class="dn-today">Heute</button>':''}<button data-dn="1" title="Nächster Tag" aria-label="Nächster Tag" ${today()>=addDays(realToday(),1)?'disabled':''}>›</button></div></div><h1>${tagDate?(tagDate<realToday()?'Rückblick':'Vorschau auf morgen'):greet[phase]+(S.name?', '+esc(S.name):'')}${tagDate?'':'.'}</h1><p class="hq">„${esc(q[0])}“ <span>— ${esc(q[1])}</span></p></div></div>
   </section>
   ${!CONFIGURED?'<div class="banner">Testmodus: Deine Einträge liegen nur auf diesem Gerät. Für Login und Sync die Datei config.js ausfüllen (siehe Anleitung).</div>':''}
   ${missionCard}
@@ -1427,6 +1432,7 @@ function viewTag(){
     ${closeOpen?`<div class="grid thread sec-body">${[checkCard,proudCard,winCard,reflectCard].filter(Boolean).join('')}</div>`:''}
   </section>
 `;
+  bind('[data-dn]',el=>{const n=+el.dataset.dn;const nd=n===0?null:addDays(today(),n);tagDate=nd&&nd!==realToday()?nd:null;render();window.scrollTo(0,0)},'click');
   bind('[data-sec]',el=>{const open=el.parentElement.classList.contains('open');setUi(closeKey,!open);viewTag()},'click');
   bind('#goBody',()=>{page='gew';location.hash='gew';render();window.scrollTo(0,0)},'click');
 
@@ -2201,7 +2207,7 @@ function renderSheet(){
 
 function sober(){if(S.settings.layout!=='verbindlich')return;M.querySelectorAll('h3,.now-label').forEach(h=>{const n=h.firstChild;if(n&&n.nodeType===3)n.textContent=n.textContent.replace(/^[\p{Extended_Pictographic}\uFE0F\u200d\s]+/u,'')})}
 viewTag=(f=>()=>{f();sober()})(viewTag);viewZiele=(f=>()=>{f();sober()})(viewZiele);viewGew=(f=>()=>{f();sober()})(viewGew);viewWerte=(f=>()=>{f();sober()})(viewWerte);viewReport=(f=>()=>{f();sober()})(viewReport);viewSettings=(f=>()=>{f();sober()})(viewSettings);viewIdeal=(f=>()=>{f();sober()})(viewIdeal);
-function render(){applyPhase();renderNav();({tag:viewTag,ziele:viewZiele,gew:viewGew,werte:viewWerte,report:viewReport,settings:viewSettings,ideal:viewIdeal})[page]();sober();renderSheet()}
+function render(){if(page!=='tag')tagDate=null;DAY_OVR=page==='tag'?tagDate:null;applyPhase();renderNav();({tag:viewTag,ziele:viewZiele,gew:viewGew,werte:viewWerte,report:viewReport,settings:viewSettings,ideal:viewIdeal})[page]();sober();renderSheet()}
 render();
 renderSave();
 initCloud();
