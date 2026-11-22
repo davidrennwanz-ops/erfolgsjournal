@@ -1298,12 +1298,7 @@ function viewTag(){
       </div>
     </div>`:'';
 
-  const checkCard=evening?`
-    <div class="card full warn">
-      <h3>⏸️ Kurzer Abend-Check</h3>
-      <p style="margin:6px 0 0;font-size:15px;line-height:1.55">Bevor du zum Bier oder zum Handy greifst: Bringt dich das deinem Ziel näher?</p>
-      ${masterGoal()&&masterGoal().plan?`<p style="margin:10px 0 0;font-size:15px;line-height:1.55"><b>Dein Plan:</b> ${esc(masterGoal().plan)}</p>`:`<p style="margin:10px 0 0;font-size:15px"><b>Handy raus aus dem Schlafzimmer.</b> Guter Schlaf ist der erste Schritt für morgen.</p>`}
-    </div>`:'';
+  const checkCard='';
 
   const winCard=`
     <div class="card full">
@@ -1324,12 +1319,7 @@ function viewTag(){
         <button class="btn small" id="dAdd">Hinzufügen</button>
       </div>
       <textarea id="distrNote" placeholder="Wie hat sich das ausgewirkt – auf Körper, Kopf, Ziele? Was war der Auslöser?" style="min-height:56px;margin-bottom:14px">${esc(d.distrNote)}</textarea>
-      <div class="two" style="margin-bottom:6px">
-        <div><label class="l">Im Bett um</label><input type="time" id="bed" value="${esc(d.bed)}"></div>
-        <div><label class="l">Handy weggelegt um</label><input type="time" id="phoneOff" value="${esc(d.phoneOff)}"></div>
-      </div>
-      <div id="screenMsg"></div>
-      <div class="two" style="margin-top:14px">
+      <div class="two" style="margin-top:4px">
         <div><label class="l">Was war heute gut?</label><textarea id="good" placeholder="Drei schöne Momente …">${esc(d.good)}</textarea></div>
         <div><label class="l">Was mache ich morgen besser?</label><textarea id="learn" placeholder="Eine Sache …">${esc(d.learn)}</textarea></div>
       </div>
