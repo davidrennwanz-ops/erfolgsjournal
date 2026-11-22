@@ -701,7 +701,7 @@ function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'
 let DAY_OVR=null,tagDate=null;const realToday=()=>iso(new Date());const today=()=>DAY_OVR||realToday();
 const addDays=(ds,n)=>{const d=new Date(ds+'T12:00');d.setDate(d.getDate()+n);return iso(d)};
 const uid=()=>Math.random().toString(36).slice(2,9);
-const DISTR_SEED=[['shorts','📱 Shorts / Social Media'],['suess','🍫 Süßes / Snacks'],['spaet','🌙 Zu spät ins Bett'],['prok','⏳ Aufgeschoben'],['couch','🛋️ Keine Bewegung'],['alk','🍺 Alkohol']];
+const DISTR_SEED=[['shorts','📱 Shorts / Social Media'],['suess','🍫 Süßes / Snacks'],['spaet','🌙 Zu spät ins Bett'],['prok','⏳ Aufgeschoben'],['couch','🛋️ Keine Bewegung']];
 
 function addMonths(ds,n){const d=new Date(ds+'T12:00');d.setMonth(d.getMonth()+n);return iso(d)}
 function firstOfNextMonth(){const d=new Date();return iso(new Date(d.getFullYear(),d.getMonth()+1,1))}
@@ -968,7 +968,7 @@ function landingHTML(){return `
 
   <section class="lp-three"><div class="lp-wrap">
     <div><span>🎯</span><h3>Fokus statt To-do-Chaos</h3><p>Ein Masterziel, höchstens zwei Nebenziele – und jeden Tag nur die zwei Aufgaben, die dich wirklich voranbringen.</p></div>
-    <div><span>🛡️</span><h3>Verzicht sichtbar machen</h3><p>Social Media, Süßes, das Feierabendbier: Sieh schwarz auf weiß, was du gewinnst, wenn du standhaft bleibst.</p></div>
+    <div><span>🛡️</span><h3>Verzicht sichtbar machen</h3><p>Social Media, Süßes, Serien bis spät in die Nacht: Sieh schwarz auf weiß, was du gewinnst, wenn du standhaft bleibst.</p></div>
     <div><span>🎙️</span><h3>Einsprechen statt tippen</h3><p>Abends keine Lust zu schreiben? Sprich deinen Tag ein – die KI trägt alles an die richtige Stelle ein.</p></div>
   </div></section>
 
@@ -1291,7 +1291,7 @@ function viewTag(){
   const proudCard=(recentWins.length||anySince.length)?`
     <div class="card full proud">
       <h3>🏆 Das hast du schon erreicht</h3>
-      <p class="hint">Halt kurz inne. Das ist dein Fortschritt – den gibst du nicht für ein Bier oder ein paar Shorts her.</p>
+      <p class="hint">Halt kurz inne. Das ist dein Fortschritt – den gibst du nicht für ein paar Minuten Ablenkung her.</p>
       <div class="wins">
         ${anySince.map(h=>{const s=avoidStats(h);return `<div class="win-chip">${h.icon} <b>${s.ok}/30</b> Tage ${esc(h.name.toLowerCase())}${s.saved?` · ${fmtSaved(s.saved,h.unit)} gewonnen`:''}</div>`}).join('')}
         ${recentWins.map(k=>`<div class="win-chip">⭐ ${esc(S.days[k].win)} <span class="meta">· ${short(k)}</span></div>`).join('')}
@@ -1304,7 +1304,7 @@ function viewTag(){
     <div class="card full">
       <h3>⭐ Mein Erfolg heute</h3>
       <p class="hint">Worauf bist du heute stolz? Auch kleine Siege zählen.</p>
-      <input type="text" id="win" value="${esc(d.win)}" placeholder="z. B. Abends kein Bier getrunken und um 22 Uhr Handy weggelegt.">
+      <input type="text" id="win" value="${esc(d.win)}" placeholder="z. B. Eine Stunde konzentriert an meinem Projekt gearbeitet und um 22 Uhr das Handy weggelegt.">
     </div>`;
 
   const reflectCard=`
@@ -1582,8 +1582,8 @@ function goalCard(g,big){
     <div><label class="l">A/R – Warum ist mir das wichtig?</label>${f('why','z. B. Freiheit über meine Zeit')}</div>
     ${big?`<div><label class="l">Das gewinne ich, wenn ich dranbleibe: <span class="meta">(eine Zeile pro Punkt)</span></label><textarea data-f="${g.id}|vision" placeholder="z. B. Ich bestimme selbst über meine Zeit …">${esc(g.vision||'')}</textarea></div>`:''}
     <div><label class="l">T – Zeitraum</label><div class="row" style="margin:0;flex-wrap:wrap"><span class="meta">von</span><input type="date" data-f="${g.id}|start" value="${esc(g.start||'')}" style="width:auto"><span class="meta">bis</span><input type="date" data-f="${g.id}|deadline" value="${esc(g.deadline||'')}" style="width:auto"></div></div>
-    <div class="woop-edit"><label class="l">Was wird mich am ehesten davon abhalten?</label>${f('obstacle','z. B. Abends Bier und Shorts – am nächsten Morgen unkonzentriert')}
-      <label class="l" style="margin-top:10px">Wenn-dann-Plan</label>${f('plan','Wenn … dann … – z. B. Wenn ich abends Lust auf Bier habe, trinke ich Alkoholfreies und lege das Handy in die Küche.')}</div>
+    <div class="woop-edit"><label class="l">Was wird mich am ehesten davon abhalten?</label>${f('obstacle','z. B. Abends Serien und Social Media – am nächsten Morgen unkonzentriert')}
+      <label class="l" style="margin-top:10px">Wenn-dann-Plan</label>${f('plan','Wenn … dann … – z. B. Wenn ich abends aufs Sofa will, gehe ich zuerst 20 Minuten spazieren und lege das Handy in die Küche.')}</div>
     ${!big?`<button class="btn ghost small" data-master="${g.id}" style="align-self:flex-start">Zum Masterziel machen</button>`:''}
   </div>`;
 }
@@ -1845,7 +1845,7 @@ function habitModal(h){
     ov.innerHTML=`<div class="hm" role="dialog" aria-label="Gewohnheit">
       <div class="hm-head"><h3>${isNew?'Neue Gewohnheit':'Gewohnheit bearbeiten'}</h3><button class="hm-x" data-hm="close" aria-label="Schließen">×</button></div>
       <div class="hm-row"><select id="hmI" class="hm-icon">${[...new Set([x.icon,...HICONS])].map(i=>`<option ${i===x.icon?'selected':''}>${i}</option>`).join('')}</select>
-        <input id="hmN" class="no-ag" type="text" value="${esc(x.name)}" placeholder="${x.type==='avoid'?'z. B. Abends alkoholfrei':'z. B. 30 Min. laufen'}"></div>
+        <input id="hmN" class="no-ag" type="text" value="${esc(x.name)}" placeholder="${x.type==='avoid'?'z. B. Keine Süßigkeiten':'z. B. 30 Min. laufen'}"></div>
       <label class="hm-l">Art</label>
       <div class="seg">${[['do','Machen'],['avoid','Verzicht']].map(([k,l])=>`<button data-ty="${k}" class="${x.type===k?'on':''}">${l}</button>`).join('')}</div>
       <label class="hm-l">Frequenz</label>
@@ -2181,7 +2181,7 @@ function renderSheet(){
   if(!bg){bg=document.createElement('div');bg.id='sheet';bg.className='sheet-bg';bg.onclick=e=>{if(e.target===bg){sheetOpen=false;renderSheet()}};document.body.appendChild(bg)}
   bg.innerHTML=`<div class="card voice sheet">
       <div style="display:flex;justify-content:space-between;align-items:center"><h3>🎙️ Sprich deinen Tag ein</h3><button class="x" id="sheetX" style="color:#cfc4b6">×</button></div>
-      <p class="hint">Einfach drauflos: „Mein Tagesfokus ist … Dankbar bin ich für … Die zwei Aufgaben für mein Ziel sind … Auf Bier habe ich verzichtet …“ – ich trage alles an die richtige Stelle ein.</p>
+      <p class="hint">Einfach drauflos: „Mein Tagesfokus ist … Dankbar bin ich für … Die zwei Aufgaben für mein Ziel sind … Auf Süßes habe ich verzichtet …“ – ich trage alles an die richtige Stelle ein.</p>
       <textarea id="voice" placeholder="${dictation?'Tippe auf „Einsprechen“ oder schreib hier …':'Hier schreiben – oder am Handy die Mikrofon-Taste der Tastatur nutzen …'}">${esc(voiceText)}</textarea>
       <div class="row" style="margin:12px 0 0;flex-wrap:wrap">
         ${dictation?`<button class="btn ${recording?'rec':''}" id="mic">${recording?'⏹ Stopp':'🎙️ Einsprechen'}</button>`:''}
