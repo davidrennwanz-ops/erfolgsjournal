@@ -486,6 +486,12 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .b-out{fill:none;stroke:#1c2230;stroke-width:2;stroke-linejoin:round;pointer-events:none}
 .b-geo{fill:none;stroke:#b08d3c;stroke-width:1.3;opacity:.75}
 .b-geo2{stroke:#b08d3c;stroke-width:.8;opacity:.35;stroke-dasharray:4 5}
+.b-fill{stroke:none;transition:fill .4s ease}
+.b-line{fill:none;stroke:#c29a2e;stroke-width:1.4}.b-line.on{stroke-width:2.6}
+.b-dot{fill:#c29a2e;stroke:#fff;stroke-width:1.5}
+.b-lbl{cursor:pointer}.b-lbl.on .b-ln{fill:#9a7420;font-weight:600}
+.b-pin{width:9px;height:9px;border-radius:50%;background:#c29a2e;flex:none}
+.b-item.on{background:#fffaf0}
 .b-lz{font-size:13px;letter-spacing:.12em;text-transform:uppercase;fill:#b08d3c;font-weight:600}
 .b-ln{font-size:15.5px;fill:#1c2230}.b-lv{font-size:14px;fill:#6f6a60}.b-lbl{cursor:pointer}
 .b-list{display:none;margin-top:8px}
@@ -514,7 +520,7 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .b-ctab table{width:100%;border-collapse:collapse;font-size:14px}.b-ctab td{padding:7px 4px;border-top:1px solid var(--line)}
 .b-ctab td:nth-child(n+2){text-align:right;white-space:nowrap}.b-ctab tr:first-child td{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b08d3c;border-top:0}
 .b-verdict{margin-top:10px;font-family:Newsreader,serif;font-style:italic;font-size:17px;line-height:1.4}
-@media(max-width:760px){.card:has(> .week){overflow-x:auto}.b-lbls{display:none}.b-list{display:block}.b-big .b-svg{max-width:340px;margin:0 auto}
+@media(max-width:760px){.card:has(> .week){overflow-x:auto}.b-lbls{display:none}.b-dot{r:8px}.b-list{display:block}.b-big .b-svg{max-width:340px;margin:0 auto}
   .b-mini{grid-template-columns:84px 1fr;gap:12px}.b-mini .b-mt{font-size:18px}.b-mini .b-ml{font-size:13.5px}.b-cgrid{grid-template-columns:1fr 1fr}.b-ctab{grid-column:1/-1}}
 .lp-beta{display:inline-block;margin-top:12px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:5px 10px}
 .lp-three{background:#1c2230;color:#f3f0e8;padding:64px 0}
@@ -1645,33 +1651,37 @@ function viewIdeal(){
 const HICONS=['✨','🏃','🌳','💧','🍺','🍬','📖','🧘','😴','🥗','💪','📵','🚬','✍️','🍷','📱','🎯','💰','🙏','🚶'];
 /* =========================================================
    Körper-Ansicht (vitruvianische Figur) für Gewohnheiten
+   Die Figur färbt sich als Ganzes; jede Gewohnheit zeigt mit Linie und Punkt auf ihre Stelle im Körper.
    ========================================================= */
 const BCX=530;
 const BZ={
-  kopf:{name:'Kopf & Geist',ax:BCX,ay:96,gain:'Klarer Kopf, besserer Schlaf, mehr Fokus für dein Masterziel.'},
-  lunge:{name:'Lunge',ax:BCX-16,ay:222,gain:'Freier atmen, mehr Ausdauer.'},
-  herz:{name:'Herz',ax:BCX+8,ay:240,gain:'Mehr Ausdauer, weniger Stress.'},
-  arme:{name:'Arme & Oberkörper',ax:BCX-150,ay:182,gain:'Kraft, gute Haltung, weniger Rückenschmerzen.'},
-  leber:{name:'Leber',ax:BCX-14,ay:286,gain:'Besserer Schlaf und ein klarer Kopf am Morgen.'},
-  magen:{name:'Magen',ax:BCX+16,ay:292,gain:'Mehr Energie über den Tag, weniger Heißhunger.'},
-  beine:{name:'Beine',ax:BCX+52,ay:520,gain:'Mehr Bewegung, mehr Ausdauer, Abstand vom Bildschirm.'}
+  kopf:{name:'Kopf & Geist',ax:BCX,ay:100,side:'r'},
+  lunge:{name:'Lunge',ax:BCX-16,ay:220,side:'l'},
+  herz:{name:'Herz',ax:BCX+12,ay:238,side:'r'},
+  arme:{name:'Arme & Oberkörper',ax:BCX-170,ay:182,side:'l'},
+  leber:{name:'Leber',ax:BCX-18,ay:288,side:'l'},
+  magen:{name:'Magen',ax:BCX+18,ay:292,side:'r'},
+  beine:{name:'Beine',ax:BCX+56,ay:520,side:'r'},
+  koerper:{name:'Ganzer Körper',ax:BCX,ay:372,side:'x'}
 };
-const BZ_LEFT=['arme','lunge','leber'];
+const B_GAIN={kopf:'Klarer Kopf, besserer Schlaf, mehr Fokus für dein Masterziel.',lunge:'Freier atmen, mehr Ausdauer.',herz:'Mehr Ausdauer, weniger Stress.',
+  arme:'Kraft, gute Haltung, weniger Rückenschmerzen.',leber:'Besserer Schlaf und ein klarer Kopf am Morgen.',magen:'Mehr Energie über den Tag, weniger Heißhunger.',
+  beine:'Mehr Bewegung, mehr Ausdauer, Abstand vom Bildschirm.',koerper:'Mehr Energie, Kraft und Ausdauer – für den ganzen Körper.'};
 function guessZone(name){const n=(name||'').toLowerCase();
   if(/wasser/.test(n))return'magen';
   if(/bier|alkohol|wein|schnaps|sekt|cocktail|saufen/.test(n))return'leber';
   if(/rauch|zigarett|vape|nikotin|shisha|frische luft/.test(n))return'lunge';
   if(/lauf|jogg|spazier|schritt|rad|wander|gehen|walk/.test(n))return'beine';
-  if(/kraft|liegestütz|hantel|gym|fitness|yoga|klimmzug|dehn|mobil/.test(n))return'arme';
-  if(/ausdauer|cardio|puls|schwimm|stress|atem/.test(n))return'herz';
+  if(/kraft|liegestütz|hantel|klimmzug/.test(n))return'arme';
+  if(/sport|training|workout|fitness|gym|yoga|bewegung|dehn|mobil|schwimm/.test(n))return'koerper';
+  if(/ausdauer|cardio|puls|stress|atem/.test(n))return'herz';
   if(/ess|ernähr|süß|zucker|fast ?food|koch|obst|gemüse|snack|fasten|kalorie|chips|naschen/.test(n))return'magen';
   return'kopf'}
 const zoneOf=h=>h.zone&&BZ[h.zone]?h.zone:guessZone(h.name);
 const bodyDays=(end,n=7)=>[...Array(n)].map((_,i)=>addDays(end,i-n+1));
 function habitRate(h,days){const ok=days.filter(d=>S.days[d]?.habits?.[h.id]===true).length;
   const goal=h.type==='do'?Math.max(1,Math.round((h.target||7)*days.length/7)):days.length;return{ok,goal,r:Math.min(1,ok/goal)}}
-function bodyRates(days){const r={},by={};S.habits.forEach(h=>{(by[zoneOf(h)]=by[zoneOf(h)]||[]).push(h)});
-  for(const z in by)r[z]=by[z].reduce((a,h)=>a+habitRate(h,days).r,0)/by[z].length;return{r,by}}
+const bodyTotal=days=>S.habits.length?S.habits.reduce((a,h)=>a+habitRate(h,days).r,0)/S.habits.length:0;
 const B_STOPS=[[0,[255,255,255]],[.25,[231,241,234]],[.5,[169,205,181]],[.75,[94,166,122]],[1,[47,125,79]]];
 function bodyCol(t){for(let i=1;i<B_STOPS.length;i++){if(t<=B_STOPS[i][0]){const[a,ca]=B_STOPS[i-1],[b,cb]=B_STOPS[i];const f=(t-a)/(b-a);return`rgb(${ca.map((v,k)=>Math.round(v+(cb[k]-v)*f)).join(',')})`}}return'rgb(47,125,79)'}
 const bTrend=(now,prev)=>{const d=Math.round((now-prev)*100);return d>=5?`↑ ${d} %`:d<=-5?`↓ ${-d} %`:'→ gleich'};
@@ -1679,58 +1689,59 @@ const B_HALF=[[13,138],[14,156],[40,166],[90,170],[170,172],[240,173],[272,171],
 const B_BODY=(()=>{const p=[...B_HALF.slice(0,-1).map(([dx,y])=>[BCX-dx,y]),[BCX,414],...B_HALF.slice(0,-1).reverse().map(([dx,y])=>[BCX+dx,y])];
   let d=`M${p[0][0]},${p[0][1]}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
   d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]},${p2[1]}`}return d})();
-let bodyFigN=0,bodySel=null;
-function bodyFigure(rates,{labels=false,mini=false,by=null,prev=null,sel=null}={}){
-  const id='bf'+(++bodyFigN),C=BCX;
-  const sh={kopf:`<ellipse cx="${C}" cy="94" rx="24" ry="18"/>`,
-    lunge:`<ellipse cx="${C-17}" cy="222" rx="14" ry="27"/><ellipse cx="${C+17}" cy="222" rx="14" ry="27"/>`,
-    herz:`<path d="M${C+4},236 c0,-8 12,-8 12,1 c0,9 -12,15 -14,21 c-2,-6 -14,-12 -14,-21 c0,-9 12,-9 12,-1Z"/>`,
-    arme:`<g clip-path="url(#${id})"><rect x="${C-300}" y="150" width="246" height="60"/><rect x="${C+54}" y="150" width="246" height="60"/></g>`,
-    leber:`<path d="M${C-36},280 c10,-10 36,-8 38,4 c-2,12 -26,14 -36,8 c-5,-3 -5,-9 -2,-12Z"/>`,
-    magen:`<path d="M${C+8},282 c12,-8 26,0 24,14 c-2,16 -20,20 -28,10 c-4,-7 2,-12 4,-16Z"/>`,
-    beine:`<g clip-path="url(#${id})"><rect x="${C-120}" y="414" width="240" height="240"/></g>`};
-  let s=`<defs><clipPath id="${id}"><path d="${B_BODY}"/></clipPath></defs><rect x="${C-285}" y="70" width="570" height="570" class="b-geo"/><circle cx="${C}" cy="330" r="310" class="b-geo"/>`;
+let bodySel=null;
+/* Figur: rate = Gesamtwert (0–1) für die Färbung; items = [{h, ok, goal, r, prev}] für Beschriftungen */
+function bodyFigure(rate,{items=null,mini=false,sel=null}={}){
+  const C=BCX,fill=bodyCol(rate);
+  let s=`<rect x="${C-285}" y="70" width="570" height="570" class="b-geo"/><circle cx="${C}" cy="330" r="310" class="b-geo"/>`;
   if(!mini)s+=`<line x1="${C}" y1="70" x2="${C}" y2="640" class="b-geo2"/><line x1="${C-285}" y1="414" x2="${C+285}" y2="414" class="b-geo2"/>`;
-  s+=`<circle cx="${C}" cy="102" r="36" fill="#fff"/><path d="${B_BODY}" fill="#fff"/>`;
-  for(const z of['beine','arme','lunge','leber','magen','herz','kopf']){const has=z in rates;
-    s+=`<g class="b-zone ${has?'':'off'} ${sel===z?'sel':''}" ${has&&!mini?`data-bz="${z}"`:''} style="fill:${has?bodyCol(rates[z]):'none'}">${sh[z]}</g>`}
+  s+=`<g class="b-fill" style="fill:${fill}"><circle cx="${C}" cy="102" r="36"/><path d="${B_BODY}"/></g>`;
   s+=`<circle class="b-out" cx="${C}" cy="102" r="36"/><path class="b-out" d="${B_BODY}"/>`;
-  if(labels){let L='';const used=Object.keys(rates).map(z=>({z,...BZ[z],hs:by[z]}));
-    const place=(arr,side)=>{let y=30;arr.sort((a,b)=>a.ay-b.ay).forEach(u=>{const hh=46+u.hs.length*42,ly=Math.max(y,u.ay-hh/2+10);y=ly+hh+12;
-      const tx=side==='l'?190:870,ex=side==='l'?198:862,an=side==='l'?'end':'start';
-      L+=`<g class="b-lbl" data-bz="${u.z}"><polyline points="${u.ax},${u.ay} ${ex},${ly+8}" fill="none" stroke="#b08d3c" stroke-width="1.2"/><circle cx="${u.ax}" cy="${u.ay}" r="4.5" fill="#b08d3c"/>`+
-        `<text class="b-lz" x="${tx}" y="${ly+13}" text-anchor="${an}">${u.name} · ${Math.round(rates[u.z]*100)} %</text>`+
-        `<text class="b-lv" x="${tx}" y="${ly+32}" text-anchor="${an}">${bTrend(rates[u.z],prev[u.z]||0)} zur Vorwoche</text>`;
-      u.hs.forEach((h,k)=>{const x=habitRate(h,bodyDays(today()));L+=`<text class="b-ln" x="${tx}" y="${ly+56+k*42}" text-anchor="${an}">${h.icon} ${esc(h.name)}</text><text class="b-lv" x="${tx}" y="${ly+74+k*42}" text-anchor="${an}">${x.ok} von ${x.goal} ${h.type==='avoid'?'Tagen verzichtet':'erledigt'}</text>`});L+='</g>'})};
-    place(used.filter(u=>BZ_LEFT.includes(u.z)),'l');place(used.filter(u=>!BZ_LEFT.includes(u.z)),'r');s+=`<g class="b-lbls">${L}</g>`}
+  if(items&&items.length){
+    // Seiten verteilen: feste Seite je Bereich, "Ganzer Körper" auf die leerere Seite
+    const L=[],R=[];items.forEach(it=>{const z=BZ[zoneOf(it.h)];(z.side==='l'?L:z.side==='r'?R:null)?.push(it)});
+    items.filter(it=>BZ[zoneOf(it.h)].side==='x').forEach(it=>(L.length<=R.length?L:R).push(it));
+    let lines='',dots='',txt='';const seen={};
+    const place=(arr,side)=>{const step=62,ay=it=>BZ[zoneOf(it.h)].ay;arr.sort((a,b)=>ay(a)-ay(b));
+      const total=arr.length*step;let y=Math.max(40,Math.min(330-total/2+20,640-total));
+      arr.forEach(it=>{const z=BZ[zoneOf(it.h)],ly=y;y+=step;
+        const tx=side==='l'?190:870,ex=side==='l'?198:862,an=side==='l'?'end':'start',on=sel===it.h.id;
+        lines+=`<polyline points="${z.ax},${z.ay} ${ex},${ly+6}" class="b-line ${on?'on':''}"/>`;
+        if(!seen[zoneOf(it.h)]){seen[zoneOf(it.h)]=1;const hot=items.some(o=>o.h.id===sel&&zoneOf(o.h)===zoneOf(it.h));dots+=`<circle cx="${z.ax}" cy="${z.ay}" r="${hot?9:5.5}" class="b-dot"/>`}
+        txt+=`<g class="b-lbl ${on?'on':''}" data-bh="${it.h.id}"><rect x="${side==='l'?tx-250:tx-6}" y="${ly-14}" width="256" height="54" fill="transparent"/>`+
+          `<text class="b-ln" x="${tx}" y="${ly+10}" text-anchor="${an}">${it.h.icon} ${esc(it.h.name)}</text>`+
+          `<text class="b-lv" x="${tx}" y="${ly+30}" text-anchor="${an}">${it.ok} von ${it.goal} ${it.h.type==='avoid'?'Tagen verzichtet':'erledigt'} · ${bTrend(it.r,it.prev)}</text></g>`})};
+    place(L,'l');place(R,'r');
+    s+=`<g class="b-lbls">${lines}${txt}</g>${dots}`;
+  }
   const narrow=matchMedia('(max-width:760px)').matches;
   return`<svg class="b-svg" viewBox="${mini||narrow?`${C-315} 15 630 640`:'-110 0 1280 670'}" role="img" aria-label="Körperfigur">${s}</svg>`;
 }
+function bodyItems(cur,prv){return S.habits.map(h=>{const x=habitRate(h,cur);return{h,ok:x.ok,goal:x.goal,r:x.r,prev:habitRate(h,prv).r}})}
 function bodyCard(){
   if(!S.habits.length)return'';
   const t=today(),cur=bodyDays(t),prv=bodyDays(addDays(t,-7));
-  const {r,by}=bodyRates(cur),{r:p}=bodyRates(prv);
-  const tot=S.habits.reduce((a,h)=>a+habitRate(h,cur).r,0)/S.habits.length;
+  const items=bodyItems(cur,prv),tot=bodyTotal(cur),ptot=bodyTotal(prv);
   const fd2=d=>new Date(d+'T12:00').toLocaleDateString('de-DE',{day:'numeric',month:'long'});
-  const sel=bodySel&&by[bodySel]?bodySel:null;
+  const it=items.find(i=>i.h.id===bodySel);
   let det='';
-  if(sel){const hs=by[sel];
-    det=`<div class="b-detail" id="bDetail"><button class="b-x" data-bclose aria-label="Schließen">×</button><div class="b-kick">${BZ[sel].name} · letzte 7 Tage</div>
-      <div class="b-dh">${Math.round(r[sel]*100)} % eingehalten <span class="b-tr ${r[sel]-(p[sel]||0)>=.05?'up':''}">${bTrend(r[sel],p[sel]||0)} zur Vorwoche</span></div>
-      ${hs.map(h=>{const x=habitRate(h,cur);return`<div class="b-drow"><div class="b-dn">${h.icon} ${esc(h.name)}<small>${x.ok} von ${x.goal} ${h.type==='avoid'?'Tagen verzichtet':'erledigt'}${h.type==='do'&&h.target<7?` · Ziel ${h.target}× pro Woche`:''}</small></div>
-        <div class="b-dots">${cur.map(d=>{const v=S.days[d]?.habits?.[h.id];return`<button class="${v===true?'on':v===false?'no':''}" data-bd="${h.id}|${d}" title="${fd2(d)}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'}).slice(0,2)}</button>`}).join('')}</div></div>`}).join('')}
-      <div class="b-gain"><b>Das gewinnst du:</b> ${BZ[sel].gain}${hs.filter(h=>h.type==='avoid'&&h.cost).map(h=>{const x=habitRate(h,cur);return` „${esc(h.name)}“: diese Woche ${x.ok*h.cost} ${h.unit==='Min.'?'Min. gewonnen':'€ gespart'} – möglich wären ${7*h.cost} ${h.unit==='Min.'?'Min.':'€'}.`}).join('')}</div>
+  if(it){const h=it.h,z=zoneOf(h);
+    det=`<div class="b-detail" id="bDetail"><button class="b-x" data-bclose aria-label="Schließen">×</button><div class="b-kick">${BZ[z].name} · letzte 7 Tage</div>
+      <div class="b-dh">${h.icon} ${esc(h.name)} <span class="b-tr ${it.r-it.prev>=.05?'up':''}">${bTrend(it.r,it.prev)} zur Vorwoche</span></div>
+      <div class="b-drow"><div class="b-dn">${it.ok} von ${it.goal} ${h.type==='avoid'?'Tagen verzichtet':'erledigt'}${h.type==='do'&&h.target<7?`<small>Ziel ${h.target}× pro Woche</small>`:''}</div>
+        <div class="b-dots">${cur.map(d=>{const v=S.days[d]?.habits?.[h.id];return`<button class="${v===true?'on':v===false?'no':''}" data-bd="${h.id}|${d}" title="${fd2(d)}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'}).slice(0,2)}</button>`}).join('')}</div></div>
+      <div class="b-gain"><b>Das gewinnst du:</b> ${B_GAIN[z]}${h.type==='avoid'&&h.cost?` Diese Woche ${it.ok*h.cost} ${h.unit==='Min.'?'Min. gewonnen':'€ gespart'} – möglich wären ${7*h.cost} ${h.unit==='Min.'?'Min.':'€'}.`:''}</div>
     </div>`}
   return`<div class="card b-card" style="margin-bottom:20px">
-    <div class="b-head"><div><h3>🧍 Dein Körper · letzte 7 Tage</h3><div class="b-score"><b>${Math.round(tot*100)} %</b> eingehalten · ${fd2(cur[0])} – ${fd2(t)}</div></div><div class="b-legend">noch offen<i></i>eingehalten</div></div>
-    <div class="b-big">${bodyFigure(r,{labels:true,by,prev:p,sel})}</div>
-    <div class="b-list">${Object.keys(r).map(z=>`<div class="b-item" data-bz="${z}"><i style="background:${bodyCol(r[z])}"></i><div class="b-in">${BZ[z].name}<small>${by[z].map(h=>h.icon+' '+esc(h.name)).join(' · ')}</small></div><b>${Math.round(r[z]*100)} %</b><span class="b-tr ${r[z]-(p[z]||0)>=.05?'up':''}">${bTrend(r[z],p[z]||0)}</span></div>`).join('')}</div>
+    <div class="b-head"><div><h3>🧍 Dein Körper · letzte 7 Tage</h3><div class="b-score"><b>${Math.round(tot*100)} %</b> eingehalten · ${fd2(cur[0])} – ${fd2(t)} <span class="b-tr ${tot-ptot>=.05?'up':''}">${bTrend(tot,ptot)} zur Vorwoche</span></div></div><div class="b-legend">noch offen<i></i>eingehalten</div></div>
+    <div class="b-big">${bodyFigure(tot,{items,sel:bodySel})}</div>
+    <div class="b-list">${items.map(i=>`<div class="b-item ${bodySel===i.h.id?'on':''}" data-bh="${i.h.id}"><span class="b-pin"></span><div class="b-in">${i.h.icon} ${esc(i.h.name)}<small>${BZ[zoneOf(i.h)].name}</small></div><b>${i.ok}/${i.goal}</b><span class="b-tr ${i.r-i.prev>=.05?'up':''}">${bTrend(i.r,i.prev)}</span></div>`).join('')}</div>
     ${det}
-    <p class="b-disc">Tippe auf einen Bereich für Details. Die Farben zeigen, wie gut du deine Gewohnheiten einhältst – keine medizinische Aussage über deinen Körper.</p>
+    <p class="b-disc">Die Figur färbt sich mit allen Gewohnheiten zusammen. Tippe auf eine Gewohnheit für Details. Keine medizinische Aussage über deinen Körper.</p>
   </div>`;
 }
 function bindBody(rerender){
-  M.querySelectorAll('[data-bz]').forEach(e=>e.onclick=()=>{bodySel=bodySel===e.dataset.bz?null:e.dataset.bz;rerender();if(bodySel)setTimeout(()=>{const d=document.getElementById('bDetail');if(d)d.scrollIntoView({behavior:'smooth',block:'nearest'})},60)});
+  M.querySelectorAll('[data-bh]').forEach(e=>e.onclick=()=>{bodySel=bodySel===e.dataset.bh?null:e.dataset.bh;rerender();if(bodySel)setTimeout(()=>{const d=document.getElementById('bDetail');if(d)d.scrollIntoView({behavior:'smooth',block:'nearest'})},60)});
   M.querySelectorAll('[data-bclose]').forEach(e=>e.onclick=()=>{bodySel=null;rerender()});
   M.querySelectorAll('[data-bd]').forEach(e=>e.onclick=()=>{const [hid,d]=e.dataset.bd.split('|');const h=S.habits.find(x=>x.id===hid);const x=day(d),v=x.habits[hid];
     if(h.type==='do'){if(v===true)delete x.habits[hid];else x.habits[hid]=true}else{if(v===undefined)x.habits[hid]=true;else if(v===true)x.habits[hid]=false;else delete x.habits[hid]}
@@ -1738,12 +1749,12 @@ function bindBody(rerender){
 }
 function bodyMiniCard(){
   if(!S.habits.length)return'';
-  const {r}=bodyRates(bodyDays(today()));const zs=Object.keys(r).sort((a,b)=>r[b]-r[a]);if(!zs.length)return'';
-  const tot=S.habits.reduce((a,h)=>a+habitRate(h,bodyDays(today())).r,0)/S.habits.length;
-  return`<div class="card b-mini" style="margin-top:18px"><div class="b-mfig">${bodyFigure(r,{mini:true})}</div><div>
+  const cur=bodyDays(today()),items=bodyItems(cur,bodyDays(addDays(today(),-7))).sort((a,b)=>b.r-a.r),tot=bodyTotal(cur);
+  const best=items[0],low=items[items.length-1];
+  return`<div class="card b-mini" style="margin-top:18px"><div class="b-mfig">${bodyFigure(tot,{mini:true})}</div><div>
     <div class="b-kick">Dein Körper · letzte 7 Tage</div><div class="b-mt">${Math.round(tot*100)} % eingehalten</div>
-    <div class="b-ml">Am stärksten: <b>${BZ[zs[0]].name}</b> · ${Math.round(r[zs[0]]*100)} %</div>
-    ${zs.length>1?`<div class="b-ml">Noch offen: <b>${BZ[zs[zs.length-1]].name}</b> · ${Math.round(r[zs[zs.length-1]]*100)} %</div>`:''}
+    <div class="b-ml">Läuft: <b>${best.h.icon} ${esc(best.h.name)}</b> · ${best.ok}/${best.goal}</div>
+    ${items.length>1&&low.r<best.r?`<div class="b-ml">Noch offen: <b>${low.h.icon} ${esc(low.h.name)}</b> · ${low.ok}/${low.goal}</div>`:''}
     <button class="b-link" id="goBody">Zur Körper-Ansicht →</button></div></div>`;
 }
 function monthDaysUpTo(m){const t=today(),last=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();const out=[];for(let i=1;i<=last;i++){const d=m+'-'+String(i).padStart(2,'0');if(d<=t)out.push(d)}return out}
@@ -1751,18 +1762,17 @@ function bodyCompareHTML(m){
   if(!S.habits.length)return'';
   const pm=iso(new Date(+m.slice(0,4),+m.slice(5,7)-2,1)).slice(0,7);
   const dc=monthDaysUpTo(m),dp=monthDaysUpTo(pm);if(!dc.length)return'';
-  const hasData=ds=>ds.some(d=>S.habits.some(h=>S.days[d]?.habits?.[h.id]!==undefined));
-  const {r:rc}=bodyRates(dc),{r:rp}=bodyRates(dp);
+  const prevOk=dp.some(d=>S.habits.some(h=>S.days[d]?.habits?.[h.id]!==undefined));
   const lab=k=>new Date(k+'-15T12:00').toLocaleDateString('de-DE',{month:'long'});
-  const avg=o=>{const v=Object.values(o);return v.length?v.reduce((a,b)=>a+b,0)/v.length:0};
-  const zs=Object.keys(rc),prevOk=hasData(dp);
-  let verdict='';if(prevOk&&zs.length){const best=zs.reduce((a,z)=>rc[z]-rp[z]>rc[a]-rp[a]?z:a,zs[0]),low=zs.reduce((a,z)=>rc[z]<rc[a]?z:a,zs[0]);
-    verdict=`<div class="b-verdict">${rc[best]-rp[best]>=.05?`Größter Schritt nach vorn: ${BZ[best].name}. `:''}Am meisten Luft nach oben: ${BZ[low].name}.</div>`}
+  const tc=bodyTotal(dc),tp=prevOk?bodyTotal(dp):0;
+  const rows=S.habits.map(h=>({h,c:habitRate(h,dc).r,p:habitRate(h,dp).r}));
+  let verdict='';if(prevOk){const best=rows.reduce((a,x)=>x.c-x.p>a.c-a.p?x:a,rows[0]),low=rows.reduce((a,x)=>x.c<a.c?x:a,rows[0]);
+    verdict=`<div class="b-verdict">${best.c-best.p>=.05?`Größter Schritt nach vorn: ${esc(best.h.name)}. `:''}Am meisten Luft nach oben: ${esc(low.h.name)}.</div>`}
   return`<div class="b-cmp"><div class="b-kick">Dein Körper im Monatsvergleich</div><div class="b-cgrid">
-    <div class="b-cf">${bodyFigure(prevOk?rp:{},{mini:true})}<b>${lab(pm)}</b><span>${prevOk?Math.round(avg(rp)*100)+' % eingehalten':'noch keine Daten'}</span></div>
-    <div class="b-cf">${bodyFigure(rc,{mini:true})}<b>${lab(m)}</b><span>${Math.round(avg(rc)*100)} % eingehalten</span></div>
+    <div class="b-cf">${bodyFigure(tp,{mini:true})}<b>${lab(pm)}</b><span>${prevOk?Math.round(tp*100)+' % eingehalten':'noch keine Daten'}</span></div>
+    <div class="b-cf">${bodyFigure(tc,{mini:true})}<b>${lab(m)}</b><span>${Math.round(tc*100)} % eingehalten</span></div>
     <div class="b-ctab"><table><tr><td></td><td>${lab(pm).slice(0,3)}</td><td>${lab(m).slice(0,3)}</td><td></td></tr>
-      ${zs.map(z=>{const d=Math.round((rc[z]-(rp[z]||0))*100);return`<tr><td>${BZ[z].name}</td><td>${prevOk?Math.round((rp[z]||0)*100)+' %':'–'}</td><td><b>${Math.round(rc[z]*100)} %</b></td><td class="b-tr ${prevOk&&d>=5?'up':''}">${prevOk?(d>=5?'↑ '+d+' %':d<=-5?'↓ '+(-d)+' %':'→'):''}</td></tr>`}).join('')}
+      ${rows.map(x=>{const d=Math.round((x.c-x.p)*100);return`<tr><td>${x.h.icon} ${esc(x.h.name)}</td><td>${prevOk?Math.round(x.p*100)+' %':'–'}</td><td><b>${Math.round(x.c*100)} %</b></td><td class="b-tr ${prevOk&&d>=5?'up':''}">${prevOk?(d>=5?'↑ '+d+' %':d<=-5?'↓ '+(-d)+' %':'→'):''}</td></tr>`}).join('')}
     </table>${verdict}</div></div></div>`;
 }
 
