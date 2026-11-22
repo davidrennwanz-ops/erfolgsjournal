@@ -1696,7 +1696,7 @@ const B_L=[[15,106],[16,128],[36,140],[58,147],[76,155],[86,170],[88,192],[90,21
 const B_PTS=(()=>{const ai=B_L.findIndex(q=>q[0]===62&&q[1]===200),hi=B_L.findIndex(q=>q[0]===58&&q[1]===342);
   const arm=B_L.slice(0,ai+1).map(([dx,y],i)=>[dx,i<2?y:y+3]).reverse();
   const torso=B_L.slice(ai+1,hi).reverse();
-  const leg=B_L.slice(hi).reverse().map(([dx,y])=>{const t=Math.max(0,Math.min(1,(y-350)/290));return[dx+4*t,y+10*t]});
+  const leg=B_L.slice(hi).reverse().map(([dx,y])=>{const t=Math.max(0,Math.min(1,(y-350)/290));return[dx,y]});
   return[...B_L.map(([dx,y])=>[BCX-dx,y]),[BCX,354],...leg.map(([dx,y])=>[BCX+dx,y]),...torso.map(([dx,y])=>[BCX+dx,y]),...arm.map(([dx,y])=>[BCX+dx,y])]})();
 const B_BODY=(()=>{const p=B_PTS;
   let d=`M${p[0][0]},${p[0][1]}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
