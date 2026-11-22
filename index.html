@@ -473,6 +473,49 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .lp-end-sub{opacity:.75;font-size:17px;margin:-10px 0 26px}
 @media(max-width:900px){.lp-steps{grid-template-columns:1fr 1fr}.lp-why h2{font-size:32px}}
 @media(max-width:560px){.lp-steps{grid-template-columns:1fr;gap:22px}.lp-why{padding:56px 0}.lp-why h2{font-size:28px}.lp-why blockquote{font-size:21px}}
+/* Körper-Ansicht */
+.b-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.b-score{color:var(--muted);font-size:14px}.b-score b{font-family:Newsreader,serif;font-weight:500;font-size:30px;color:var(--ink);margin-right:4px}
+.b-legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.b-legend i{display:block;width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,#fff,#e7f1ea,#a9cdb5,#5ea67a,#2f7d4f);border:1px solid var(--line)}
+.b-svg{width:100%;height:auto;display:block}
+.b-big .b-svg{max-height:560px}
+.b-zone{transition:fill .35s ease;stroke:#1c2230;stroke-width:1.2;cursor:pointer}
+.b-zone.off{fill:none!important;stroke:#c9c1b1;stroke-dasharray:3 3;cursor:default}
+.b-zone.sel{stroke:#b08d3c;stroke-width:3}
+.b-out{fill:none;stroke:#1c2230;stroke-width:2;stroke-linejoin:round;pointer-events:none}
+.b-geo{fill:none;stroke:#b08d3c;stroke-width:1.3;opacity:.75}
+.b-geo2{stroke:#b08d3c;stroke-width:.8;opacity:.35;stroke-dasharray:4 5}
+.b-lz{font-size:13px;letter-spacing:.12em;text-transform:uppercase;fill:#b08d3c;font-weight:600}
+.b-ln{font-size:15.5px;fill:#1c2230}.b-lv{font-size:14px;fill:#6f6a60}.b-lbl{cursor:pointer}
+.b-list{display:none;margin-top:8px}
+.b-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.b-item i{width:16px;height:16px;border-radius:50%;border:1px solid #1c2230;flex:none}
+.b-in{flex:1}.b-in small{display:block;color:var(--muted);font-size:12px}
+.b-tr{font-size:12.5px;color:var(--muted);white-space:nowrap}.b-tr.up{color:#2f7d4f}
+.b-kick{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b08d3c;font-weight:600}
+.b-detail{border-left:3px solid #b08d3c;background:#fffaf0;border-radius:6px;padding:14px 16px;margin-top:12px}
+.b-dh{font-family:Newsreader,serif;font-size:20px;margin:2px 0 6px}
+.b-x{float:right;background:none;border:0;font-size:20px;color:var(--muted);cursor:pointer}
+.b-drow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.b-dn{flex:1;min-width:170px}.b-dn small{display:block;color:var(--muted);font-size:12px}
+.b-dots{display:flex;gap:4px}
+.b-dots button{width:30px;height:28px;border-radius:4px;border:1px solid var(--line);font:inherit;font-size:10.5px;color:var(--muted);background:#fff;cursor:pointer;padding:0}
+.b-dots button.on{background:#a9cdb5;border-color:#7fb393;color:#1c2230}
+.b-dots button.no{background:#f1ece2;color:#9c9584;text-decoration:line-through}
+.b-gain{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:14px;line-height:1.55}
+.b-disc{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.b-mini{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+.b-mt{font-family:Newsreader,serif;font-size:21px;margin:2px 0 6px}.b-ml{font-size:14.5px;padding:3px 0}
+.b-link{background:none;border:0;padding:0;margin-top:8px;color:#b08d3c;font:inherit;font-weight:600;cursor:pointer}
+.b-cmp{margin:14px 0 18px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.b-cgrid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:16px;align-items:start;margin-top:8px}
+.b-cf{text-align:center}.b-cf b{display:block;font-family:Newsreader,serif;font-weight:500;font-size:18px}.b-cf span{color:var(--muted);font-size:13px}
+.b-ctab table{width:100%;border-collapse:collapse;font-size:14px}.b-ctab td{padding:7px 4px;border-top:1px solid var(--line)}
+.b-ctab td:nth-child(n+2){text-align:right;white-space:nowrap}.b-ctab tr:first-child td{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b08d3c;border-top:0}
+.b-verdict{margin-top:10px;font-family:Newsreader,serif;font-style:italic;font-size:17px;line-height:1.4}
+@media(max-width:760px){.card:has(> .week){overflow-x:auto}.b-lbls{display:none}.b-list{display:block}.b-big .b-svg{max-width:340px;margin:0 auto}
+  .b-mini{grid-template-columns:84px 1fr;gap:12px}.b-mini .b-mt{font-size:18px}.b-mini .b-ml{font-size:13.5px}.b-cgrid{grid-template-columns:1fr 1fr}.b-ctab{grid-column:1/-1}}
 .lp-beta{display:inline-block;margin-top:12px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:5px 10px}
 .lp-three{background:#1c2230;color:#f3f0e8;padding:64px 0}
 .lp-three .lp-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
@@ -1343,7 +1386,7 @@ function viewTag(){
   ${(()=>{const m=mcDue();if(!m||(S.monthly[m]&&S.monthly[m].done))return '';return `<div class="banner mc-banner">🗓️ <b>Zeit für deinen Monats-Check</b> – 5 Minuten für Erfolge, Selbsteinschätzung und deine wichtigste Erkenntnis. <button class="btn small" id="goMc">Jetzt starten</button></div>`})()}
   <section class="day-sec open plan">
     <div class="sec-head static"><span class="t">Mein Plan für heute</span><span class="sum">${d.goal.trim()?(d.goalDone?'Fokus ✓ · ':'Fokus offen · '):''}${tasksSet.length?`${tasksDone}/${tasksSet.length} Aufgaben · `:''}Gewohnheiten ${doneDo}/${doH.length} · Verzicht ${avOk}/${avH.length}</span></div>
-    <div class="sec-body">${tilesHTML}</div>
+    <div class="sec-body">${tilesHTML}${bodyMiniCard()}</div>
   </section>
   <section class="day-sec ${closeOpen?'open':''} ${eveningDone?'done':''}">
     <button class="sec-head" data-sec="abschluss"><span class="t">Tagesabschluss</span><span class="sum">${closeSum}</span><span class="chev">▾</span></button>
@@ -1351,6 +1394,7 @@ function viewTag(){
   </section>
 `;
   bind('[data-sec]',el=>{const open=el.parentElement.classList.contains('open');setUi(closeKey,!open);viewTag()},'click');
+  bind('#goBody',()=>{page='gew';location.hash='gew';render();window.scrollTo(0,0)},'click');
 
   const cb=M.querySelector('#commit');if(cb)cb.onclick=()=>{
     if(!d.tasks.some(t=>t.t.trim())){toast('Leg zuerst deine 2 Aufgaben fest – dann sagst du zu.',3000);const f=M.querySelector('.task-t');if(f){const det=f.closest('details');if(det)det.open=true;f.focus()}return}
@@ -1599,12 +1643,136 @@ function viewIdeal(){
    Gewohnheiten
    ========================================================= */
 const HICONS=['✨','🏃','🌳','💧','🍺','🍬','📖','🧘','😴','🥗','💪','📵','🚬','✍️','🍷','📱','🎯','💰','🙏','🚶'];
+/* =========================================================
+   Körper-Ansicht (vitruvianische Figur) für Gewohnheiten
+   ========================================================= */
+const BCX=530;
+const BZ={
+  kopf:{name:'Kopf & Geist',ax:BCX,ay:96,gain:'Klarer Kopf, besserer Schlaf, mehr Fokus für dein Masterziel.'},
+  lunge:{name:'Lunge',ax:BCX-16,ay:222,gain:'Freier atmen, mehr Ausdauer.'},
+  herz:{name:'Herz',ax:BCX+8,ay:240,gain:'Mehr Ausdauer, weniger Stress.'},
+  arme:{name:'Arme & Oberkörper',ax:BCX-150,ay:182,gain:'Kraft, gute Haltung, weniger Rückenschmerzen.'},
+  leber:{name:'Leber',ax:BCX-14,ay:286,gain:'Besserer Schlaf und ein klarer Kopf am Morgen.'},
+  magen:{name:'Magen',ax:BCX+16,ay:292,gain:'Mehr Energie über den Tag, weniger Heißhunger.'},
+  beine:{name:'Beine',ax:BCX+52,ay:520,gain:'Mehr Bewegung, mehr Ausdauer, Abstand vom Bildschirm.'}
+};
+const BZ_LEFT=['arme','lunge','leber'];
+function guessZone(name){const n=(name||'').toLowerCase();
+  if(/wasser/.test(n))return'magen';
+  if(/bier|alkohol|wein|schnaps|sekt|cocktail|saufen/.test(n))return'leber';
+  if(/rauch|zigarett|vape|nikotin|shisha|frische luft/.test(n))return'lunge';
+  if(/lauf|jogg|spazier|schritt|rad|wander|gehen|walk/.test(n))return'beine';
+  if(/kraft|liegestütz|hantel|gym|fitness|yoga|klimmzug|dehn|mobil/.test(n))return'arme';
+  if(/ausdauer|cardio|puls|schwimm|stress|atem/.test(n))return'herz';
+  if(/ess|ernähr|süß|zucker|fast ?food|koch|obst|gemüse|snack|fasten|kalorie|chips|naschen/.test(n))return'magen';
+  return'kopf'}
+const zoneOf=h=>h.zone&&BZ[h.zone]?h.zone:guessZone(h.name);
+const bodyDays=(end,n=7)=>[...Array(n)].map((_,i)=>addDays(end,i-n+1));
+function habitRate(h,days){const ok=days.filter(d=>S.days[d]?.habits?.[h.id]===true).length;
+  const goal=h.type==='do'?Math.max(1,Math.round((h.target||7)*days.length/7)):days.length;return{ok,goal,r:Math.min(1,ok/goal)}}
+function bodyRates(days){const r={},by={};S.habits.forEach(h=>{(by[zoneOf(h)]=by[zoneOf(h)]||[]).push(h)});
+  for(const z in by)r[z]=by[z].reduce((a,h)=>a+habitRate(h,days).r,0)/by[z].length;return{r,by}}
+const B_STOPS=[[0,[255,255,255]],[.25,[231,241,234]],[.5,[169,205,181]],[.75,[94,166,122]],[1,[47,125,79]]];
+function bodyCol(t){for(let i=1;i<B_STOPS.length;i++){if(t<=B_STOPS[i][0]){const[a,ca]=B_STOPS[i-1],[b,cb]=B_STOPS[i];const f=(t-a)/(b-a);return`rgb(${ca.map((v,k)=>Math.round(v+(cb[k]-v)*f)).join(',')})`}}return'rgb(47,125,79)'}
+const bTrend=(now,prev)=>{const d=Math.round((now-prev)*100);return d>=5?`↑ ${d} %`:d<=-5?`↓ ${-d} %`:'→ gleich'};
+const B_HALF=[[13,138],[14,156],[40,166],[90,170],[170,172],[240,173],[272,171],[286,178],[280,188],[262,191],[200,192],[120,194],[72,198],[54,214],[52,260],[50,320],[46,356],[54,396],[64,460],[74,540],[84,612],[104,632],[100,642],[60,642],[60,616],[46,540],[30,460],[12,420],[0,414]];
+const B_BODY=(()=>{const p=[...B_HALF.slice(0,-1).map(([dx,y])=>[BCX-dx,y]),[BCX,414],...B_HALF.slice(0,-1).reverse().map(([dx,y])=>[BCX+dx,y])];
+  let d=`M${p[0][0]},${p[0][1]}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
+  d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]},${p2[1]}`}return d})();
+let bodyFigN=0,bodySel=null;
+function bodyFigure(rates,{labels=false,mini=false,by=null,prev=null,sel=null}={}){
+  const id='bf'+(++bodyFigN),C=BCX;
+  const sh={kopf:`<ellipse cx="${C}" cy="94" rx="24" ry="18"/>`,
+    lunge:`<ellipse cx="${C-17}" cy="222" rx="14" ry="27"/><ellipse cx="${C+17}" cy="222" rx="14" ry="27"/>`,
+    herz:`<path d="M${C+4},236 c0,-8 12,-8 12,1 c0,9 -12,15 -14,21 c-2,-6 -14,-12 -14,-21 c0,-9 12,-9 12,-1Z"/>`,
+    arme:`<g clip-path="url(#${id})"><rect x="${C-300}" y="150" width="246" height="60"/><rect x="${C+54}" y="150" width="246" height="60"/></g>`,
+    leber:`<path d="M${C-36},280 c10,-10 36,-8 38,4 c-2,12 -26,14 -36,8 c-5,-3 -5,-9 -2,-12Z"/>`,
+    magen:`<path d="M${C+8},282 c12,-8 26,0 24,14 c-2,16 -20,20 -28,10 c-4,-7 2,-12 4,-16Z"/>`,
+    beine:`<g clip-path="url(#${id})"><rect x="${C-120}" y="414" width="240" height="240"/></g>`};
+  let s=`<defs><clipPath id="${id}"><path d="${B_BODY}"/></clipPath></defs><rect x="${C-285}" y="70" width="570" height="570" class="b-geo"/><circle cx="${C}" cy="330" r="310" class="b-geo"/>`;
+  if(!mini)s+=`<line x1="${C}" y1="70" x2="${C}" y2="640" class="b-geo2"/><line x1="${C-285}" y1="414" x2="${C+285}" y2="414" class="b-geo2"/>`;
+  s+=`<circle cx="${C}" cy="102" r="36" fill="#fff"/><path d="${B_BODY}" fill="#fff"/>`;
+  for(const z of['beine','arme','lunge','leber','magen','herz','kopf']){const has=z in rates;
+    s+=`<g class="b-zone ${has?'':'off'} ${sel===z?'sel':''}" ${has&&!mini?`data-bz="${z}"`:''} style="fill:${has?bodyCol(rates[z]):'none'}">${sh[z]}</g>`}
+  s+=`<circle class="b-out" cx="${C}" cy="102" r="36"/><path class="b-out" d="${B_BODY}"/>`;
+  if(labels){let L='';const used=Object.keys(rates).map(z=>({z,...BZ[z],hs:by[z]}));
+    const place=(arr,side)=>{let y=30;arr.sort((a,b)=>a.ay-b.ay).forEach(u=>{const hh=46+u.hs.length*42,ly=Math.max(y,u.ay-hh/2+10);y=ly+hh+12;
+      const tx=side==='l'?190:870,ex=side==='l'?198:862,an=side==='l'?'end':'start';
+      L+=`<g class="b-lbl" data-bz="${u.z}"><polyline points="${u.ax},${u.ay} ${ex},${ly+8}" fill="none" stroke="#b08d3c" stroke-width="1.2"/><circle cx="${u.ax}" cy="${u.ay}" r="4.5" fill="#b08d3c"/>`+
+        `<text class="b-lz" x="${tx}" y="${ly+13}" text-anchor="${an}">${u.name} · ${Math.round(rates[u.z]*100)} %</text>`+
+        `<text class="b-lv" x="${tx}" y="${ly+32}" text-anchor="${an}">${bTrend(rates[u.z],prev[u.z]||0)} zur Vorwoche</text>`;
+      u.hs.forEach((h,k)=>{const x=habitRate(h,bodyDays(today()));L+=`<text class="b-ln" x="${tx}" y="${ly+56+k*42}" text-anchor="${an}">${h.icon} ${esc(h.name)}</text><text class="b-lv" x="${tx}" y="${ly+74+k*42}" text-anchor="${an}">${x.ok} von ${x.goal} ${h.type==='avoid'?'Tagen verzichtet':'erledigt'}</text>`});L+='</g>'})};
+    place(used.filter(u=>BZ_LEFT.includes(u.z)),'l');place(used.filter(u=>!BZ_LEFT.includes(u.z)),'r');s+=`<g class="b-lbls">${L}</g>`}
+  const narrow=matchMedia('(max-width:760px)').matches;
+  return`<svg class="b-svg" viewBox="${mini||narrow?`${C-315} 15 630 640`:'-110 0 1280 670'}" role="img" aria-label="Körperfigur">${s}</svg>`;
+}
+function bodyCard(){
+  if(!S.habits.length)return'';
+  const t=today(),cur=bodyDays(t),prv=bodyDays(addDays(t,-7));
+  const {r,by}=bodyRates(cur),{r:p}=bodyRates(prv);
+  const tot=S.habits.reduce((a,h)=>a+habitRate(h,cur).r,0)/S.habits.length;
+  const fd2=d=>new Date(d+'T12:00').toLocaleDateString('de-DE',{day:'numeric',month:'long'});
+  const sel=bodySel&&by[bodySel]?bodySel:null;
+  let det='';
+  if(sel){const hs=by[sel];
+    det=`<div class="b-detail" id="bDetail"><button class="b-x" data-bclose aria-label="Schließen">×</button><div class="b-kick">${BZ[sel].name} · letzte 7 Tage</div>
+      <div class="b-dh">${Math.round(r[sel]*100)} % eingehalten <span class="b-tr ${r[sel]-(p[sel]||0)>=.05?'up':''}">${bTrend(r[sel],p[sel]||0)} zur Vorwoche</span></div>
+      ${hs.map(h=>{const x=habitRate(h,cur);return`<div class="b-drow"><div class="b-dn">${h.icon} ${esc(h.name)}<small>${x.ok} von ${x.goal} ${h.type==='avoid'?'Tagen verzichtet':'erledigt'}${h.type==='do'&&h.target<7?` · Ziel ${h.target}× pro Woche`:''}</small></div>
+        <div class="b-dots">${cur.map(d=>{const v=S.days[d]?.habits?.[h.id];return`<button class="${v===true?'on':v===false?'no':''}" data-bd="${h.id}|${d}" title="${fd2(d)}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'}).slice(0,2)}</button>`}).join('')}</div></div>`}).join('')}
+      <div class="b-gain"><b>Das gewinnst du:</b> ${BZ[sel].gain}${hs.filter(h=>h.type==='avoid'&&h.cost).map(h=>{const x=habitRate(h,cur);return` „${esc(h.name)}“: diese Woche ${x.ok*h.cost} ${h.unit==='Min.'?'Min. gewonnen':'€ gespart'} – möglich wären ${7*h.cost} ${h.unit==='Min.'?'Min.':'€'}.`}).join('')}</div>
+    </div>`}
+  return`<div class="card b-card" style="margin-bottom:20px">
+    <div class="b-head"><div><h3>🧍 Dein Körper · letzte 7 Tage</h3><div class="b-score"><b>${Math.round(tot*100)} %</b> eingehalten · ${fd2(cur[0])} – ${fd2(t)}</div></div><div class="b-legend">noch offen<i></i>eingehalten</div></div>
+    <div class="b-big">${bodyFigure(r,{labels:true,by,prev:p,sel})}</div>
+    <div class="b-list">${Object.keys(r).map(z=>`<div class="b-item" data-bz="${z}"><i style="background:${bodyCol(r[z])}"></i><div class="b-in">${BZ[z].name}<small>${by[z].map(h=>h.icon+' '+esc(h.name)).join(' · ')}</small></div><b>${Math.round(r[z]*100)} %</b><span class="b-tr ${r[z]-(p[z]||0)>=.05?'up':''}">${bTrend(r[z],p[z]||0)}</span></div>`).join('')}</div>
+    ${det}
+    <p class="b-disc">Tippe auf einen Bereich für Details. Die Farben zeigen, wie gut du deine Gewohnheiten einhältst – keine medizinische Aussage über deinen Körper.</p>
+  </div>`;
+}
+function bindBody(rerender){
+  M.querySelectorAll('[data-bz]').forEach(e=>e.onclick=()=>{bodySel=bodySel===e.dataset.bz?null:e.dataset.bz;rerender();if(bodySel)setTimeout(()=>{const d=document.getElementById('bDetail');if(d)d.scrollIntoView({behavior:'smooth',block:'nearest'})},60)});
+  M.querySelectorAll('[data-bclose]').forEach(e=>e.onclick=()=>{bodySel=null;rerender()});
+  M.querySelectorAll('[data-bd]').forEach(e=>e.onclick=()=>{const [hid,d]=e.dataset.bd.split('|');const h=S.habits.find(x=>x.id===hid);const x=day(d),v=x.habits[hid];
+    if(h.type==='do'){if(v===true)delete x.habits[hid];else x.habits[hid]=true}else{if(v===undefined)x.habits[hid]=true;else if(v===true)x.habits[hid]=false;else delete x.habits[hid]}
+    markDay(d);rerender()});
+}
+function bodyMiniCard(){
+  if(!S.habits.length)return'';
+  const {r}=bodyRates(bodyDays(today()));const zs=Object.keys(r).sort((a,b)=>r[b]-r[a]);if(!zs.length)return'';
+  const tot=S.habits.reduce((a,h)=>a+habitRate(h,bodyDays(today())).r,0)/S.habits.length;
+  return`<div class="card b-mini" style="margin-top:18px"><div class="b-mfig">${bodyFigure(r,{mini:true})}</div><div>
+    <div class="b-kick">Dein Körper · letzte 7 Tage</div><div class="b-mt">${Math.round(tot*100)} % eingehalten</div>
+    <div class="b-ml">Am stärksten: <b>${BZ[zs[0]].name}</b> · ${Math.round(r[zs[0]]*100)} %</div>
+    ${zs.length>1?`<div class="b-ml">Noch offen: <b>${BZ[zs[zs.length-1]].name}</b> · ${Math.round(r[zs[zs.length-1]]*100)} %</div>`:''}
+    <button class="b-link" id="goBody">Zur Körper-Ansicht →</button></div></div>`;
+}
+function monthDaysUpTo(m){const t=today(),last=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();const out=[];for(let i=1;i<=last;i++){const d=m+'-'+String(i).padStart(2,'0');if(d<=t)out.push(d)}return out}
+function bodyCompareHTML(m){
+  if(!S.habits.length)return'';
+  const pm=iso(new Date(+m.slice(0,4),+m.slice(5,7)-2,1)).slice(0,7);
+  const dc=monthDaysUpTo(m),dp=monthDaysUpTo(pm);if(!dc.length)return'';
+  const hasData=ds=>ds.some(d=>S.habits.some(h=>S.days[d]?.habits?.[h.id]!==undefined));
+  const {r:rc}=bodyRates(dc),{r:rp}=bodyRates(dp);
+  const lab=k=>new Date(k+'-15T12:00').toLocaleDateString('de-DE',{month:'long'});
+  const avg=o=>{const v=Object.values(o);return v.length?v.reduce((a,b)=>a+b,0)/v.length:0};
+  const zs=Object.keys(rc),prevOk=hasData(dp);
+  let verdict='';if(prevOk&&zs.length){const best=zs.reduce((a,z)=>rc[z]-rp[z]>rc[a]-rp[a]?z:a,zs[0]),low=zs.reduce((a,z)=>rc[z]<rc[a]?z:a,zs[0]);
+    verdict=`<div class="b-verdict">${rc[best]-rp[best]>=.05?`Größter Schritt nach vorn: ${BZ[best].name}. `:''}Am meisten Luft nach oben: ${BZ[low].name}.</div>`}
+  return`<div class="b-cmp"><div class="b-kick">Dein Körper im Monatsvergleich</div><div class="b-cgrid">
+    <div class="b-cf">${bodyFigure(prevOk?rp:{},{mini:true})}<b>${lab(pm)}</b><span>${prevOk?Math.round(avg(rp)*100)+' % eingehalten':'noch keine Daten'}</span></div>
+    <div class="b-cf">${bodyFigure(rc,{mini:true})}<b>${lab(m)}</b><span>${Math.round(avg(rc)*100)} % eingehalten</span></div>
+    <div class="b-ctab"><table><tr><td></td><td>${lab(pm).slice(0,3)}</td><td>${lab(m).slice(0,3)}</td><td></td></tr>
+      ${zs.map(z=>{const d=Math.round((rc[z]-(rp[z]||0))*100);return`<tr><td>${BZ[z].name}</td><td>${prevOk?Math.round((rp[z]||0)*100)+' %':'–'}</td><td><b>${Math.round(rc[z]*100)} %</b></td><td class="b-tr ${prevOk&&d>=5?'up':''}">${prevOk?(d>=5?'↑ '+d+' %':d<=-5?'↓ '+(-d)+' %':'→'):''}</td></tr>`}).join('')}
+    </table>${verdict}</div></div></div>`;
+}
+
 function viewGew(){
   const wk=weekDays(),t=today();
   const head=`<div></div>${wk.map(d=>`<div class="h" style="${d===t?'color:var(--accent);font-weight:600':''}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'})}<br>${+d.slice(8)}.</div>`).join('')}`;
   const doH=S.habits.filter(h=>h.type==='do'),avH=S.habits.filter(h=>h.type==='avoid');
   M.innerHTML=`
   <div class="section-head"><div><h1>Gewohnheiten</h1><p>Kleine Dinge, regelmäßig. Nicht perfekt – aber dranbleiben.</p></div>${editBtn('gew')}</div>
+  ${bodyCard()}
   <div class="card" style="margin-bottom:20px">
     <h3>✅ Das tue ich – diese Woche</h3><p class="hint">Jede Gewohnheit hat ein Wochenziel (z. B. 3× laufen). Rückwirkend abhaken geht auch.</p>
     <div class="week">${head}<div class="h">Ziel</div>
@@ -1622,6 +1790,7 @@ function viewGew(){
     ${S.habits.map(h=>`<div class="row" style="flex-wrap:wrap"><select data-hicon="${h.id}" style="width:66px">${[...new Set([h.icon,...HICONS])].map(i=>`<option ${i===h.icon?'selected':''}>${i}</option>`).join('')}</select><input type="text" data-hname="${h.id}" value="${esc(h.name)}" style="flex:1;min-width:140px">
       ${h.type==='do'?`<span class="meta">Ziel/Woche</span><select data-tgt="${h.id}" style="width:70px">${[1,2,3,4,5,6,7].map(n=>`<option ${h.target===n?'selected':''}>${n}</option>`).join('')}</select>`
        :`<span class="meta">Kostet</span><input type="number" min="0" data-cost="${h.id}" value="${h.cost||0}" style="width:76px"><select data-unit="${h.id}" style="width:80px"><option ${h.unit==='€'?'selected':''}>€</option><option ${h.unit==='Min.'?'selected':''}>Min.</option></select>`}
+      <span class="meta">Körper</span><select data-hzone="${h.id}" style="width:auto">${Object.entries(BZ).map(([k,z])=>`<option value="${k}" ${zoneOf(h)===k?'selected':''}>${z.name}</option>`).join('')}</select>
       <span class="tag">${h.type==='avoid'?'Verzichten':'Tun'}</span><button class="x" data-hdel="${h.id}">×</button></div>`).join('')}
     <div class="row" style="margin-top:14px;flex-wrap:wrap">
       <select id="hT" style="width:130px"><option value="do">Tun</option><option value="avoid">Verzichten</option></select>
@@ -1639,8 +1808,10 @@ function viewGew(){
   bind('[data-cost]',el=>{S.habits.find(h=>h.id===el.dataset.cost).cost=Math.max(0,+el.value||0);markMeta()});
   bind('[data-unit]',el=>{S.habits.find(h=>h.id===el.dataset.unit).unit=el.value;markMeta()},'change');
   bind('[data-hdel]',el=>{S.habits=S.habits.filter(x=>x.id!==el.dataset.hdel);markMeta();viewGew()},'click');
+  bind('[data-hzone]',el=>{S.habits.find(h=>h.id===el.dataset.hzone).zone=el.value;markMeta();viewGew()},'change');
+  bindBody(viewGew);
   if(editing.gew)M.querySelector('#hAdd').onclick=()=>{const n=M.querySelector('#hN').value.trim();if(!n)return;const type=M.querySelector('#hT').value;
-    S.habits.push(Object.assign({id:uid(),name:n,icon:M.querySelector('#hI').value,type},type==='do'?{target:7}:{cost:0,unit:'€'}));markMeta();viewGew()};
+    S.habits.push(Object.assign({id:uid(),name:n,icon:M.querySelector('#hI').value,type,zone:guessZone(n)},type==='do'?{target:7}:{cost:0,unit:'€'}));markMeta();viewGew()};
 }
 
 /* =========================================================
@@ -1744,6 +1915,7 @@ function monthCheckCard(){
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h3>🗓️ Monats-Check · ${label}</h3>
       <select id="mcSel" style="width:auto">${[...new Set([m,...Object.keys(S.monthly||{}),today().slice(0,7)])].sort().reverse().map(k=>`<option value="${k}" ${k===m?'selected':''}>${new Date(k+'-15T12:00').toLocaleDateString('de-DE',{month:'long',year:'numeric'})}</option>`).join('')}</select></div>
     <p class="hint">5 Minuten am Monatsende: Was hast du erreicht, wie ging es dir – und was nimmst du mit?</p>
+    ${bodyCompareHTML(m)}
     <label class="l">Erfolge des Monats – auf diese Meilensteine bin ich stolz:</label>
     ${x.wins.map((w,i)=>`<div class="row"><span class="num">${i+1}</span><input type="text" class="mc-win" data-i="${i}" value="${esc(w)}" placeholder="Meilenstein ${i+1}"></div>`).join('')}
     ${MC_GROUPS.map(([g,items])=>{const a=mcAvg(x,items.map(i=>i[0]));return `<div class="mc-group"><div class="mc-gh">${g}${g!=='Lebensbereiche'&&a?` <b>Ø ${String(a).replace('.',',')}</b>`:''}</div>
