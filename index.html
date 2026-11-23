@@ -1223,7 +1223,7 @@ icons.settings='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 icons.weg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21c0-4 4-5 6-7s1-5-2-6 0-5 4-5"/><circle cx="6" cy="21" r=".6"/><path d="M17 3l2 1-2 1"/></svg>';
 icons.ideal='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 const pages=[['tag','Mein Tag'],['ziele','Meine Ziele'],['gew','Gewohnheiten'],['ideal','Mein idealer Tag'],['report','Reports'],['weg','Dein Weg'],['settings','Einstellungen']];
-let page='tag';try{if(location.hash&&location.hash!=='#tag')history.replaceState(null,'',location.pathname+location.search+'#tag')}catch(e){}
+let page='tag';try{const h=location.hash.slice(1),nav=(performance.getEntriesByType('navigation')[0]||{}).type;if(h&&pages.some(x=>x[0]===h)&&(nav==='reload'||nav==='back_forward'))page=h;else if(location.hash&&location.hash!=='#tag')history.replaceState(null,'',location.pathname+location.search+'#tag')}catch(e){}
 const MOB_OPT=[['ziele','Meine Ziele'],['gew','Gewohnheiten'],['ideal','Mein idealer Tag'],['report','Reports'],['weg','Dein Weg']];
 const MENU_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
 function mobSet(){const m=Array.isArray(S.settings.mobNav)?S.settings.mobNav:['ziele','gew'];return['tag',...m.filter(k=>MOB_OPT.some(o=>o[0]===k)).slice(0,3)]}
