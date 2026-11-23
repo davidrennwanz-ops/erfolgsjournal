@@ -517,9 +517,29 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .daynav button{all:unset;cursor:pointer;min-width:34px;height:34px;padding:0 10px;box-sizing:border-box;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:18px;line-height:32px;text-align:center;text-shadow:none}
 .daynav button.dn-today{font-size:13px;font-weight:600;color:var(--accent);border-color:var(--accent)}
 .daynav button[disabled]{opacity:.35;cursor:default}
+/* Monatsübersicht Gewohnheiten */
+.mnav{display:flex;align-items:center;gap:10px;font-weight:600}
+.mnav button{all:unset;cursor:pointer;width:32px;height:32px;border:1px solid var(--line);border-radius:8px;text-align:center;line-height:30px;font-size:18px;background:var(--panel)}
+.mnav button[disabled]{opacity:.35;cursor:default}
+.mlegend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:8px 0 12px}.mlegend span{display:flex;align-items:center;gap:6px}
+.mlegend .mc{width:12px;height:12px}
+.mrow{display:flex;align-items:center;gap:12px;padding:5px 0}
+.mrow+.mrow{border-top:1px solid var(--line)}
+.mhead{border-top:0!important;padding-bottom:0}
+.mname{width:170px;flex:none;font-size:14px;line-height:1.3}
+.mcells{flex:1;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:3px}
+.mc,.mh{all:unset;box-sizing:border-box;display:block;aspect-ratio:1;max-width:22px;width:100%;border-radius:4px;border:1px solid #ddd4c3;background:#fff}
+button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
+.mc.ok{background:#2f7d4f;border-color:#2f7d4f}.mc.slip{background:#efe3cf;border-color:#d9c3a0}
+.mc.na{background:transparent;border:1px dashed #e3dccd}.mc.fut{background:transparent;border-color:#efe9dd}
+.mh.we{color:#b4ab99}
+.mh{border:0;background:none;aspect-ratio:auto;font-size:10.5px;color:var(--muted);text-align:center;cursor:pointer}
+.mh.td{color:var(--accent);font-weight:700}.mh[disabled]{cursor:default}
+.mq{width:54px;flex:none;text-align:right;font-size:13.5px;color:var(--muted)}.mq.hit{color:#2f7d4f;font-weight:600}
+@media(max-width:760px){.mrow{flex-wrap:wrap;gap:4px 8px}.mname{width:100%}.mhead .mname{display:none}.mcells{gap:2px}.mq{width:44px}}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
-.b-line{fill:none;stroke:#c29a2e;stroke-width:1.4}.b-line.on{stroke-width:2.6}
+.b-line{fill:none;stroke:#c29a2e;stroke-width:1.3;stroke-linejoin:round}.b-line.on{stroke-width:2.6}
 .b-dot{fill:#c29a2e;stroke:#fff;stroke-width:1.5}
 .b-lbl{cursor:pointer}.b-lbl.on .b-ln{fill:#9a7420;font-weight:600}
 .b-pin{width:9px;height:9px;border-radius:50%;background:#c29a2e;flex:none}
@@ -1725,24 +1745,34 @@ function bodyFigure(rate,{items=null,mini=false,sel=null}={}){
   s+=`<ellipse class="b-out" cx="${C}" cy="74" rx="27" ry="36"/><path class="b-out" d="${B_BODY}"/>`;
   s+=`<g class="b-anat"><path d="M${C-3},214 q-26,10 -50,-14 M${C+3},214 q26,10 50,-11"/><path d="M${C},220 V302"/><path d="M${C-4},238 q-11,2 -20,-1 M${C+4},238 q11,2 20,-1 M${C-4},258 q-11,2 -20,-1 M${C+4},258 q11,2 20,-1 M${C-4},278 q-10,2 -18,-1 M${C+4},278 q10,2 18,-1"/><path d="M${C-26},224 q-6,40 -2,78 M${C+26},226 q6,40 2,78"/><path d="M${C-42},304 q12,24 34,40 M${C+42},306 q-12,24 -34,40"/></g>`;
   if(items&&items.length){
-    // Seiten verteilen: feste Seite je Bereich, "Ganzer Körper" auf die leerere Seite
-    const L=[],R=[];items.forEach(it=>{const z=BZ[zoneOf(it.h)];(z.side==='l'?L:z.side==='r'?R:null)?.push(it)});
-    items.filter(it=>BZ[zoneOf(it.h)].side==='x').forEach(it=>(L.length<=R.length?L:R).push(it));
-    let lines='',dots='',txt='';const seen={};
-    const place=(arr,side)=>{const step=62,ay=it=>BZ[zoneOf(it.h)].ay;arr.sort((a,b)=>ay(a)-ay(b));
-      const total=arr.length*step;let y=Math.max(40,Math.min(300-total/2+20,640-total));
-      arr.forEach(it=>{const z=BZ[zoneOf(it.h)],ly=y;y+=step;
-        const tx=side==='l'?C-150:C+150,ex=side==='l'?C-142:C+142,an=side==='l'?'end':'start',on=sel===it.h.id;
-        lines+=`<polyline points="${z.ax},${z.ay} ${ex},${ly+6}" class="b-line ${on?'on':''}"/>`;
-        if(!seen[zoneOf(it.h)]){seen[zoneOf(it.h)]=1;const hot=items.some(o=>o.h.id===sel&&zoneOf(o.h)===zoneOf(it.h));dots+=`<circle cx="${z.ax}" cy="${z.ay}" r="${hot?9:5.5}" class="b-dot"/>`}
-        txt+=`<g class="b-lbl ${on?'on':''}" data-bh="${it.h.id}"><rect x="${side==='l'?tx-270:tx-6}" y="${ly-14}" width="276" height="54" fill="transparent"/>`+
+    // Ausgewogen links/rechts verteilen (nach Körperhöhe sortiert), jede Gewohnheit mit eigenem Punkt
+    const base=it=>BZ[zoneOf(it.h)].ay;
+    const sorted=[...items].sort((a,b)=>base(a)-base(b)||a.h.name.localeCompare(b.h.name));
+    const L=[],Rr=[];sorted.forEach((it,i)=>{(L.length<Rr.length?L:Rr.length<L.length?Rr:(i%2?L:Rr)).push(it)});
+    const cnt={};
+    const anchor=(it,side)=>{const z=zoneOf(it.h),sg=side==='l'?-1:1,k=(cnt[z+side]=(cnt[z+side]||0)+1)-1;
+      if(z==='kopf')return[C+sg*(8+k*7),62+k*14];
+      if(z==='koerper')return[C+sg*(14+k*6),196+k*22];
+      if(z==='arme')return[C+sg*82,226+k*26];
+      return[C+sg*32,410+k*34]};
+    let lines='',dots='',txt='';
+    const place=(arr,side)=>{const step=78,an=side==='l'?'end':'start',sg=side==='l'?-1:1;
+      const pts=arr.map(it=>({it,a:anchor(it,side)}));pts.sort((x,y)=>x.a[1]-y.a[1]);
+      // Wunschhöhe = Höhe des Punkts, dann Überlappungen auflösen
+      let y=-1e9;pts.forEach(p=>{p.ly=Math.max(p.a[1]-12,y+step);y=p.ly});
+      const over=y-600;if(over>0)pts.forEach(p=>p.ly-=over);
+      let top=40;pts.forEach(p=>{if(p.ly<top)p.ly=top;top=p.ly+step});
+      pts.forEach(({it,a,ly})=>{const on=sel===it.h.id,tx=C+sg*170,ex=C+sg*160,kx=C+sg*118;
+        lines+=`<polyline points="${a[0]},${a[1]} ${kx},${a[1]} ${ex},${ly+6}" class="b-line ${on?'on':''}"/>`;
+        dots+=`<circle cx="${a[0]}" cy="${a[1]}" r="${on?8:5}" class="b-dot"/>`;
+        txt+=`<g class="b-lbl ${on?'on':''}" data-bh="${it.h.id}"><rect x="${side==='l'?tx-280:tx-6}" y="${ly-16}" width="286" height="60" fill="transparent"/>`+
           `<text class="b-ln" x="${tx}" y="${ly+10}" text-anchor="${an}">${it.h.icon} ${esc(it.h.name)}</text>`+
-          `<text class="b-lv" x="${tx}" y="${ly+30}" text-anchor="${an}">${it.ok} von ${it.goal} ${it.h.type==='avoid'?'Tagen verzichtet':'erledigt'} · ${bTrend(it.r,it.prev)}</text></g>`})};
-    place(L,'l');place(R,'r');
+          `<text class="b-lv" x="${tx}" y="${ly+31}" text-anchor="${an}">${it.ok} von ${it.goal} ${it.h.type==='avoid'?'Tagen verzichtet':'erledigt'} · ${bTrend(it.r,it.prev)}</text></g>`})};
+    place(L,'l');place(Rr,'r');
     s+=mini?dots:`<g class="b-lbls">${lines}${txt}</g>${dots}`;
   }
   const narrow=matchMedia('(max-width:760px)').matches;
-  return`<svg class="b-svg" viewBox="${mini||narrow?`${C-125} 28 250 632`:`${C-430} 28 860 632`}" role="img" aria-label="Körperfigur">${s}</svg>`;
+  return`<svg class="b-svg" viewBox="${mini||narrow?`${C-125} 28 250 632`:`${C-470} 20 940 660`}" role="img" aria-label="Körperfigur">${s}</svg>`;
 }
 function bodyItems(cur,prv){return S.habits.map(h=>{const x=habitRate(h,cur);return{h,ok:x.ok,goal:x.goal,r:x.r,na:x.na,prev:habitRate(h,prv).r}}).filter(i=>!i.na)}
 function bodyCard(){
@@ -1830,12 +1860,35 @@ function viewGew(){
       ${S.habits.map(h=>`<button class="h-name" data-hedit="${h.id}" title="Bearbeiten">${h.icon} ${esc(h.name)}<small>${freqLabel(h)}${h.type==='avoid'?' · <span class="h-av">Verzicht</span>':''}</small></button>`+wk.map(d=>cell(h,d)).join('')+stat(h)).join('')}
     </div>`:'<p class="empty">Noch keine Gewohnheiten. Leg deine erste an.</p>'}
     <p class="hint" style="margin:12px 0 0">Tippe auf den Namen einer Gewohnheit, um sie zu bearbeiten.</p>
-  </div>`;
+  </div>
+  ${habMonthCard()}`;
   bind('[data-hd]',el=>{const [h,d]=el.dataset.hd.split('|');if(el.checked)day(d).habits[h]=true;else delete day(d).habits[h];markDay(d);viewGew()},'change');
   bind('[data-ad]',el=>{const [h,d]=el.dataset.ad.split('|');const x=day(d),v=x.habits[h];if(v===undefined)x.habits[h]=true;else if(v===true)x.habits[h]=false;else delete x.habits[h];markDay(d);viewGew()},'click');
   bind('[data-hedit]',el=>habitModal(S.habits.find(h=>h.id===el.dataset.hedit)),'click');
   bind('#hNew',()=>habitModal(null),'click');
   bindBody(viewGew);
+  bind('[data-mnav]',el=>{const m=gewMonth||today().slice(0,7),d=new Date(+m.slice(0,4),+m.slice(5,7)-1+(+el.dataset.mnav),1);const nm=iso(d).slice(0,7);gewMonth=nm===today().slice(0,7)?null:nm;viewGew()},'click');
+  bind('[data-mday]',el=>{const d=el.dataset.mday;page='tag';location.hash='tag';tagDate=d===realToday()?null:d;render();window.scrollTo(0,0)},'click');
+}
+let gewMonth=null;
+function habMonthCard(){
+  if(!S.habits.length)return'';
+  const m=gewMonth||today().slice(0,7),t=today(),y=+m.slice(0,4),mo=+m.slice(5,7),n=new Date(y,mo,0).getDate();
+  const ds=[...Array(n)].map((_,i)=>m+'-'+String(i+1).padStart(2,'0'));
+  const label=new Date(y,mo-1,15).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
+  const isCur=m===t.slice(0,7);
+  const head=`<div class="mrow mhead"><div class="mname"></div><div class="mcells" style="--n:${n}">${ds.map(d=>{const we=wdIdx(d)>=5,dd=+d.slice(8);return`<button class="mh ${we?'we':''} ${d===t?'td':''}" data-mday="${d}" ${d>t?'disabled':''} title="${fmtDate(d)}">${dd===1||dd%5===0||d===t?dd:''}</button>`}).join('')}</div><div class="mq"></div></div>`;
+  const rows=S.habits.map(h=>{const past=ds.filter(d=>d<=t),x=habitRate(h,past);
+    const cells=ds.map(d=>{const we=wdIdx(d)>=5;if(d>t)return`<span class="mc fut ${we?'we':''}"></span>`;
+      if(!hStarted(h,d)||(hFreq(h)==='days'&&!isDue(h,d)))return`<span class="mc na ${we?'we':''}"></span>`;
+      const v=S.days[d]?.habits?.[h.id];return`<button class="mc ${v===true?'ok':v===false?'slip':''} ${we?'we':''}" data-mday="${d}" title="${fmtDate(d)}"></button>`}).join('');
+    return`<div class="mrow"><div class="mname">${h.icon} ${esc(h.name)}</div><div class="mcells" style="--n:${n}">${cells}</div><div class="mq ${!x.na&&x.r>=.8?'hit':''}">${x.na?'–':x.ok+'/'+x.goal}</div></div>`}).join('');
+  return`<div class="card hmonth" style="margin-bottom:20px">
+    <div class="h-top"><h3>Monatsübersicht</h3><div class="mnav"><button data-mnav="-1" aria-label="Vorheriger Monat">‹</button><span>${label}</span><button data-mnav="1" aria-label="Nächster Monat" ${isCur?'disabled':''}>›</button></div></div>
+    <div class="mlegend"><span><i class="mc ok"></i>geschafft</span><span><i class="mc slip"></i>Ausrutscher</span><span><i class="mc"></i>offen</span><span><i class="mc na"></i>nicht geplant</span></div>
+    ${head}${rows}
+    <p class="hint" style="margin:10px 0 0">Tippe auf einen Tag, um ihn auf Mein Tag im Rückblick zu öffnen.</p>
+  </div>`;
 }
 function habitModal(h){
   const isNew=!h;const x=h?JSON.parse(JSON.stringify(h)):{id:uid(),name:'',icon:'✨',type:'do',freq:'daily',days:[0,1,2,3,4],target:3,start:today(),cost:0,unit:'€'};
