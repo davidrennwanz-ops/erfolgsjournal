@@ -537,6 +537,7 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .mh.td{color:var(--accent);font-weight:700}.mh[disabled]{cursor:default}
 .mq{width:54px;flex:none;text-align:right;font-size:13.5px;color:var(--muted)}.mq.hit{color:#2f7d4f;font-weight:600}
 @media(max-width:760px){.mrow{flex-wrap:wrap;gap:4px 8px}.mname{width:100%}.mhead .mname{display:none}.mcells{gap:2px}.mq{width:44px}}
+.b-pct{font-family:Newsreader,serif;font-size:52px;font-weight:600;fill:#b08d3c;stroke:#fffdf8;stroke-width:5px;paint-order:stroke;stroke-linejoin:round}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.3;stroke-linejoin:round}.b-line.on{stroke-width:2.6}
@@ -1387,7 +1388,7 @@ function viewTag(){
   const TL=[
     {id:'focus',wide:1,icon:'☀️',title:'Tagesfokus',q:'Das Wichtigste heute – ist das geschafft, war der Tag ein Erfolg.',
      filled:!!d.goal.trim(),stage:!d.goal.trim()?0:d.goalDone?2:1,two:1},
-    {id:'tasks',wide:1,icon:'🎯',title:'Diese 2 Aufgaben bringen mich meinen Zielen heute am nächsten',q:'Nur das, was wirklich zählt. Alles andere steht in TickTick.',
+    {id:'tasks',wide:1,icon:'🎯',title:'Diese 2 Schritte bringen mich heute meinem Ziel näher',q:'Nur das, was wirklich zählt. Alles andere steht in TickTick.',
      filled:filledTasks.length>0,stage:!filledTasks.length?0:filledTasks.every(t=>t.done)?2:1,two:1},
     {id:'grat',icon:'🙏',title:'Dafür bin ich dankbar',q:gq,filled:gratFilled.length>0,stage:gratFilled.length?2:0},
     {id:'joy',icon:'🌅',title:'Darauf freue ich mich heute',q:'Eine Sache – groß oder klein.',filled:!!d.joy.trim(),stage:d.joy.trim()?2:0},
@@ -1738,7 +1739,7 @@ const B_BODY=(()=>{const p=B_PTS;
   d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]},${p2[1]}`}return d})();
 let bodySel=null;
 /* Figur: rate = Gesamtwert (0–1) für die Färbung; items = [{h, ok, goal, r, prev}] für Beschriftungen */
-function bodyFigure(rate,{items=null,mini=false,sel=null}={}){
+function bodyFigure(rate,{items=null,mini=false,sel=null,pct=false}={}){
   const C=BCX,fill=bodyCol(rate);
   let s=``;
     s+=`<g class="b-fill" style="fill:${fill}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
@@ -1771,6 +1772,7 @@ function bodyFigure(rate,{items=null,mini=false,sel=null}={}){
     place(L,'l');place(Rr,'r');
     s+=mini?dots:`<g class="b-lbls">${lines}${txt}</g>${dots}`;
   }
+  if(pct)s+=`<text x="${C}" y="318" class="b-pct" text-anchor="middle">${Math.round(rate*100)} %</text>`;
   const narrow=matchMedia('(max-width:760px)').matches;
   return`<svg class="b-svg" viewBox="${mini||narrow?`${C-125} 28 250 632`:`${C-470} 20 940 660`}" role="img" aria-label="Körperfigur">${s}</svg>`;
 }
@@ -1821,7 +1823,7 @@ function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forE
     else{const c=wk.filter(d=>d<t&&S.days[d]?.habits?.[h.id]===true).length;if(v===true||c>=h.target)items.push({h,r:1,done:true})}});
   return{items,rate:items.length?items.reduce((a,i)=>a+i.r,0)/items.length:0}}
 function bodyHabTile(inner){const {items,rate}=bodyToday();const n=items.filter(i=>i.done).length;
-  return`<div class="tile wide b-habtile"><div class="b-hf">${bodyFigure(rate,{mini:true,items})}<div class="b-hcap"><b>Heute ${n} von ${items.length}</b> Gewohnheiten</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
+  return`<div class="tile wide b-habtile"><div class="b-hf">${bodyFigure(rate,{mini:true,pct:true})}<div class="b-hcap"><b>Heute ${n} von ${items.length}</b> Gewohnheiten</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
 function monthDaysUpTo(m){const t=today(),last=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();const out=[];for(let i=1;i<=last;i++){const d=m+'-'+String(i).padStart(2,'0');if(d<=t)out.push(d)}return out}
 function bodyCompareHTML(m){
   if(!S.habits.length)return'';
