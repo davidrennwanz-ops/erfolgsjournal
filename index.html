@@ -1746,10 +1746,10 @@ let bodySel=null,bodyLvN=0,bodyLastLvl=null;
 function bodyFigure(rate,{items=null,mini=false,sel=null,pct=false,level=false,from=null}={}){
   const C=BCX,fill=bodyCol(rate);
   let s=``;
-  if(level){const lv=y=>Math.round(652-y*(652-36)),id='blv'+(++bodyLvN),full=rate>=.999;
+  if(level){const lv=y=>y>=.999?-90:y<=0?700:Math.round(652-y*(652-36))-24,id='blv'+(++bodyLvN),full=rate>=.999;
     s+=`<g class="b-fill" style="fill:#fff"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
-    s+=`<clipPath id="${id}"><rect class="b-lvl" x="${C-140}" y="${lv(from==null?rate:from)}" data-to="${lv(rate)}" width="280" height="700"/></clipPath>`;
-    s+=`<g class="b-fill" clip-path="url(#${id})" style="fill:${full?'#2f7d4f':'#5a9f73'}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
+    s+=`<linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".065" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="${id}" maskUnits="userSpaceOnUse" x="${C-150}" y="-100" width="300" height="900"><rect class="b-lvl" x="${C-140}" y="${lv(from==null?rate:from)}" data-to="${lv(rate)}" width="280" height="760" fill="url(#${id}g)"/></mask>`;
+    s+=`<g class="b-fill" mask="url(#${id})" style="fill:${full?'#2f7d4f':'#5a9f73'}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
     s+=`<ellipse class="b-out ${full?'gold':''}" cx="${C}" cy="74" rx="27" ry="36"/><path class="b-out ${full?'gold':''}" d="${B_BODY}"/>`;
   }else{
     s+=`<g class="b-fill" style="fill:${fill}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
