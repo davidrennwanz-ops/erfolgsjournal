@@ -151,8 +151,8 @@ body.t-verbindlich .mission .label{color:var(--accent);font-weight:600;letter-sp
 @media(max-width:700px){.mission .goal-line{font-size:21px!important}}
 .mission .m-hl{margin:18px 0 0;padding:4px 0 4px 16px;border-left:2px solid var(--accent)}
 .mission .m-hl small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:5px}
-.mission .m-hl>div{font-family:Newsreader,serif;font-style:italic;font-size:21px;line-height:1.35}
-.mission .m-hl ul{margin:0;padding-left:18px;font-family:Newsreader,serif;font-style:italic;font-size:18px;line-height:1.5}
+.mission .m-hl>div{font-family:Newsreader,serif;font-style:normal;font-size:21px;line-height:1.4}
+.mission .m-hl ul{margin:0;padding-left:18px;font-family:Newsreader,serif;font-style:normal;font-size:18px;line-height:1.5}
 body.t-verbindlich .mission .m-hl>div,body.t-verbindlich .mission .m-hl ul{color:#fff}
 @media(max-width:700px){.mission .m-hl>div{font-size:19px}.mission .m-hl ul{font-size:17px}}
 .countdown{display:inline-block;background:var(--accent);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;margin-bottom:10px}
@@ -1431,7 +1431,7 @@ function viewTag(){
       <span class="label">Mein Masterziel</span>
       <div class="goal-line">${esc(main.title)}</div>
       ${main.start&&main.deadline?`<div class="tbar"><i style="width:${timePct(main)}%"></i></div><div class="tstat">${timeStatus(main)}</div>`:''}
-      ${main.why?`<div class="m-hl"><small>Mein Warum</small><div>${esc(main.why)}</div></div>`:''}
+      ${main.why?`<div class="m-hl"><small>Mein Warum</small><div>„${esc(main.why.trim().replace(/^[„"“]+|[“"”]+$/g,''))}“</div></div>`:''}
       ${visionLines(main).length?`<div class="m-hl"><small>Das gewinne ich, wenn ich dranbleibe</small><ul>${visionLines(main).map(v=>`<li>${esc(v)}</li>`).join('')}</ul></div>`:''}
     </div>`:'';
   const taskCardV=taskCard.replace('%%VERDICT%%',`<p class="verdict ${vcls}" style="margin:6px 0 14px;font-size:14px">${verdict}</p>`);
