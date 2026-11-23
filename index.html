@@ -540,6 +540,8 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .b-lvl{transition:y .7s cubic-bezier(.3,.7,.3,1)}
 .b-out.gold{stroke:#8a6a1f;stroke-width:2.2}
 .b-won{color:#9a7420;font-family:Newsreader,serif;font-size:17px;font-weight:600}
+.wk-row{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}.wk-lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
+.pill.warn{border-color:#c9a03e;background:#fbf3df;color:#7a5c17}
 .b-pct{font-family:Newsreader,serif;font-size:34px;font-weight:600;fill:#9a7420}.b-pbg{fill:#fffdf8;stroke:#d8c38f;stroke-width:1.5}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
@@ -1414,7 +1416,9 @@ function viewTag(){
       :relaxFilled.map(r=>`<div class="logged"><input type="checkbox" class="chk" data-ck="relax:${r.i}" ${r.done?'checked':''}><span class="${r.done?'struck':''}">${esc(r.t)}</span></div>`).join('');
     if(t.id==='hab')return `<div class="pills">${dueH.map(h=>{const v=d.habits[h.id];
       if(h.type==='avoid')return `<button class="pill ${v===true?'done':v===false?'slip':''}" data-a="${h.id}">${h.icon} ${esc(h.name)}${v===true?' ✓':v===false?' ✗':''}</button>`;
-      const c=weekCount(h);return `<button class="pill ${v===true?'done':''}" data-h="${h.id}">${h.icon} ${esc(h.name)}${hFreq(h)==='weekly'?` <span style="opacity:.7;font-size:12px">${c}/${h.target}</span>`:''}</button>`}).join('')||'<span class="empty">Heute steht keine Gewohnheit an.</span>'}</div>`;
+      const c=weekCount(h);return `<button class="pill ${v===true?'done':''}" data-h="${h.id}">${h.icon} ${esc(h.name)}${hFreq(h)==='weekly'?` <span style="opacity:.7;font-size:12px">${c}/${h.target}</span>`:''}</button>`}).join('')||'<span class="empty">Heute steht keine Gewohnheit an.</span>'}</div>${(()=>{const wkH=S.habits.filter(h=>hFreq(h)==='weekly'&&hStarted(h,today()));if(!wkH.length)return'';const left=7-wdIdx(today());
+      return `<div class="wk-row"><div class="wk-lab">Diese Woche</div><div class="pills">${wkH.map(h=>{const v=d.habits[h.id],c=weekCount(h),need=h.target-c,met=need<=0,warn=!met&&need>=left-1;
+        return `<button class="pill ${v===true?'done':''} ${warn&&v!==true?'warn':''}" data-h="${h.id}" title="${met?'Wochenziel erreicht':warn?'Wird knapp – noch '+left+' Tag'+(left>1?'e':'')+' in dieser Woche':'Wochenziel'}">${h.icon} ${esc(h.name)} <span style="opacity:.75;font-size:12px">${c}/${h.target}${met?' ✓':''}</span></button>`}).join('')}</div></div>`})()}`;
   }
   const tileHTML=t=>{const st=t.stage,edit=!t.pills&&(!t.filled||isEd(t.id));
     const badge=st===1?'Eingetragen – noch offen':st===2?(t.two?'✓ Geschafft':t.pills?'✓ Alles erledigt':'✓ Eingetragen'):t.count?t.count:'';
