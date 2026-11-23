@@ -537,7 +537,7 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .mh.td{color:var(--accent);font-weight:700}.mh[disabled]{cursor:default}
 .mq{width:54px;flex:none;text-align:right;font-size:13.5px;color:var(--muted)}.mq.hit{color:#2f7d4f;font-weight:600}
 @media(max-width:760px){.mrow{flex-wrap:wrap;gap:4px 8px}.mname{width:100%}.mhead .mname{display:none}.mcells{gap:2px}.mq{width:44px}}
-.b-pct{font-family:Newsreader,serif;font-size:52px;font-weight:600;fill:#b08d3c;stroke:#fffdf8;stroke-width:5px;paint-order:stroke;stroke-linejoin:round}
+.b-pct{font-family:Newsreader,serif;font-size:34px;font-weight:600;fill:#9a7420}.b-pbg{fill:#fffdf8;stroke:#d8c38f;stroke-width:1.5}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.3;stroke-linejoin:round}.b-line.on{stroke-width:2.6}
@@ -1772,7 +1772,7 @@ function bodyFigure(rate,{items=null,mini=false,sel=null,pct=false}={}){
     place(L,'l');place(Rr,'r');
     s+=mini?dots:`<g class="b-lbls">${lines}${txt}</g>${dots}`;
   }
-  if(pct)s+=`<text x="${C}" y="318" class="b-pct" text-anchor="middle">${Math.round(rate*100)} %</text>`;
+  if(pct)s+=`<rect x="${C-50}" y="184" width="100" height="46" rx="23" class="b-pbg"/><text x="${C}" y="218" class="b-pct" text-anchor="middle">${Math.round(rate*100)} %</text>`;
   const narrow=matchMedia('(max-width:760px)').matches;
   return`<svg class="b-svg" viewBox="${mini||narrow?`${C-125} 28 250 632`:`${C-470} 20 940 660`}" role="img" aria-label="Körperfigur">${s}</svg>`;
 }
