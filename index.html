@@ -1397,7 +1397,7 @@ function viewTag(){
      filled:filledTasks.length>0,stage:!filledTasks.length?0:filledTasks.every(t=>t.done)?2:1,two:1},
     {id:'grat',icon:'🙏',title:'Dafür bin ich dankbar',q:gq,filled:gratFilled.length>0,stage:gratFilled.length?2:0},
     {id:'joy',icon:'🌅',title:'Darauf freue ich mich heute',q:'Eine Sache – groß oder klein.',filled:!!d.joy.trim(),stage:d.joy.trim()?2:0},
-    {id:'hab',icon:'✅',title:'Meine Gewohnheiten heute',q:'Antippen, wenn erledigt. Bei Verzicht: 2× tippen = Ausrutscher.',pills:1,stage:habAll?2:0,count:`${habDone}/${dueH.length}`},
+    {id:'hab',icon:'✅',title:'Meine Gewohnheiten',q:'Antippen, wenn erledigt. Bei Verzicht: 2× tippen = Ausrutscher.',pills:1,stage:habAll?2:0,count:`${habDone}/${dueH.length}`},
     {id:'relax',icon:'🌿',title:'Bewusst entspannen',q:'Geplante Erholung statt Handy aus Langeweile.',filled:relaxFilled.length>0,stage:relaxFilled.length?2:0}
   ];
   const goalSel=(i,sel)=>`<select data-k="taskgoal:${i}" class="t-goal"><option value="">– Ziel –</option>${S.goals.map(g=>`<option value="${g.id}" ${sel===g.id?'selected':''}>🎯 ${esc(g.title)}</option>`).join('')}</select>`;
@@ -1414,7 +1414,7 @@ function viewTag(){
     if(t.id==='joy')return edit?`<input type="text" data-k="joy" value="${esc(d.joy)}" placeholder="z. B. Abendessen mit der Familie">${saveBtn('joy')}`:`<div class="logged">${esc(d.joy)}</div>`;
     if(t.id==='relax')return edit?d.relax.map((r,i)=>`<input type="text" data-k="relax:${i}" value="${esc(r.t)}" placeholder="${i?'z. B. 20 Min. lesen auf dem Sofa':'z. B. Spaziergang ohne Handy'}">`).join('')+saveBtn('relax')
       :relaxFilled.map(r=>`<div class="logged"><input type="checkbox" class="chk" data-ck="relax:${r.i}" ${r.done?'checked':''}><span class="${r.done?'struck':''}">${esc(r.t)}</span></div>`).join('');
-    if(t.id==='hab')return `<div class="pills">${dueH.map(h=>{const v=d.habits[h.id];
+    if(t.id==='hab')return `<div class="wk-lab">Heute</div><div class="pills">${dueH.map(h=>{const v=d.habits[h.id];
       if(h.type==='avoid')return `<button class="pill ${v===true?'done':v===false?'slip':''}" data-a="${h.id}">${h.icon} ${esc(h.name)}${v===true?' ✓':v===false?' ✗':''}</button>`;
       const c=weekCount(h);return `<button class="pill ${v===true?'done':''}" data-h="${h.id}">${h.icon} ${esc(h.name)}${hFreq(h)==='weekly'?` <span style="opacity:.7;font-size:12px">${c}/${h.target}</span>`:''}</button>`}).join('')||'<span class="empty">Heute steht keine Gewohnheit an.</span>'}</div>${(()=>{const wkH=S.habits.filter(h=>hFreq(h)==='weekly'&&hStarted(h,today()));if(!wkH.length)return'';const left=7-wdIdx(today());
       return `<div class="wk-row"><div class="wk-lab">Diese Woche</div><div class="pills">${wkH.map(h=>{const v=d.habits[h.id],c=weekCount(h),need=h.target-c,met=need<=0,warn=!met&&need>=left-1;
