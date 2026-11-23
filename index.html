@@ -2364,8 +2364,9 @@ function viewReport(){
    Einstellungen
    ========================================================= */
 let setSec='allg';
-function notifCfg(){const d={email:window.USER_MAIL||'',morning:{on:false,time:'07:00',mail:true,push:false,items:['goal','review','plan']},evening:{on:false,time:'20:30',mail:false,push:true,items:['reflect','habits']}};
-  const n=S.settings.notify||{};return{email:n.email!=null?n.email:d.email,morning:Object.assign({},d.morning,n.morning||{}),evening:Object.assign({},d.evening,n.evening||{})}}
+function notifCfg(){const d={email:window.USER_MAIL||'',morning:{on:false,time:'06:00',mail:false,push:true,items:['goal','review','plan']},evening:{on:false,time:'19:00',mail:false,push:true,items:['reflect','habits']}};
+  const n=S.settings.notify||{};const ch={mail:false,push:true}; // vorerst nur Push
+  return{email:n.email!=null?n.email:d.email,morning:Object.assign({},d.morning,n.morning||{},ch),evening:Object.assign({},d.evening,n.evening||{},ch)}}
 function viewSettings(){
   const L=[
     ['verbindlich','Verbindlich','Klar und ernst, ohne Spielerei. Ein goldener Faden führt durch deinen Tag.'],
@@ -2398,18 +2399,17 @@ function viewSettings(){
         ${dl().map(x=>`<div class="set-row"><span>${esc(x[1])}</span><button class="x" data-ddel="${x[0]}" aria-label="Löschen">×</button></div>`).join('')||'<p class="empty">Noch keine Ablenkungen.</p>'}
         <div class="set-add"><select id="sdI" style="width:72px">${DI.map(i=>`<option>${i}</option>`).join('')}</select><input type="text" id="sdN" class="no-ag" placeholder="z. B. Netflix, Online-Shopping, Grübeln …"><button class="btn small" id="sdAdd">Hinzufügen</button></div>
       </div>`,
-  notif:`<div class="n-note"><b>Push ist startklar.</b> Aktiviere Push auf deinem Handy und schalte Morgen und/oder Abend ein. E-Mail folgt, sobald der Mailversand eingerichtet ist.</div>
-      <div class="card"><h3>Kontakt</h3><p class="hint">An diese Adresse gehen deine E-Mails.</p>
-        <input type="email" id="nMail" class="no-ag" value="${esc(N.email)}" placeholder="deine@mail.de">
-        <div class="n-push" id="nPushBox"><span>Push auf diesem Gerät: <b id="nPushSt">…</b></span><button class="btn small ghost" id="nPerm" style="display:none">Push aktivieren</button><button class="btn small ghost" id="nTest" style="display:none">Test senden</button></div>
+  notif:`<div class="n-note"><b>Push ist startklar.</b> Aktiviere Push auf deinem Handy und schalte Morgen und/oder Abend ein.</div>
+      <div class="card"><h3>Push auf diesem Gerät</h3><p class="hint">Die Nachrichten erscheinen in deinem Benachrichtigungscenter.</p>
+        <div class="n-push" id="nPushBox"><span>Status: <b id="nPushSt">…</b></span><button class="btn small ghost" id="nPerm" style="display:none">Push aktivieren</button><button class="btn small ghost" id="nTest" style="display:none">Test senden</button></div>
         ${'Notification' in window&&Notification.permission==='denied'?'<p class="hint" style="margin:6px 0 0">Push ist im Browser blockiert. Du kannst es in den Website-Einstellungen deines Browsers wieder erlauben.</p>':''}
       </div>
-      ${[['morning','☀️ Am Morgen','Startet deinen Tag mit Fokus.',[['goal','Mein Masterziel und mein Warum'],['review','KI-Rückblick auf gestern – lobt, was gut lief, und richtet den Blick nach vorn'],['plan','Erinnerung: Tagesfokus und 2 Schritte festlegen']],[5,6,7,8,9,10]],
+      ${[['morning','☀️ Am Morgen','Startet deinen Tag mit Fokus.',[['goal','Mein Masterziel und mein Warum'],['review','Rückblick auf gestern – lobt, was gut lief, und richtet den Blick nach vorn'],['plan','Erinnerung: Tagesfokus und 2 Schritte festlegen']],[5,6,7,8,9,10]],
          ['evening','🌙 Am Abend','Erinnert dich an deinen Tagesabschluss.',[['reflect','Erinnerung an die Abendreflexion'],['habits','Stand deiner Gewohnheiten heute'],['win','Frage nach deinem Erfolg des Tages']],[17,18,19,20,21,22,23]]].map(([k,t,sub,items,hours])=>{const c=N[k];return`<div class="card ${c.on?'':'n-off'}">
         <div class="n-top"><div><h3>${t}</h3><p class="hint" style="margin:2px 0 0">${sub}</p></div><label class="sw-row" style="margin:0"><input type="checkbox" data-non="${k}" ${c.on?'checked':''}><span class="sw-tog"></span></label></div>
         <div class="n-body">
           <div class="n-line"><span>Uhrzeit</span><select data-ntime="${k}" style="width:120px">${hours.flatMap(h=>[h+':00',h+':30']).map(x=>{const v=x.padStart(5,'0');return`<option value="${v}" ${c.time===v?'selected':''}>${x} Uhr</option>`}).join('')}</select></div>
-          <div class="n-line"><span>Über</span><label class="n-chk"><input type="checkbox" data-nch="${k}|mail" ${c.mail?'checked':''}> E-Mail</label><label class="n-chk"><input type="checkbox" data-nch="${k}|push" ${c.push?'checked':''}> Push</label></div>
+          
           <div class="n-inh">Inhalt</div>
           ${items.map(([ik,il])=>`<label class="n-item"><input type="checkbox" data-nit="${k}|${ik}" ${c.items.includes(ik)?'checked':''}> <span>${il}</span></label>`).join('')}
         </div></div>`}).join('')}
