@@ -1840,7 +1840,7 @@ function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forE
   return{items,rate:items.length?items.reduce((a,i)=>a+i.r,0)/items.length:0}}
 function bodyHabTile(inner){const {items,rate}=bodyToday();const n=items.filter(i=>i.done).length,full=items.length&&n===items.length;
   const from=bodyLastLvl&&bodyLastLvl.d===today()?bodyLastLvl.r:rate;bodyLastLvl={d:today(),r:rate};
-  return`<div class="tile wide b-habtile ${full?'won':''}"><div class="b-hf">${bodyFigure(rate,{mini:true,level:true,from})}<div class="b-hcap">${full?'<b class="b-won">Tag gewonnen.</b>':''}</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
+  return`<div class="tile wide b-habtile ${full?'won':''}"><div class="b-hf">${bodyFigure(rate,{mini:true,level:true,from})}<div class="b-hcap">${full?'<b class="b-won">Tag gewonnen.</b>':''}</div><button class="b-link" id="goBody">Wochenansicht →</button></div><div class="b-hc">${inner}</div></div>`}
 function monthDaysUpTo(m){const t=today(),last=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();const out=[];for(let i=1;i<=last;i++){const d=m+'-'+String(i).padStart(2,'0');if(d<=t)out.push(d)}return out}
 function bodyCompareHTML(m){
   if(!S.habits.length)return'';
