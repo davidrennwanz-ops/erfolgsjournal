@@ -193,7 +193,7 @@ body.t-dunkel .proud{background:var(--panel)}
   .stat{padding:9px 10px}
   .mission .goal-line{font-size:19px}
   .app{flex-direction:column}
-  nav.side{position:fixed;bottom:var(--vvb,0px);top:auto;left:0;right:0;width:100%;height:auto;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:10;gap:0}
+  nav.side{position:fixed;bottom:0;top:auto;left:0;right:0;width:100%;height:auto;flex-direction:row;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:10;gap:0}
   .brand,.nav-label,.side-foot{display:none}
   .nav-btn{flex-direction:column;gap:3px;font-size:10.5px;padding:7px 6px;flex:1;text-align:center;justify-content:center}
   main{padding:14px 14px 100px}
@@ -365,7 +365,7 @@ body.t-verbindlich .logout-side{border-radius:4px}
 .logout-side:hover{filter:brightness(1.1)}
 .logout-mobile{display:none}
 @media (max-width:860px){.logout-mobile{all:unset;display:flex;align-items:center;gap:6px;position:fixed;top:10px;left:10px;z-index:25;background:var(--accent);color:#fff;font-size:12px;font-weight:500;padding:6px 11px;border-radius:999px;cursor:pointer;box-shadow:0 4px 14px -8px rgba(0,0,0,.4)}body.t-verbindlich .logout-mobile{border-radius:4px}}
-@media (max-width:860px){.savepill{top:auto;right:auto;left:10px;bottom:calc(78px + var(--vvb,0px) + env(safe-area-inset-bottom));font-size:11px;padding:4px 9px;opacity:.92}.logout-mobile{display:none!important}}
+@media (max-width:860px){.savepill{top:auto;right:auto;left:10px;bottom:calc(78px + env(safe-area-inset-bottom));font-size:11px;padding:4px 9px;opacity:.92}.logout-mobile{display:none!important}}
 
 .tour-hole{position:fixed;z-index:60;border-radius:10px;box-shadow:0 0 0 9999px rgba(15,18,25,.62);transition:all .25s;pointer-events:none;outline:2px solid var(--accent)}
 .tour-card{position:fixed;z-index:61;left:50%;transform:translateX(-50%);width:min(420px,calc(100vw - 28px));background:var(--panel);color:var(--ink);border-radius:12px;padding:18px 20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6);border-top:4px solid var(--accent)}
@@ -577,6 +577,12 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .mm-btn{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:12px;border-radius:8px;font-size:15.5px;color:#e5ddd2}
 .mm-btn svg{width:20px;height:20px;opacity:.85}.mm-btn.on{background:var(--accent);color:#fff}.mm-out{margin-top:8px;border-top:1px solid #3a352e;border-radius:0;color:#cbbfa9}
 @media (max-width:860px){.nav-btn.mob-hide{display:none!important}.nav-more{display:flex!important}}
+@media (max-width:860px){
+  html.appmode,html.appmode body{height:100%;overflow:hidden}
+  html.appmode .app{height:100dvh;height:100svh;min-height:0;display:flex;flex-direction:column}
+  html.appmode main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:110px}
+  html.appmode nav.side{position:relative!important;bottom:auto!important;order:2;flex:none}
+}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.3;stroke-linejoin:round}.b-line.on{stroke-width:2.6}
@@ -918,7 +924,7 @@ async function initCloud(){
   }catch(e){console.warn('cloud init',e);toast('Keine Verbindung – du arbeitest mit dem letzten Stand auf diesem Gerät.',4000);renderSave();setSync()}
 }
 function showUnlock(email,msg){
-  document.querySelector('.app').style.display='none';
+  document.querySelector('.app').style.display='none';appMode(false);
   ['savepill','fab','logoutMobile'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
   let el=document.getElementById('auth');if(!el){el=document.createElement('div');el.id='auth';el.className='auth';document.body.appendChild(el)}
   el.innerHTML=`<div class="card"><h1>Entsperren</h1><div class="meta">Deine Einträge sind mit deinem Passwort verschlüsselt. Gib es einmal ein, um sie auf diesem Gerät zu öffnen.</div><div class="gold"></div>
@@ -928,7 +934,7 @@ function showUnlock(email,msg){
     <div class="row"><button class="btn" id="uGo">Entsperren</button><button class="btn ghost" id="uOut">Abmelden</button></div></div>`;
   const go=async()=>{const pw=el.querySelector('#uP').value,err=el.querySelector('#uErr');err.textContent='';
     const r=await SB.auth.signInWithPassword({email,password:pw});if(r.error){err.textContent='Passwort falsch.';return}
-    CK=await deriveKey(pw,r.data.user.id);await keyPut(r.data.user.id,CK);el.remove();document.querySelector('.app').style.display='';initCloud()};
+    CK=await deriveKey(pw,r.data.user.id);await keyPut(r.data.user.id,CK);el.remove();document.querySelector('.app').style.display='';appMode(true);initCloud()};
   el.querySelector('#uGo').onclick=go;el.querySelector('#uP').onkeydown=e=>{if(e.key==='Enter')go()};el.querySelector('#uOut').onclick=doLogout;
 }
 /* =========================================================
@@ -1059,7 +1065,7 @@ function landingHTML(){return `
 </div>`}
 
 function showLogin(){
-  document.querySelector('.app').style.display='none';
+  document.querySelector('.app').style.display='none';appMode(false);
   ['savepill','fab','logoutMobile'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
   let el=document.getElementById('auth');if(!el){el=document.createElement('div');el.id='auth';document.body.appendChild(el)}
   el.className='auth lp-host';el.innerHTML=landingHTML();window.scrollTo(0,0);
@@ -1076,7 +1082,7 @@ function showLogin(){
     if(r.error){err.textContent=r.error.message==='Invalid login credentials'?'E-Mail oder Passwort falsch.':/registered/i.test(r.error.message)?'Diese E-Mail hat schon ein Konto – bitte anmelden.':r.error.message;return}
     if(up&&!r.data.session){err.style.color='inherit';err.textContent='Fast geschafft: Bestätige den Link in deiner E-Mail und melde dich dann an.';return}
     CK=await deriveKey(password,r.data.session.user.id);await keyPut(r.data.session.user.id,CK);
-    el.remove();document.querySelector('.app').style.display='';['savepill','fab','logoutMobile'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=''});page='tag';initCloud()};
+    el.remove();document.querySelector('.app').style.display='';appMode(true);['savepill','fab','logoutMobile'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=''});page='tag';initCloud()};
   el.querySelector('#aIn').onclick=()=>go(false);el.querySelector('#aUp').onclick=()=>go(true);
   el.querySelector('#aP').onkeydown=e=>{if(e.key==='Enter')go(mode==='signup')};
 }
@@ -1211,11 +1217,11 @@ function openMobMenu(){
   document.body.appendChild(ov);
   const close=()=>ov.remove();
   ov.onclick=e=>{if(e.target===ov)close()};ov.querySelector('.mm-x').onclick=close;
-  ov.querySelectorAll('[data-mp]').forEach(b=>b.onclick=()=>{close();page=b.dataset.mp;location.hash=page;render();window.scrollTo(0,0)});
+  ov.querySelectorAll('[data-mp]').forEach(b=>b.onclick=()=>{close();page=b.dataset.mp;location.hash=page;render();toTop()});
   const o=ov.querySelector('[data-mout]');if(o)o.onclick=()=>{close();doLogout()};
 }
-function fixBar(){const vv=window.visualViewport;if(!vv)return;const gap=Math.max(0,Math.round(window.innerHeight-(vv.height+vv.offsetTop)));document.documentElement.style.setProperty('--vvb',(gap>0&&gap<200?gap:0)+'px')}
-if(window.visualViewport){visualViewport.addEventListener('resize',fixBar);visualViewport.addEventListener('scroll',fixBar)}addEventListener('scroll',fixBar,{passive:true});addEventListener('resize',fixBar);
+function toTop(){window.scrollTo(0,0);if(M)M.scrollTop=0}
+const appMode=on=>document.documentElement.classList.toggle('appmode',on);
 function renderNav(){
   const n=document.getElementById('nav');
   n.innerHTML=`<div class="brand"><div class="brand-mark">${LP_SUN}</div><div><b>Erfolgsjournal</b><small>Log dich in deinen Tag ein</small></div></div>`+
@@ -1223,7 +1229,7 @@ function renderNav(){
    `<button class="nav-btn ${page===p[0]?'active':''} ${mobSet().includes(p[0])?'':'mob-hide'}" data-p="${p[0]}">${icons[p[0]]}<span>${p[1]}</span></button>`).join('')+
   `<button class="nav-btn nav-more ${mobSet().includes(page)?'':'active'}" id="navMore" aria-label="Menü">${MENU_IC}<span>Menü</span></button>`+
   `<div class="side-foot"><span id="sync" class="sync"></span>${SB&&cloud?'<button class="logout-side" id="logoutSide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Abmelden</button>':''}</div>`;
-  n.querySelectorAll('.nav-btn[data-p]').forEach(b=>b.onclick=()=>{page=b.dataset.p;location.hash=page;render();window.scrollTo(0,0)});
+  n.querySelectorAll('.nav-btn[data-p]').forEach(b=>b.onclick=()=>{page=b.dataset.p;location.hash=page;render();toTop()});
   document.getElementById('navMore').onclick=openMobMenu;
   setSync();
   const lo=document.getElementById('logoutSide');if(lo)lo.onclick=doLogout;
@@ -1505,9 +1511,9 @@ function viewTag(){
   </section>
 `;
   requestAnimationFrame(()=>requestAnimationFrame(()=>M.querySelectorAll('.b-lvl').forEach(r=>r.setAttribute('y',r.dataset.to))));
-  bind('[data-dn]',el=>{const n=+el.dataset.dn;const nd=n===0?null:addDays(today(),n);tagDate=nd&&nd!==realToday()?nd:null;render();window.scrollTo(0,0)},'click');
+  bind('[data-dn]',el=>{const n=+el.dataset.dn;const nd=n===0?null:addDays(today(),n);tagDate=nd&&nd!==realToday()?nd:null;render();toTop()},'click');
   bind('[data-sec]',el=>{const open=el.parentElement.classList.contains('open');setUi(closeKey,!open);viewTag()},'click');
-  bind('#goBody',()=>{page='gew';location.hash='gew';render();window.scrollTo(0,0)},'click');
+  bind('#goBody',()=>{page='gew';location.hash='gew';render();toTop()},'click');
 
   const cb=M.querySelector('#commit');if(cb)cb.onclick=()=>{
     if(!d.tasks.some(t=>t.t.trim())){toast('Leg zuerst deine 2 Aufgaben fest – dann sagst du zu.',3000);const f=M.querySelector('.task-t');if(f){const det=f.closest('details');if(det)det.open=true;f.focus()}return}
@@ -2028,7 +2034,7 @@ function viewGew(){
   bind('#hNew',()=>habitModal(null),'click');
   bindBody(viewGew);
   bind('[data-mnav]',el=>{const m=gewMonth||today().slice(0,7),d=new Date(+m.slice(0,4),+m.slice(5,7)-1+(+el.dataset.mnav),1);const nm=iso(d).slice(0,7);gewMonth=nm===today().slice(0,7)?null:nm;viewGew()},'click');
-  bind('[data-mday]',el=>{const d=el.dataset.mday;page='tag';location.hash='tag';tagDate=d===realToday()?null:d;render();window.scrollTo(0,0)},'click');
+  bind('[data-mday]',el=>{const d=el.dataset.mday;page='tag';location.hash='tag';tagDate=d===realToday()?null:d;render();toTop()},'click');
 }
 let gewMonth=null;
 function habMonthCard(){
@@ -2323,7 +2329,7 @@ function viewSettings(){
       </div>
       <div class="card"><h3>📱 Mobilansicht</h3><p class="hint">Was soll unten in der Leiste auf dem Handy stehen? „Mein Tag“ und „Menü“ sind immer da – im Menü findest du alle Seiten. Du kannst bis zu 3 weitere wählen.</p>
         ${MOB_OPT.map(([k,l])=>{const on=mobSet().includes(k),full=mobSet().length>=4&&!on;return`<label class="mob-opt ${full?'dis':''}"><input type="checkbox" data-mob="${k}" ${on?'checked':''} ${full?'disabled':''}> ${icons[k]}<span>${l}</span></label>`}).join('')}</div>
-      ${SB?`<div class="card"><h3>Konto</h3><p class="hint">${cloud?'Angemeldet und synchronisiert.':'Nicht angemeldet.'}</p><button class="btn ghost" id="logout">Abmelden</button></div>`:''}
+
     </div>
   </div>`;
   bind('[data-l]',el=>{S.settings.layout=el.dataset.l;markMeta();render()},'click');
@@ -2360,7 +2366,7 @@ function endTour(){tourI=-1;['tourHole','tourCard'].forEach(id=>{const e=documen
 function showTour(){
   const st=TOUR[tourI];if(!st){endTour();return}
   if(st.p&&page!==st.p){page=st.p;location.hash=page;render()}
-  if(st.p==='tag'&&!st.s.startsWith('.nav'))window.scrollTo(0,0);
+  if(st.p==='tag'&&!st.s.startsWith('.nav'))toTop();
   let hole=document.getElementById('tourHole');if(!hole){hole=document.createElement('div');hole.id='tourHole';hole.className='tour-hole';document.body.appendChild(hole)}
   let card=document.getElementById('tourCard');if(!card){card=document.createElement('div');card.id='tourCard';card.className='tour-card';document.body.appendChild(card)}
   const el=st.s?[...document.querySelectorAll(st.s)].find(e=>e.offsetParent!==null||getComputedStyle(e).position==='fixed'):null;
@@ -2380,7 +2386,7 @@ function showTour(){
   if(q('tourBack'))q('tourBack').onclick=()=>{tourI--;showTour()};
   if(q('tourSkip'))q('tourSkip').onclick=()=>{saveName();endTour();page='tag';location.hash='tag';render()};
   if(q('tourDay'))q('tourDay').onclick=()=>{endTour();page='tag';location.hash='tag';render()};
-  if(q('tourGoal'))q('tourGoal').onclick=()=>{endTour();editing.ziele=true;page='ziele';location.hash='ziele';render();window.scrollTo(0,0)};
+  if(q('tourGoal'))q('tourGoal').onclick=()=>{endTour();editing.ziele=true;page='ziele';location.hash='ziele';render();toTop()};
 }
 addEventListener('resize',()=>{if(tourI>=0)showTour()});
 
@@ -2414,6 +2420,7 @@ function renderSheet(){
 function sober(){if(S.settings.layout!=='verbindlich')return;M.querySelectorAll('h3,.now-label').forEach(h=>{const n=h.firstChild;if(n&&n.nodeType===3)n.textContent=n.textContent.replace(/^[\p{Extended_Pictographic}\uFE0F\u200d\s]+/u,'')})}
 viewTag=(f=>()=>{f();sober()})(viewTag);viewZiele=(f=>()=>{f();sober()})(viewZiele);viewGew=(f=>()=>{f();sober()})(viewGew);viewWerte=(f=>()=>{f();sober()})(viewWerte);viewReport=(f=>()=>{f();sober()})(viewReport);viewSettings=(f=>()=>{f();sober()})(viewSettings);viewIdeal=(f=>()=>{f();sober()})(viewIdeal);
 function render(){if(page!=='tag')tagDate=null;DAY_OVR=page==='tag'?tagDate:null;applyPhase();renderNav();({tag:viewTag,ziele:viewZiele,gew:viewGew,werte:viewWerte,report:viewReport,settings:viewSettings,ideal:viewIdeal,weg:viewWeg})[page]();sober();renderSheet()}
+appMode(document.querySelector('.app').style.display!=='none');
 render();
 renderSave();
 initCloud();
