@@ -1387,7 +1387,7 @@ function viewTag(){
   const filledTasks=d.tasks.map((t,i)=>({...t,i})).filter(t=>t.t.trim());
   const gratFilled=d.grat.filter(g=>g.trim());
   const relaxFilled=d.relax.map((r,i)=>({...r,i})).filter(r=>r.t.trim());
-  const dueH=S.habits.filter(h=>isDue(h,today())),habDone=dueH.filter(h=>d.habits[h.id]===true).length,habAll=dueH.length&&habDone===dueH.length;
+  const dueH=S.habits.filter(h=>isDue(h,today())&&hFreq(h)!=='weekly'),habDone=dueH.filter(h=>d.habits[h.id]===true).length,habAll=dueH.length&&habDone===dueH.length;
   const TL=[
     {id:'focus',wide:1,icon:'☀️',title:'Tagesfokus',q:'Das Wichtigste heute – ist das geschafft, war der Tag ein Erfolg.',
      filled:!!d.goal.trim(),stage:!d.goal.trim()?0:d.goalDone?2:1,two:1},
@@ -1830,13 +1830,13 @@ function bodyMiniCard(){
 }
 
 /* Tagesergebnis für Mein Tag: Wochenziele zählen nur, wenn heute erledigt oder Wochenziel schon erreicht */
-function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forEach(h=>{if(!isDue(h,t))return;const v=S.days[t]?.habits?.[h.id];
+function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forEach(h=>{if(!isDue(h,t)||hFreq(h)==='weekly')return;const v=S.days[t]?.habits?.[h.id];
     if(hFreq(h)!=='weekly')items.push({h,r:v===true?1:0,done:v===true});
     else{const c=wk.filter(d=>d<t&&S.days[d]?.habits?.[h.id]===true).length;if(v===true||c>=h.target)items.push({h,r:1,done:true})}});
   return{items,rate:items.length?items.reduce((a,i)=>a+i.r,0)/items.length:0}}
 function bodyHabTile(inner){const {items,rate}=bodyToday();const n=items.filter(i=>i.done).length,full=items.length&&n===items.length;
   const from=bodyLastLvl&&bodyLastLvl.d===today()?bodyLastLvl.r:rate;bodyLastLvl={d:today(),r:rate};
-  return`<div class="tile wide b-habtile ${full?'won':''}"><div class="b-hf">${bodyFigure(rate,{mini:true,level:true,from})}<div class="b-hcap">${full?'<b class="b-won">Tag gewonnen.</b>':`<b>Heute ${n} von ${items.length}</b> Gewohnheiten`}</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
+  return`<div class="tile wide b-habtile ${full?'won':''}"><div class="b-hf">${bodyFigure(rate,{mini:true,level:true,from})}<div class="b-hcap">${full?'<b class="b-won">Tag gewonnen.</b>':''}</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
 function monthDaysUpTo(m){const t=today(),last=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();const out=[];for(let i=1;i<=last;i++){const d=m+'-'+String(i).padStart(2,'0');if(d<=t)out.push(d)}return out}
 function bodyCompareHTML(m){
   if(!S.habits.length)return'';
