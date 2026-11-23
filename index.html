@@ -588,6 +588,20 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .sw-tog{width:44px;height:26px;border-radius:13px;background:#d6cfc1;position:relative;transition:.2s;flex:none}
 .sw-tog:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
 .sw-row input:checked+.sw-tog{background:var(--accent)}.sw-row input:checked+.sw-tog:after{left:21px}
+/* Einstellungen */
+.set-wrap{display:grid;grid-template-columns:210px 1fr;gap:26px;align-items:start;max-width:980px}
+.set-nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:20px}
+.set-nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;font-size:15px;color:var(--ink)}
+.set-nav button span{width:22px;text-align:center}
+.set-nav button:hover{background:var(--accent-soft)}
+.set-nav button.on{background:var(--panel);border:1px solid var(--line);font-weight:600;box-shadow:inset 3px 0 0 var(--accent)}
+.set-body{display:grid;gap:16px;min-width:0}
+.set-body .card{margin:0}
+.set-h{font-family:Newsreader,serif;font-weight:500;font-size:24px;margin:2px 0 0}
+.set-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}.set-row span{flex:1}
+.set-add{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.set-add input{flex:1;min-width:160px}
+@media(max-width:760px){.set-wrap{grid-template-columns:1fr;gap:14px}.set-nav{position:static;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .set-nav button{white-space:nowrap;padding:8px 12px;border:1px solid var(--line);background:var(--panel);font-size:14px}.set-nav button.on{box-shadow:none;background:var(--ink);color:#fff;border-color:var(--ink)}.set-h{display:none}}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.3;stroke-linejoin:round}.b-line.on{stroke-width:2.6}
@@ -2294,62 +2308,69 @@ function viewReport(){
 /* =========================================================
    Einstellungen
    ========================================================= */
+let setSec='allg';
 function viewSettings(){
   const L=[
     ['verbindlich','Verbindlich','Klar und ernst, ohne Spielerei. Ein goldener Faden führt durch deinen Tag.'],
     ['tageszeit','Tageszeit','Szene und Farben wechseln mit Sonnenaufgang, Tag, Abend und Nacht.']
   ];
-  M.innerHTML=`
-  <div class="section-head"><div><h1>Einstellungen</h1><p>Mach die Seite zu deiner.</p></div></div>
-  <div class="grid">
-    <div class="card">
+  const SECS=[['allg','Allgemein','⚙️'],['look','Darstellung','🎨'],['tag','Mein Tag','☀️'],['data','Daten & Hilfe','💾']];
+  const DI=['📱','🍺','🍷','📺','🎮','🛒','🍫','🍕','☕','🚬','🌙','⏳','🛋️','💬','😤','📧'];
+  const body={
+  allg:`<div class="card">
+        <h3>Dein Name</h3><p class="hint">Für die Begrüßung auf „Mein Tag“.</p>
+        <input type="text" id="sName" class="no-ag" value="${esc(S.name)}" placeholder="Dein Vorname">
+      </div>
+      <div class="card">
+        <h3>Abend beginnt um</h3><p class="hint">Ab dieser Uhrzeit klappt der Tagesabschluss auf „Mein Tag“ automatisch auf.</p>
+        <select id="sEve" style="width:140px">${[15,16,17,18,19,20,21].map(h=>`<option value="${h}" ${S.settings.evening===h?'selected':''}>${h}:00 Uhr</option>`).join('')}</select>
+      </div>`,
+  look:`<div class="card">
       <h3>Layout</h3><p class="hint">Wie soll dein Journal aussehen?</p>
       ${L.map(l=>`<div class="layout-opt ${S.settings.layout===l[0]?'on':''}" data-l="${l[0]}">
-        <div class="sw" style="${l[0]==='dunkel'?'background:#16181d':l[0]==='ruhig'?'background:#f3efe9':l[0]==='verbindlich'?'background:linear-gradient(90deg,#f3f0e8 0 40%,#b08d3c 40% 44%,#1c2230 44%)':''}">${l[0]==='tageszeit'?scene(phase,true):''}</div>
+        <div class="sw" style="${l[0]==='verbindlich'?'background:linear-gradient(90deg,#f3f0e8 0 40%,#b08d3c 40% 44%,#1c2230 44%)':''}">${l[0]==='tageszeit'?scene(phase,true):''}</div>
         <div><b>${l[1]}</b><div class="meta" style="margin-top:3px;line-height:1.4">${l[2]}</div></div></div>`).join('')}
     </div>
-    <div class="stack">
-      <div class="card">
-        <h3>Abend beginnt um</h3><p class="hint">Ab dieser Uhrzeit klappt die Abendreflexion auf „Mein Tag“ automatisch auf.</p>
-        <select id="sEve" style="width:120px">${[15,16,17,18,19,20,21].map(h=>`<option value="${h}" ${S.settings.evening===h?'selected':''}>${h}:00 Uhr</option>`).join('')}</select>
-      </div>
-      <div class="card">
-        <h3>Ablenkungen verwalten</h3><p class="hint">Diese Auswahl erscheint in der Abendreflexion.</p>
-        ${dl().map(x=>`<div class="row"><span style="flex:1">${esc(x[1])}</span><button class="x" data-ddel="${x[0]}">×</button></div>`).join('')}
-      </div>
-      <div class="card">
-        <h3>Dein Name</h3><p class="hint">Für die Begrüßung.</p>
-        <input type="text" id="sName" value="${esc(S.name)}">
-      </div>
-      <div class="card"><h3>🎙️ KI-Spracheingabe</h3><p class="hint">Der Mikrofon-Knopf unten rechts auf „Mein Tag“: Du sprichst deinen Tag ein, und die KI trägt alles in die passenden Felder ein.</p>
+    <div class="card"><h3>Mobilansicht</h3><p class="hint">Was soll unten in der Leiste auf dem Handy stehen? „Mein Tag“ und „Menü“ sind immer da – im Menü findest du alle Seiten. Du kannst bis zu 3 weitere wählen.</p>
+        ${MOB_OPT.map(([k,l])=>{const on=mobSet().includes(k),full=mobSet().length>=4&&!on;return`<label class="mob-opt ${full?'dis':''}"><input type="checkbox" data-mob="${k}" ${on?'checked':''} ${full?'disabled':''}> ${icons[k]}<span>${l}</span></label>`}).join('')}</div>`,
+  tag:`<div class="card"><h3>KI-Spracheingabe</h3><p class="hint">Der Mikrofon-Knopf unten rechts auf „Mein Tag“: Du sprichst deinen Tag ein, und die KI trägt alles in die passenden Felder ein.</p>
         <label class="sw-row"><input type="checkbox" id="sVoice" ${S.settings.voice!==false?'checked':''}><span class="sw-tog"></span><span>${S.settings.voice!==false?'Aktiviert':'Deaktiviert'}</span></label></div>
       <div class="card">
-        <h3>Tutorial</h3><p class="hint">Die kurze Einführung noch einmal ansehen.</p>
-        <button class="btn ghost" id="tourAgain">▶ Tutorial starten</button>
-      </div>
-      <div class="card">
+        <h3>Ablenkungen</h3><p class="hint">Diese Auswahl erscheint in der Abendreflexion. Leg an, was dich typischerweise vom Ziel abhält.</p>
+        ${dl().map(x=>`<div class="set-row"><span>${esc(x[1])}</span><button class="x" data-ddel="${x[0]}" aria-label="Löschen">×</button></div>`).join('')||'<p class="empty">Noch keine Ablenkungen.</p>'}
+        <div class="set-add"><select id="sdI" style="width:72px">${DI.map(i=>`<option>${i}</option>`).join('')}</select><input type="text" id="sdN" class="no-ag" placeholder="z. B. Netflix, Online-Shopping, Grübeln …"><button class="btn small" id="sdAdd">Hinzufügen</button></div>
+      </div>`,
+  data:`<div class="card">
         <h3>Datensicherung</h3><p class="hint">Einmal im Monat exportieren – die Datei ist deine Sicherung.</p>
         <div class="row" style="flex-wrap:wrap"><button class="btn" id="exp">⬇ Daten exportieren</button><label class="btn ghost" style="cursor:pointer">⬆ Importieren<input type="file" id="imp" accept="application/json" style="display:none"></label></div>
         <details style="margin-top:12px"><summary class="meta" style="cursor:pointer">Daten aus der Claude-Version übernehmen</summary>
           <textarea id="impTxt" placeholder="Hier den kopierten Text einfügen …" style="margin-top:8px;min-height:80px"></textarea>
           <button class="btn small" id="impGo" style="margin-top:8px">Übernehmen</button></details>
       </div>
-      <div class="card"><h3>📱 Mobilansicht</h3><p class="hint">Was soll unten in der Leiste auf dem Handy stehen? „Mein Tag“ und „Menü“ sind immer da – im Menü findest du alle Seiten. Du kannst bis zu 3 weitere wählen.</p>
-        ${MOB_OPT.map(([k,l])=>{const on=mobSet().includes(k),full=mobSet().length>=4&&!on;return`<label class="mob-opt ${full?'dis':''}"><input type="checkbox" data-mob="${k}" ${on?'checked':''} ${full?'disabled':''}> ${icons[k]}<span>${l}</span></label>`}).join('')}</div>
-
-    </div>
+      <div class="card">
+        <h3>Tutorial</h3><p class="hint">Die kurze Einführung noch einmal ansehen.</p>
+        <button class="btn ghost" id="tourAgain">▶ Tutorial starten</button>
+      </div>`};
+  M.innerHTML=`
+  <div class="section-head"><div><h1>Einstellungen</h1><p>Mach die Seite zu deiner.</p></div></div>
+  <div class="set-wrap">
+    <nav class="set-nav">${SECS.map(([k,l,i])=>`<button class="${setSec===k?'on':''}" data-ss="${k}"><span>${i}</span>${l}</button>`).join('')}</nav>
+    <div class="set-body"><h2 class="set-h">${SECS.find(x=>x[0]===setSec)[1]}</h2>${body[setSec]}</div>
   </div>`;
+  bind('[data-ss]',el=>{setSec=el.dataset.ss;viewSettings()},'click');
   bind('[data-l]',el=>{S.settings.layout=el.dataset.l;markMeta();render()},'click');
-  bind('#sEve',el=>{S.settings.evening=+el.value;markMeta()},'change');
+  bind('#sEve',el=>{S.settings.evening=+el.value;markMeta();toast('Gespeichert ✓',1200)},'change');
   bind('#sName',el=>{S.name=el.value;markMeta()});
   bind('#exp',()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='erfolgsjournal-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)},'click');
   bind('#imp',el=>{const f=el.files[0];if(!f)return;f.text().then(t=>{try{const n=normalize(JSON.parse(t));S=n;markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Import erfolgreich.');render()}catch(e){toast('Datei konnte nicht gelesen werden.')}})},'change');
   bind('#impGo',()=>{try{S=normalize(JSON.parse(M.querySelector('#impTxt').value));markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Übernommen ✓');render()}catch(e){toast('Text konnte nicht gelesen werden.')}},'click');
-  bind('#logout',doLogout,'click');
   bind('#sVoice',el=>{S.settings.voice=el.checked;markMeta();renderSheet();viewSettings();toast(el.checked?'Spracheingabe aktiviert':'Spracheingabe deaktiviert',1600)},'change');
   bind('[data-mob]',el=>{const cur=mobSet().slice(1);const k=el.dataset.mob;S.settings.mobNav=el.checked?[...cur,k].slice(0,3):cur.filter(x=>x!==k);markMeta();renderNav();viewSettings()},'change');
   bind('#tourAgain',startTour,'click');
   bind('[data-ddel]',el=>{S.distractions=S.distractions.filter(x=>x[0]!==el.dataset.ddel);markMeta();viewSettings()},'click');
+  const addD=()=>{const n=M.querySelector('#sdN').value.trim();if(!n){M.querySelector('#sdN').focus();return}S.distractions.push(['c'+uid(),M.querySelector('#sdI').value+' '+n]);markMeta();toast('Ablenkung hinzugefügt ✓',1400);viewSettings();setTimeout(()=>{const i=M.querySelector('#sdN');if(i)i.focus()},30)};
+  bind('#sdAdd',addD,'click');
+  bind('#sdN',(el,e)=>{if(e.key==='Enter'){e.preventDefault();addD()}},'keydown');
 }
 
 /* =========================================================
