@@ -538,7 +538,7 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .mq{width:54px;flex:none;text-align:right;font-size:13.5px;color:var(--muted)}.mq.hit{color:#2f7d4f;font-weight:600}
 @media(max-width:760px){.mrow{flex-wrap:wrap;gap:4px 8px}.mname{width:100%}.mhead .mname{display:none}.mcells{gap:2px}.mq{width:44px}}
 .b-lvl{transition:y .7s cubic-bezier(.3,.7,.3,1)}
-.b-out.gold{stroke:#b08d3c;stroke-width:3}
+.b-out.gold{stroke:#8a6a1f;stroke-width:2.2}
 .b-won{color:#9a7420;font-family:Newsreader,serif;font-size:17px;font-weight:600}
 .b-pct{font-family:Newsreader,serif;font-size:34px;font-weight:600;fill:#9a7420}.b-pbg{fill:#fffdf8;stroke:#d8c38f;stroke-width:1.5}
 .b-fill{stroke:none;transition:fill .4s ease}
@@ -1749,7 +1749,8 @@ function bodyFigure(rate,{items=null,mini=false,sel=null,pct=false,level=false,f
   if(level){const lv=y=>y>=.999?-90:y<=0?700:Math.round(652-y*(652-36))-24,id='blv'+(++bodyLvN),full=rate>=.999;
     s+=`<g class="b-fill" style="fill:#fff"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
     s+=`<linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".065" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="${id}" maskUnits="userSpaceOnUse" x="${C-150}" y="-100" width="300" height="900"><rect class="b-lvl" x="${C-140}" y="${lv(from==null?rate:from)}" data-to="${lv(rate)}" width="280" height="760" fill="url(#${id}g)"/></mask>`;
-    s+=`<g class="b-fill" mask="url(#${id})" style="fill:${full?'#2f7d4f':'#5a9f73'}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
+    if(full)s+=`<linearGradient id="${id}au" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6c869"/><stop offset=".55" stop-color="#c9a03e"/><stop offset="1" stop-color="#a87f2a"/></linearGradient>`;
+    s+=`<g class="b-fill" mask="url(#${id})" style="fill:${full?`url(#${id}au)`:'#5a9f73'}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
     s+=`<ellipse class="b-out ${full?'gold':''}" cx="${C}" cy="74" rx="27" ry="36"/><path class="b-out ${full?'gold':''}" d="${B_BODY}"/>`;
   }else{
     s+=`<g class="b-fill" style="fill:${fill}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
