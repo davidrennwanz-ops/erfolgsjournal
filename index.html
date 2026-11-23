@@ -543,6 +543,40 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .wk-row{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}.wk-lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:8px}
 .pill.warn{border-color:#c9a03e;background:#fbf3df;color:#7a5c17}
 .b-pct{font-family:Newsreader,serif;font-size:34px;font-weight:600;fill:#9a7420}.b-pbg{fill:#fffdf8;stroke:#d8c38f;stroke-width:1.5}
+/* Dein Weg */
+.weg{max-width:860px}
+.weg-hero{padding:6px 0 18px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.weg-kick{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9a7420;font-weight:600}
+.weg-hero h1{font-family:Newsreader,serif;font-weight:500;font-size:36px;line-height:1.15;margin:6px 0 10px}
+.weg-lead{font-size:17px;line-height:1.6;color:var(--muted);margin:0;max-width:680px}
+.weg-sec{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:26px 0;border-bottom:1px solid var(--line)}
+.weg-n{width:36px;height:36px;border-radius:50%;border:1.5px solid #b08d3c;color:#9a7420;font-family:Newsreader,serif;font-size:18px;display:grid;place-items:center;margin-top:2px}
+.weg-sec h2{font-family:Newsreader,serif;font-weight:500;font-size:25px;line-height:1.25;margin:0 0 10px}
+.weg-sec p{font-size:15.5px;line-height:1.7;margin:0 0 12px}
+.weg-key{margin-top:14px;padding:4px 0 4px 16px;border-left:2px solid #b08d3c;font-family:Newsreader,serif;font-size:18.5px;line-height:1.5}
+.weg-ref{display:inline-block;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#f3ead4;color:#8a6a1f;font-size:11px;font-weight:600;line-height:17px;text-align:center;text-decoration:none;vertical-align:2px}
+.weg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+.weg-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.weg-card h3{font-family:Newsreader,serif;font-weight:500;font-size:18px;margin:4px 0 6px}.weg-card p{font-size:14.5px;line-height:1.6;margin:0}.weg-ic{font-size:20px}
+.weg-steps{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.weg-steps>div{border-left:2px solid #b08d3c;padding:2px 0 2px 14px}.weg-steps b{font-size:14px}.weg-steps p{font-size:14.5px;margin:4px 0 0}
+.weg-end{text-align:center;font-family:Newsreader,serif;font-style:italic;font-size:24px;line-height:1.45;padding:34px 0}
+.weg-end:before{content:'';display:block;width:48px;height:2px;background:#b08d3c;margin:0 auto 18px}
+.weg-src{border-top:1px solid var(--line);padding-top:16px}.weg-src h3{margin:0 0 4px}.weg-src ol{padding-left:22px;font-size:13px;line-height:1.6;color:var(--muted)}.weg-src a{color:var(--muted)}
+@media(max-width:760px){.weg-hero h1{font-size:28px}.weg-sec{grid-template-columns:1fr;gap:8px}.weg-grid,.weg-steps{grid-template-columns:1fr}.weg-sec h2{font-size:22px}}
+/* Mobile Navigation */
+.nav-more{display:none!important}
+.mob-opt{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer;font-size:15px}
+.mob-opt svg{width:18px;height:18px;opacity:.7}.mob-opt.dis{opacity:.45;cursor:default}
+.mm-ov{position:fixed;inset:0;background:rgba(20,24,34,.45);z-index:300;display:flex;align-items:flex-end}
+.mm{background:var(--side);color:var(--side-ink);width:100%;border-radius:16px 16px 0 0;padding:14px 14px calc(18px + env(safe-area-inset-bottom));max-height:85vh;overflow:auto;animation:mmUp .22s ease}
+@keyframes mmUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.mm-head{display:flex;justify-content:space-between;align-items:center;padding:4px 8px 8px}.mm-head b{font-family:Newsreader,serif;font-size:19px}
+.mm-x{all:unset;cursor:pointer;font-size:26px;color:#d9d0c5;padding:0 6px}
+.mm-lab{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#8f857a;padding:12px 12px 4px}.mm-sp{height:10px}
+.mm-btn{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:12px;border-radius:8px;font-size:15.5px;color:#e5ddd2}
+.mm-btn svg{width:20px;height:20px;opacity:.85}.mm-btn.on{background:var(--accent);color:#fff}.mm-out{margin-top:8px;border-top:1px solid #3a352e;border-radius:0;color:#cbbfa9}
+@media (max-width:860px){.nav-btn.mob-hide{display:none!important}.nav-more{display:flex!important}}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.3;stroke-linejoin:round}.b-line.on{stroke-width:2.6}
@@ -1161,16 +1195,34 @@ const icons={
  report:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'
 };
 icons.settings='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>';
+icons.weg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21c0-4 4-5 6-7s1-5-2-6 0-5 4-5"/><circle cx="6" cy="21" r=".6"/><path d="M17 3l2 1-2 1"/></svg>';
 icons.ideal='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
-const pages=[['tag','Mein Tag'],['ziele','Meine Ziele'],['gew','Gewohnheiten'],['ideal','Mein idealer Tag'],['report','Reports'],['settings','Einstellungen']];
+const pages=[['tag','Mein Tag'],['ziele','Meine Ziele'],['gew','Gewohnheiten'],['ideal','Mein idealer Tag'],['report','Reports'],['weg','Dein Weg'],['settings','Einstellungen']];
 let page='tag';try{if(location.hash&&location.hash!=='#tag')history.replaceState(null,'',location.pathname+location.search+'#tag')}catch(e){}
+const MOB_OPT=[['ziele','Meine Ziele'],['gew','Gewohnheiten'],['ideal','Mein idealer Tag'],['report','Reports'],['weg','Dein Weg']];
+const MENU_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+function mobSet(){const m=Array.isArray(S.settings.mobNav)?S.settings.mobNav:['ziele','gew'];return['tag',...m.filter(k=>MOB_OPT.some(o=>o[0]===k)).slice(0,3)]}
+function openMobMenu(){
+  const ov=document.createElement('div');ov.className='mm-ov';
+  ov.innerHTML=`<div class="mm"><div class="mm-head"><b>Menü</b><button class="mm-x" aria-label="Schließen">×</button></div>
+    ${pages.map((p,i)=>(i===1?'<div class="mm-lab">Mein Kompass</div>':'')+(i===4?'<div class="mm-lab">Auswertung</div>':'')+(i===5?'<div class="mm-sp"></div>':'')+
+      `<button class="mm-btn ${page===p[0]?'on':''}" data-mp="${p[0]}">${icons[p[0]]}<span>${p[1]}</span></button>`).join('')}
+    ${SB&&cloud?'<button class="mm-btn mm-out" data-mout="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Abmelden</span></button>':''}</div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.onclick=e=>{if(e.target===ov)close()};ov.querySelector('.mm-x').onclick=close;
+  ov.querySelectorAll('[data-mp]').forEach(b=>b.onclick=()=>{close();page=b.dataset.mp;location.hash=page;render();window.scrollTo(0,0)});
+  const o=ov.querySelector('[data-mout]');if(o)o.onclick=()=>{close();doLogout()};
+}
 function renderNav(){
   const n=document.getElementById('nav');
   n.innerHTML=`<div class="brand"><div class="brand-mark">${LP_SUN}</div><div><b>Erfolgsjournal</b><small>Log dich in deinen Tag ein</small></div></div>`+
   pages.map((p,i)=>(i===1?'<div class="nav-label">Mein Kompass</div>':'')+(i===4?'<div class="nav-label">Auswertung</div>':'')+(i===5?'<div style="height:14px"></div>':'')+
-   `<button class="nav-btn ${page===p[0]?'active':''}" data-p="${p[0]}">${icons[p[0]]}<span>${p[1]}</span></button>`).join('')+
+   `<button class="nav-btn ${page===p[0]?'active':''} ${mobSet().includes(p[0])?'':'mob-hide'}" data-p="${p[0]}">${icons[p[0]]}<span>${p[1]}</span></button>`).join('')+
+  `<button class="nav-btn nav-more ${mobSet().includes(page)?'':'active'}" id="navMore" aria-label="Menü">${MENU_IC}<span>Menü</span></button>`+
   `<div class="side-foot"><span id="sync" class="sync"></span>${SB&&cloud?'<button class="logout-side" id="logoutSide"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Abmelden</button>':''}</div>`;
-  n.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>{page=b.dataset.p;location.hash=page;render();window.scrollTo(0,0)});
+  n.querySelectorAll('.nav-btn[data-p]').forEach(b=>b.onclick=()=>{page=b.dataset.p;location.hash=page;render();window.scrollTo(0,0)});
+  document.getElementById('navMore').onclick=openMobMenu;
   setSync();
   const lo=document.getElementById('logoutSide');if(lo)lo.onclick=doLogout;
 }
@@ -1860,6 +1912,93 @@ function bodyCompareHTML(m){
     </table>${verdict}</div></div></div>`;
 }
 
+/* =========================================================
+   Dein Weg – warum das Journal so aufgebaut ist
+   ========================================================= */
+const WEG_SRC=[
+ ['Schultz, Dayan & Montague (1997): A neural substrate of prediction and reward. Science 275','https://pubmed.ncbi.nlm.nih.gov/9054347/'],
+ ['Killingsworth & Gilbert (2010): A wandering mind is an unhappy mind. Science 330','https://news.harvard.edu/gazette/story/2010/11/wandering-mind-not-a-happy-mind/'],
+ ['Leroy (2009): Why is it so hard to do my work? Attention residue. Organizational Behavior and Human Decision Processes 109','https://ideas.repec.org/a/eee/jobhdp/v109y2009i2p168-181.html'],
+ ['Masicampo & Baumeister (2011): Consider it done! Plan making can eliminate the cognitive effects of unfulfilled goals. J Pers Soc Psychol 101','https://pubmed.ncbi.nlm.nih.gov/21688924/'],
+ ['Lally, van Jaarsveld, Potts & Wardle (2010): How are habits formed. European Journal of Social Psychology 40','https://www.ucl.ac.uk/news/2009/aug/how-long-does-it-take-form-habit'],
+ ['Singh et al. (2023): Physical activity for depression, anxiety and distress – umbrella review. British Journal of Sports Medicine','https://pmc.ncbi.nlm.nih.gov/articles/PMC10579187/'],
+ ['Sonnentag & Fritz (2007/2015): Erholung und mentales Abschalten nach der Arbeit','https://kops.uni-konstanz.de/bitstreams/3a755cc9-9cc9-4589-9439-aacedd90a514/download'],
+ ['Emmons & McCullough (2003): Counting blessings versus burdens. J Pers Soc Psychol 84','https://pubmed.ncbi.nlm.nih.gov/12585811/'],
+ ['Kumar, Killingsworth & Gilovich (2014): Waiting for Merlot – anticipatory consumption. Psychological Science 25','https://www.psychologicalscience.org/journals/psychological-science/0956797614546556/'],
+ ['Harkin et al. (2016): Does monitoring goal progress promote goal attainment? Psychological Bulletin 142','https://www.apa.org/news/press/releases/2015/10/progress-goals'],
+ ['Gollwitzer & Sheeran (2006): Implementation intentions and goal achievement – a meta-analysis. Advances in Experimental Social Psychology 38','https://www.socmot.uni-konstanz.de/publications/implementation-intentions-and-goal-achievement-meta-analysis-effects-and-processes'],
+ ['Di Stefano, Gino, Pisano & Staats (2014): Learning by thinking – reflection and performance. Harvard Business School','https://www.library.hbs.edu/working-knowledge/reflecting-on-work-improves-job-performance']
+];
+const wq=n=>`<a class="weg-ref" href="#weg-src" title="${esc(WEG_SRC[n-1][0])}">${n}</a>`;
+function viewWeg(){
+  const why=(S.goals.find(g=>g.master)||{}).title;
+  M.innerHTML=`<div class="weg">
+  <header class="weg-hero">
+    <div class="weg-kick">Dein Weg</div>
+    <h1>Warum dieses Journal funktioniert</h1>
+    <p class="weg-lead">Nicht mit mehr Disziplin, sondern mit einem besseren Rahmen. Hier erfährst du, was hinter jedem Teil des Erfolgsjournals steckt – und was die Forschung dazu sagt.</p>
+  </header>
+
+  <section class="weg-sec"><div class="weg-n">1</div><div>
+    <h2>Das Hamsterrad – und warum es nicht deine Schuld ist</h2>
+    <p>Arbeit, Termine, Nachrichten, das Handy in der Hand. Am Abend bist du müde, aber das, was dein Leben wirklich verändern würde, ist keinen Schritt weiter. Das liegt nicht an fehlendem Willen. Es liegt daran, wie unser Gehirn gebaut ist.</p>
+    <p>Der Botenstoff <b>Dopamin</b> hilft dem Gehirn zu lernen, was sich lohnt: Nervenzellen reagieren besonders stark, wenn eine Belohnung anders ausfällt als erwartet ${wq(1)}. Für unsere Vorfahren war das überlebenswichtig. Heute nutzen Feeds, Shorts und Snacks genau diesen Mechanismus – ständig kleine, unvorhersehbare Belohnungen, die das Gehirn immer wieder nachfragt.</p>
+    <p>Dazu kommt: Wir sind oft nicht bei der Sache. In einer großen Harvard-Studie waren die Gedanken der Teilnehmenden in fast der Hälfte der wachen Zeit woanders als bei dem, was sie gerade taten – und das machte sie im Schnitt unglücklicher ${wq(2)}.</p>
+    <div class="weg-key">Die gute Nachricht: Dieselben Mechanismen kannst du für dich nutzen. Kleine, sichtbare Erfolge jeden Tag sind auch eine Belohnung – nur eine, die dich voranbringt.</div>
+  </div></section>
+
+  <section class="weg-sec"><div class="weg-n">2</div><div>
+    <h2>Eine Sache statt zehn</h2>
+    <p>Wer zwischen vielen Aufgaben hin- und herspringt, nimmt einen Teil der Aufmerksamkeit jedes Mal mit. Forscher nennen das <b>Aufmerksamkeitsreste</b>: Die Gedanken hängen noch an der letzten Aufgabe, und die nächste leidet darunter ${wq(3)}.</p>
+    <p>Unerledigte Ziele lassen uns außerdem nicht los – sie drängen sich immer wieder in die Gedanken. Experimente zeigen aber: Schon ein <b>konkreter Plan</b> für das, was als Nächstes zu tun ist, beruhigt dieses Gedankenkarussell, und der Kopf wird frei für anderes ${wq(4)}.</p>
+    <div class="weg-key">Deshalb gibt es ein <b>Masterziel</b>${why?` – bei dir: <i>${esc(why)}</i>`:''}, einen <b>Tagesfokus</b> und genau <b>2 Schritte</b> pro Tag. Nicht fünf. Zwei Schritte, die du wirklich schaffst, bringen dich weiter als eine lange Liste, die dich am Abend ausbremst.</div>
+  </div></section>
+
+  <section class="weg-sec"><div class="weg-n">3</div><div>
+    <h2>Kleine Schritte, jeden Tag</h2>
+    <p>Gewohnheiten entstehen durch Wiederholung in derselben Situation – bis etwas automatisch läuft, ohne dass du darüber nachdenken musst. Vielleicht hast du schon gehört, das dauere 21 Tage. Das ist ein Mythos. In der bekanntesten Studie dazu vom University College London brauchten die Teilnehmenden im Schnitt <b>66 Tage</b>, je nach Person und Gewohnheit zwischen 18 und 254 Tagen ${wq(5)}.</p>
+    <p>Und noch etwas zeigte die Studie: Ein einzelner ausgelassener Tag hat den Aufbau der Gewohnheit nicht nennenswert gestört ${wq(5)}.</p>
+    <div class="weg-key">Wenn du nach drei Wochen noch kämpfst, bist du nicht gescheitert – du bist mitten im Prozess. <b>Ein Ausrutscher löscht keinen Fortschritt.</b> Wichtig ist nur, dass du am nächsten Tag wieder einsteigst.</div>
+  </div></section>
+
+  <section class="weg-sec"><div class="weg-n">4</div><div>
+    <h2>Körper und Geist gehören zusammen</h2>
+    <p>Ein klarer Kopf braucht einen Körper, der mitzieht. Eine große Übersichtsarbeit aus fast 100 Reviews mit über 1.000 Studien kam zu dem Ergebnis: Bewegung verbessert Symptome von Depression, Angst und Stress deutlich – bei ganz unterschiedlichen Menschen ${wq(6)}.</p>
+    <p>Genauso wichtig ist das Gegenstück: echte Erholung. Wer nach der Arbeit gedanklich abschalten kann, fühlt sich nachweislich besser und ist am nächsten Tag leistungsfähiger ${wq(7)}.</p>
+    <div class="weg-key">Deshalb stehen im Journal neben deinem Ziel auch deine <b>Gewohnheiten</b> für Körper und Kopf – und die Figur, die sichtbar macht, wie gut du gerade für dich sorgst.</div>
+  </div></section>
+
+  <section class="weg-sec"><div class="weg-n">5</div><div>
+    <h2>Was jeder Teil deines Tages bewirkt</h2>
+    <div class="weg-grid">
+      <div class="weg-card"><div class="weg-ic">🎯</div><h3>Tagesfokus & 2 Schritte</h3><p>Ein klarer Plan für heute nimmt unerledigten Zielen den Druck und lenkt deine Energie auf das, was zählt ${wq(4)}.</p></div>
+      <div class="weg-card"><div class="weg-ic">🙏</div><h3>Dankbarkeit</h3><p>Wer regelmäßig aufschreibt, wofür er dankbar ist, berichtet in Studien über mehr Wohlbefinden – am deutlichsten über mehr positive Gefühle ${wq(8)}.</p></div>
+      <div class="weg-card"><div class="weg-ic">🌅</div><h3>Vorfreude</h3><p>Schon das Warten auf ein schönes Erlebnis macht glücklich – Menschen fühlen sich besser, wenn sie an etwas denken, das sie bald erleben werden ${wq(9)}. Deshalb fragt dich das Journal jeden Tag, worauf du dich freust.</p></div>
+      <div class="weg-card"><div class="weg-ic">🌿</div><h3>Bewusst entspannen</h3><p>Erholung passiert nicht nebenbei. Abschalten, Entspannen und Dinge, die dir guttun, gehören zu den wichtigsten Faktoren für dein Wohlbefinden ${wq(7)}.</p></div>
+      <div class="weg-card"><div class="weg-ic">✅</div><h3>Gewohnheiten abhaken</h3><p>Eine Auswertung von 138 Studien zeigt: Wer seinen Fortschritt regelmäßig festhält, erreicht seine Ziele eher – besonders, wenn er ihn aufschreibt ${wq(10)}.</p></div>
+      <div class="weg-card"><div class="weg-ic">🧭</div><h3>Wenn-dann-Plan</h3><p>„Wenn X passiert, dann tue ich Y.“ Solche Pläne hatten in einer Auswertung von 94 Studien einen mittleren bis großen Effekt auf das Erreichen von Zielen ${wq(11)}.</p></div>
+      <div class="weg-card"><div class="weg-ic">🌙</div><h3>Abendrückblick</h3><p>Wer am Ende des Tages kurz reflektiert, lernt mehr aus seinen Erfahrungen. In einer Studie schnitten Teilnehmende mit 15 Minuten Reflexion pro Tag im Abschlusstest rund 23 % besser ab ${wq(12)}.</p></div>
+      <div class="weg-card"><div class="weg-ic">🗓️</div><h3>Monats-Check</h3><p>Einmal im Monat zurückschauen: Was hast du erreicht, was nimmst du mit? So wird aus vielen einzelnen Tagen ein sichtbarer Weg.</p></div>
+    </div>
+  </div></section>
+
+  <section class="weg-sec"><div class="weg-n">6</div><div>
+    <h2>So nutzt du dein Journal</h2>
+    <div class="weg-steps">
+      <div><b>Morgens · 3 Minuten</b><p>Tagesfokus festlegen, 2 Schritte für dein Ziel wählen, Dankbarkeit und Vorfreude eintragen.</p></div>
+      <div><b>Tagsüber</b><p>Erledigtes abhaken und Gewohnheiten antippen. Die Figur füllt sich mit jedem Häkchen.</p></div>
+      <div><b>Abends · 3 Minuten</b><p>Deinen Erfolg des Tages festhalten und kurz zurückblicken: Was war gut, was machst du morgen besser?</p></div>
+      <div><b>Einmal im Monat</b><p>Monats-Check im Report: Bilanz ziehen und den nächsten Monat ausrichten.</p></div>
+    </div>
+  </div></section>
+
+  <div class="weg-end">Du musst nicht perfekt sein.<br>Du musst nur jeden Tag wiederkommen.</div>
+
+  <section class="weg-src" id="weg-src"><h3>Quellen</h3><p class="hint">Studien zeigen Durchschnittswerte – jeder Mensch ist anders. Die Zahlen sind nach bestem Wissen zusammengefasst.</p>
+    <ol>${WEG_SRC.map(([t,u])=>`<li><a href="${u}" target="_blank" rel="noopener">${esc(t)}</a></li>`).join('')}</ol></section>
+  </div>`;
+}
+
 function viewGew(){
   const wk=weekDays(),t=today();
   const head=`<div></div>${wk.map(d=>`<div class="h" style="${d===t?'color:var(--accent);font-weight:600':''}">${new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'short'})}<br>${+d.slice(8)}.</div>`).join('')}<div class="h">Woche</div>`;
@@ -2180,6 +2319,8 @@ function viewSettings(){
           <textarea id="impTxt" placeholder="Hier den kopierten Text einfügen …" style="margin-top:8px;min-height:80px"></textarea>
           <button class="btn small" id="impGo" style="margin-top:8px">Übernehmen</button></details>
       </div>
+      <div class="card"><h3>📱 Mobilansicht</h3><p class="hint">Was soll unten in der Leiste auf dem Handy stehen? „Mein Tag“ und „Menü“ sind immer da – im Menü findest du alle Seiten. Du kannst bis zu 3 weitere wählen.</p>
+        ${MOB_OPT.map(([k,l])=>{const on=mobSet().includes(k),full=mobSet().length>=4&&!on;return`<label class="mob-opt ${full?'dis':''}"><input type="checkbox" data-mob="${k}" ${on?'checked':''} ${full?'disabled':''}> ${icons[k]}<span>${l}</span></label>`}).join('')}</div>
       ${SB?`<div class="card"><h3>Konto</h3><p class="hint">${cloud?'Angemeldet und synchronisiert.':'Nicht angemeldet.'}</p><button class="btn ghost" id="logout">Abmelden</button></div>`:''}
     </div>
   </div>`;
@@ -2190,6 +2331,7 @@ function viewSettings(){
   bind('#imp',el=>{const f=el.files[0];if(!f)return;f.text().then(t=>{try{const n=normalize(JSON.parse(t));S=n;markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Import erfolgreich.');render()}catch(e){toast('Datei konnte nicht gelesen werden.')}})},'change');
   bind('#impGo',()=>{try{S=normalize(JSON.parse(M.querySelector('#impTxt').value));markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Übernommen ✓');render()}catch(e){toast('Text konnte nicht gelesen werden.')}},'click');
   bind('#logout',doLogout,'click');
+  bind('[data-mob]',el=>{const cur=mobSet().slice(1);const k=el.dataset.mob;S.settings.mobNav=el.checked?[...cur,k].slice(0,3):cur.filter(x=>x!==k);markMeta();renderNav();viewSettings()},'change');
   bind('#tourAgain',startTour,'click');
   bind('[data-ddel]',el=>{S.distractions=S.distractions.filter(x=>x[0]!==el.dataset.ddel);markMeta();viewSettings()},'click');
 }
@@ -2269,7 +2411,7 @@ function renderSheet(){
 
 function sober(){if(S.settings.layout!=='verbindlich')return;M.querySelectorAll('h3,.now-label').forEach(h=>{const n=h.firstChild;if(n&&n.nodeType===3)n.textContent=n.textContent.replace(/^[\p{Extended_Pictographic}\uFE0F\u200d\s]+/u,'')})}
 viewTag=(f=>()=>{f();sober()})(viewTag);viewZiele=(f=>()=>{f();sober()})(viewZiele);viewGew=(f=>()=>{f();sober()})(viewGew);viewWerte=(f=>()=>{f();sober()})(viewWerte);viewReport=(f=>()=>{f();sober()})(viewReport);viewSettings=(f=>()=>{f();sober()})(viewSettings);viewIdeal=(f=>()=>{f();sober()})(viewIdeal);
-function render(){if(page!=='tag')tagDate=null;DAY_OVR=page==='tag'?tagDate:null;applyPhase();renderNav();({tag:viewTag,ziele:viewZiele,gew:viewGew,werte:viewWerte,report:viewReport,settings:viewSettings,ideal:viewIdeal})[page]();sober();renderSheet()}
+function render(){if(page!=='tag')tagDate=null;DAY_OVR=page==='tag'?tagDate:null;applyPhase();renderNav();({tag:viewTag,ziele:viewZiele,gew:viewGew,werte:viewWerte,report:viewReport,settings:viewSettings,ideal:viewIdeal,weg:viewWeg})[page]();sober();renderSheet()}
 render();
 renderSave();
 initCloud();
