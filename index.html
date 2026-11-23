@@ -537,6 +537,9 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
 .mh.td{color:var(--accent);font-weight:700}.mh[disabled]{cursor:default}
 .mq{width:54px;flex:none;text-align:right;font-size:13.5px;color:var(--muted)}.mq.hit{color:#2f7d4f;font-weight:600}
 @media(max-width:760px){.mrow{flex-wrap:wrap;gap:4px 8px}.mname{width:100%}.mhead .mname{display:none}.mcells{gap:2px}.mq{width:44px}}
+.b-lvl{transition:y .7s cubic-bezier(.3,.7,.3,1)}
+.b-out.gold{stroke:#b08d3c;stroke-width:3}
+.b-won{color:#9a7420;font-family:Newsreader,serif;font-size:17px;font-weight:600}
 .b-pct{font-family:Newsreader,serif;font-size:34px;font-weight:600;fill:#9a7420}.b-pbg{fill:#fffdf8;stroke:#d8c38f;stroke-width:1.5}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
@@ -1443,6 +1446,7 @@ function viewTag(){
     ${closeOpen?`<div class="grid thread sec-body">${[checkCard,proudCard,winCard,reflectCard].filter(Boolean).join('')}</div>`:''}
   </section>
 `;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>M.querySelectorAll('.b-lvl').forEach(r=>r.setAttribute('y',r.dataset.to))));
   bind('[data-dn]',el=>{const n=+el.dataset.dn;const nd=n===0?null:addDays(today(),n);tagDate=nd&&nd!==realToday()?nd:null;render();window.scrollTo(0,0)},'click');
   bind('[data-sec]',el=>{const open=el.parentElement.classList.contains('open');setUi(closeKey,!open);viewTag()},'click');
   bind('#goBody',()=>{page='gew';location.hash='gew';render();window.scrollTo(0,0)},'click');
@@ -1737,13 +1741,20 @@ const B_PTS=(()=>{const ai=B_L.findIndex(q=>q[0]===62&&q[1]===200),hi=B_L.findIn
 const B_BODY=(()=>{const p=B_PTS;
   let d=`M${p[0][0]},${p[0][1]}`;for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
   d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)},${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)},${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)} ${p2[0]},${p2[1]}`}return d})();
-let bodySel=null;
+let bodySel=null,bodyLvN=0,bodyLastLvl=null;
 /* Figur: rate = Gesamtwert (0–1) für die Färbung; items = [{h, ok, goal, r, prev}] für Beschriftungen */
-function bodyFigure(rate,{items=null,mini=false,sel=null,pct=false}={}){
+function bodyFigure(rate,{items=null,mini=false,sel=null,pct=false,level=false,from=null}={}){
   const C=BCX,fill=bodyCol(rate);
   let s=``;
+  if(level){const lv=y=>Math.round(652-y*(652-36)),id='blv'+(++bodyLvN),full=rate>=.999;
+    s+=`<g class="b-fill" style="fill:#fff"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
+    s+=`<clipPath id="${id}"><rect class="b-lvl" x="${C-140}" y="${lv(from==null?rate:from)}" data-to="${lv(rate)}" width="280" height="700"/></clipPath>`;
+    s+=`<g class="b-fill" clip-path="url(#${id})" style="fill:${full?'#2f7d4f':'#5a9f73'}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
+    s+=`<ellipse class="b-out ${full?'gold':''}" cx="${C}" cy="74" rx="27" ry="36"/><path class="b-out ${full?'gold':''}" d="${B_BODY}"/>`;
+  }else{
     s+=`<g class="b-fill" style="fill:${fill}"><ellipse cx="${C}" cy="74" rx="27" ry="36"/><path d="${B_BODY}"/></g>`;
-  s+=`<ellipse class="b-out" cx="${C}" cy="74" rx="27" ry="36"/><path class="b-out" d="${B_BODY}"/>`;
+    s+=`<ellipse class="b-out" cx="${C}" cy="74" rx="27" ry="36"/><path class="b-out" d="${B_BODY}"/>`;
+  }
   s+=`<g class="b-anat"><path d="M${C-3},214 q-26,10 -50,-14 M${C+3},214 q26,10 50,-11"/><path d="M${C},220 V302"/><path d="M${C-4},238 q-11,2 -20,-1 M${C+4},238 q11,2 20,-1 M${C-4},258 q-11,2 -20,-1 M${C+4},258 q11,2 20,-1 M${C-4},278 q-10,2 -18,-1 M${C+4},278 q10,2 18,-1"/><path d="M${C-26},224 q-6,40 -2,78 M${C+26},226 q6,40 2,78"/><path d="M${C-42},304 q12,24 34,40 M${C+42},306 q-12,24 -34,40"/></g>`;
   if(items&&items.length){
     // Ausgewogen links/rechts verteilen (nach Körperhöhe sortiert), jede Gewohnheit mit eigenem Punkt
@@ -1822,8 +1833,9 @@ function bodyToday(){const t=today(),wk=weekDays(t);const items=[];S.habits.forE
     if(hFreq(h)!=='weekly')items.push({h,r:v===true?1:0,done:v===true});
     else{const c=wk.filter(d=>d<t&&S.days[d]?.habits?.[h.id]===true).length;if(v===true||c>=h.target)items.push({h,r:1,done:true})}});
   return{items,rate:items.length?items.reduce((a,i)=>a+i.r,0)/items.length:0}}
-function bodyHabTile(inner){const {items,rate}=bodyToday();const n=items.filter(i=>i.done).length;
-  return`<div class="tile wide b-habtile"><div class="b-hf">${bodyFigure(rate,{mini:true,pct:true})}<div class="b-hcap"><b>Heute ${n} von ${items.length}</b> Gewohnheiten</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
+function bodyHabTile(inner){const {items,rate}=bodyToday();const n=items.filter(i=>i.done).length,full=items.length&&n===items.length;
+  const from=bodyLastLvl&&bodyLastLvl.d===today()?bodyLastLvl.r:rate;bodyLastLvl={d:today(),r:rate};
+  return`<div class="tile wide b-habtile ${full?'won':''}"><div class="b-hf">${bodyFigure(rate,{mini:true,pct:true,level:true,from})}<div class="b-hcap">${full?'<b class="b-won">Tag gewonnen.</b>':`<b>Heute ${n} von ${items.length}</b> Gewohnheiten`}</div><button class="b-link" id="goBody">Körper-Ansicht →</button></div><div class="b-hc">${inner}</div></div>`}
 function monthDaysUpTo(m){const t=today(),last=new Date(+m.slice(0,4),+m.slice(5,7),0).getDate();const out=[];for(let i=1;i<=last;i++){const d=m+'-'+String(i).padStart(2,'0');if(d<=t)out.push(d)}return out}
 function bodyCompareHTML(m){
   if(!S.habits.length)return'';
