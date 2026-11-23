@@ -583,6 +583,11 @@ button.mc{cursor:pointer}button.mc:hover{border-color:var(--accent)}
   html.appmode main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:110px}
   html.appmode nav.side{position:relative!important;bottom:auto!important;order:2;flex:none}
 }
+.sw-row{display:flex;align-items:center;gap:12px;cursor:pointer;font-size:15px;margin-top:6px}
+.sw-row input{position:absolute;opacity:0;width:0;height:0}
+.sw-tog{width:44px;height:26px;border-radius:13px;background:#d6cfc1;position:relative;transition:.2s;flex:none}
+.sw-tog:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s}
+.sw-row input:checked+.sw-tog{background:var(--accent)}.sw-row input:checked+.sw-tog:after{left:21px}
 .b-fill{stroke:none;transition:fill .4s ease}
 .b-anat{fill:none;stroke:#1c2230;stroke-width:1.2;opacity:.3;stroke-linecap:round}.b-anat circle{fill:#1c2230;stroke:none}
 .b-line{fill:none;stroke:#c29a2e;stroke-width:1.3;stroke-linejoin:round}.b-line.on{stroke-width:2.6}
@@ -2316,6 +2321,8 @@ function viewSettings(){
         <h3>Dein Name</h3><p class="hint">Für die Begrüßung.</p>
         <input type="text" id="sName" value="${esc(S.name)}">
       </div>
+      <div class="card"><h3>🎙️ KI-Spracheingabe</h3><p class="hint">Der Mikrofon-Knopf unten rechts auf „Mein Tag“: Du sprichst deinen Tag ein, und die KI trägt alles in die passenden Felder ein.</p>
+        <label class="sw-row"><input type="checkbox" id="sVoice" ${S.settings.voice!==false?'checked':''}><span class="sw-tog"></span><span>${S.settings.voice!==false?'Aktiviert':'Deaktiviert'}</span></label></div>
       <div class="card">
         <h3>Tutorial</h3><p class="hint">Die kurze Einführung noch einmal ansehen.</p>
         <button class="btn ghost" id="tourAgain">▶ Tutorial starten</button>
@@ -2339,6 +2346,7 @@ function viewSettings(){
   bind('#imp',el=>{const f=el.files[0];if(!f)return;f.text().then(t=>{try{const n=normalize(JSON.parse(t));S=n;markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Import erfolgreich.');render()}catch(e){toast('Datei konnte nicht gelesen werden.')}})},'change');
   bind('#impGo',()=>{try{S=normalize(JSON.parse(M.querySelector('#impTxt').value));markMeta();Object.keys(S.days).forEach(d=>dirty.add('d-'+d));schedule();toast('Übernommen ✓');render()}catch(e){toast('Text konnte nicht gelesen werden.')}},'click');
   bind('#logout',doLogout,'click');
+  bind('#sVoice',el=>{S.settings.voice=el.checked;markMeta();renderSheet();viewSettings();toast(el.checked?'Spracheingabe aktiviert':'Spracheingabe deaktiviert',1600)},'change');
   bind('[data-mob]',el=>{const cur=mobSet().slice(1);const k=el.dataset.mob;S.settings.mobNav=el.checked?[...cur,k].slice(0,3):cur.filter(x=>x!==k);markMeta();renderNav();viewSettings()},'change');
   bind('#tourAgain',startTour,'click');
   bind('[data-ddel]',el=>{S.distractions=S.distractions.filter(x=>x[0]!==el.dataset.ddel);markMeta();viewSettings()},'click');
@@ -2397,7 +2405,7 @@ let sheetOpen=false;
 function renderSheet(){
   let fab=document.getElementById('fab');
   if(!fab){fab=document.createElement('button');fab.id='fab';fab.className='fab';fab.title='Tag einsprechen';fab.innerHTML='🎙️';fab.onclick=()=>{sheetOpen=true;renderSheet()};document.body.appendChild(fab)}
-  fab.style.display=page==='tag'&&!sheetOpen?'grid':'none';
+  fab.style.display=page==='tag'&&!sheetOpen&&S.settings.voice!==false?'grid':'none';
   let bg=document.getElementById('sheet');
   if(!sheetOpen){if(bg)bg.remove();return}
   if(!bg){bg=document.createElement('div');bg.id='sheet';bg.className='sheet-bg';bg.onclick=e=>{if(e.target===bg){sheetOpen=false;renderSheet()}};document.body.appendChild(bg)}
