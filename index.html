@@ -900,8 +900,50 @@ function renderLogoutMobile(){let b=document.getElementById('logoutMobile');if(!
 function renderSave(){renderLogoutMobile();let el=document.getElementById('savepill');if(!el){el=document.createElement('div');el.id='savepill';document.body.appendChild(el)}
   const st=!cloud?'local':saveSt.st;el.className='savepill '+st;
   el.innerHTML='<i></i>'+(st==='local'?(CONFIGURED?'Nicht verbunden – nur auf diesem Gerät':'Testmodus – nur auf diesem Gerät'):st==='saving'?'Speichert …':st==='error'?'⚠ Nicht gespeichert – wird erneut versucht':'✓ Gespeichert'+(saveSt.t?' · '+saveSt.t:''))}
-function markDay(d=today()){dirty.add('d-'+d);schedule()}
-function markMeta(){dirty.add('meta');schedule()}
+
+/* ---------- Benachrichtigungen: Einstellungen + vorbereitete Texte an den Server ---------- */
+const NFN=()=>CFG.SUPABASE_URL+'/functions/v1/notify';
+async function nCall(body){const {data:{session}}=await SB.auth.getSession();const r=await fetch(NFN(),{method:'POST',headers:{'Content-Type':'application/json',apikey:CFG.SUPABASE_ANON_KEY,Authorization:'Bearer '+(session?session.access_token:'')},body:JSON.stringify(body)});return r.json()}
+function closedDay(x){return !!(x&&((x.win||'').trim()||(x.good||'').trim()||(x.learn||'').trim()||x.mood))}
+function reviewText(dt){const x=S.days[dt];if(!closedDay(x))return null;
+  const due=S.habits.filter(h=>isDue(h,dt)&&hFreq(h)!=='weekly');
+  const ok=due.filter(h=>h.type==='avoid'?x.habits?.[h.id]!==false&&x.habits?.[h.id]!==undefined:x.habits?.[h.id]===true).length;
+  const slips=due.filter(h=>h.type==='avoid'&&x.habits?.[h.id]===false).length;
+  const ts=(x.tasks||[]).filter(t=>(t.t||'').trim()),td=ts.filter(t=>t.done).length;
+  const hab=due.length?ok/due.length:1,tk=ts.length?td/ts.length:(x.goalDone?1:0);
+  const good=hab>=.5&&(tk>=1||x.goalDone||(x.mood>=4&&tk>=.5));
+  const facts=[];if(ts.length)facts.push(td===ts.length?(ts.length===2?'beide Aufgaben erledigt':'deine Aufgaben erledigt'):`${td} von ${ts.length} Aufgaben erledigt`);
+  if(x.goalDone)facts.push('Tagesfokus erreicht');if(due.length)facts.push(`Gewohnheiten ${ok} von ${due.length}`);
+  const win=(x.win||'').trim(),learn=(x.learn||'').trim();const q=t=>'„'+t.replace(/^[„"“]+|[“"”]+$/g,'')+'“';
+  if(good){const pos=facts.filter(f=>!/^\d+ von/.test(f));return `Gestern war ein starker Tag${pos.length?': '+pos.join(', '):''}.${win?' Dein Erfolg: '+q(win)+'.':''} Genau so entstehen Ergebnisse – mach heute dort weiter, wo du gestern aufgehört hast.`}
+  return `Gestern lief nicht alles nach Plan${facts.length?' ('+facts.join(', ')+')':''}${slips?', dazu ein Ausrutscher':''}. Das ist okay – wichtig ist, dass du dranbleibst.${win?' Trotzdem gab es einen Erfolg: '+q(win)+'.':''}${learn?' Dein Vorsatz: '+q(learn)+'.':''} Heute ist ein neuer Tag und eine neue Chance.`}
+function habitsText(dt){const x=S.days[dt]||{};const due=S.habits.filter(h=>isDue(h,dt)&&hFreq(h)!=='weekly'&&h.type==='do');if(!due.length)return null;
+  const open=due.filter(h=>x.habits?.[h.id]!==true);
+  return open.length?`Gewohnheiten heute: ${due.length-open.length} von ${due.length} erledigt. Noch offen: ${open.map(h=>h.name).join(', ')}.`:`Alle ${due.length} Gewohnheiten heute erledigt – stark! 💪`}
+let nSyncT=null;
+function notifySync(){if(!(SB&&cloud&&UID))return;clearTimeout(nSyncT);nSyncT=setTimeout(async()=>{try{
+  const N=notifCfg();if(!N.morning.on&&!N.evening.on&&!S.settings.notify)return;
+  const m=masterGoal();const why=m&&m.why?m.why.trim().replace(/^[„"“]+|[“"”]+$/g,''):'';
+  await SB.from('notify_settings').upsert({user_id:UID,email:N.email||null,name:(S.name||'').trim()||null,tz:Intl.DateTimeFormat().resolvedOptions().timeZone||'Europe/Berlin',morning:N.morning,evening:N.evening,goal_text:m?m.title+(why?' – Warum: „'+why+'“':''):null,app_url:location.origin+location.pathname,updated_at:new Date().toISOString()});
+  const t=realToday(),tm=addDays(t,1),y=addDays(t,-1);
+  for(const [src,dst] of [[y,t],[t,tm]]){const r=reviewText(src);
+    if(r)await SB.from('notify_queue').upsert({user_id:UID,kind:'morning',for_date:dst,body:r});
+    else await SB.from('notify_queue').delete().eq('user_id',UID).eq('kind','morning').eq('for_date',dst)}
+  const h=habitsText(t);if(h)await SB.from('notify_queue').upsert({user_id:UID,kind:'evening',for_date:t,body:h});
+  await SB.from('notify_queue').delete().eq('user_id',UID).lt('for_date',y);
+}catch(e){console.warn('notify',e)}},2500)}
+function b64u(s){const p='='.repeat((4-s.length%4)%4),b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))}
+async function pushOn(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window)){toast('Push wird von diesem Browser nicht unterstützt.',3000);return false}
+  const perm=await Notification.requestPermission();if(perm!=='granted'){toast('Push wurde nicht erlaubt.',2500);return false}
+  try{const reg=await navigator.serviceWorker.ready;const {vapid}=await nCall({action:'init'});
+    let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(vapid)});
+    const j=sub.toJSON();const {error}=await SB.from('push_subs').upsert({endpoint:j.endpoint,user_id:UID,p256dh:j.keys.p256dh,auth:j.keys.auth});if(error)throw error;
+    try{localStorage.setItem('ej-push','1')}catch(e){}toast('Push auf diesem Gerät aktiviert ✓',2200);return true}
+  catch(e){console.warn(e);toast('Push konnte nicht aktiviert werden.',3000);return false}}
+async function pushState(){try{if(!('serviceWorker' in navigator)||!('PushManager' in window))return 'na';if(Notification.permission==='denied')return 'denied';const reg=await navigator.serviceWorker.getRegistration();const sub=reg&&await reg.pushManager.getSubscription();return sub?'on':'off'}catch(e){return 'off'}}
+function markDay(d=today()){dirty.add('d-'+d);schedule();notifySync()}
+function markMeta(){dirty.add('meta');schedule();notifySync()}
 function schedule(){
   try{localStorage.setItem(LKEY,JSON.stringify(S))}catch(e){}
   if(cloud)setSave('saving');
@@ -951,7 +993,7 @@ async function initCloud(){
     S=normalize(n);cloud=true;
     try{localStorage.setItem(LKEY,JSON.stringify(S))}catch(e){}
     plain.forEach(k=>queue(k)); // alte, unverschlüsselte Einträge jetzt verschlüsselt speichern
-    setSync();render();setSave('ok');
+    setSync();render();setSave('ok');notifySync();
     if(!S.settings.tutorialDone)setTimeout(startTour,400);
   }catch(e){console.warn('cloud init',e);toast('Keine Verbindung – du arbeitest mit dem letzten Stand auf diesem Gerät.',4000);renderSave();setSync()}
 }
@@ -2356,14 +2398,14 @@ function viewSettings(){
         ${dl().map(x=>`<div class="set-row"><span>${esc(x[1])}</span><button class="x" data-ddel="${x[0]}" aria-label="Löschen">×</button></div>`).join('')||'<p class="empty">Noch keine Ablenkungen.</p>'}
         <div class="set-add"><select id="sdI" style="width:72px">${DI.map(i=>`<option>${i}</option>`).join('')}</select><input type="text" id="sdN" class="no-ag" placeholder="z. B. Netflix, Online-Shopping, Grübeln …"><button class="btn small" id="sdAdd">Hinzufügen</button></div>
       </div>`,
-  notif:`<div class="n-note"><b>In Vorbereitung.</b> Deine Einstellungen werden schon gespeichert – der Versand von E-Mails und Push-Nachrichten wird gerade eingerichtet. Sobald er läuft, bekommst du hier Bescheid.</div>
+  notif:`<div class="n-note"><b>Push ist startklar.</b> Aktiviere Push auf deinem Handy und schalte Morgen und/oder Abend ein. E-Mail folgt, sobald der Mailversand eingerichtet ist.</div>
       <div class="card"><h3>Kontakt</h3><p class="hint">An diese Adresse gehen deine E-Mails.</p>
         <input type="email" id="nMail" class="no-ag" value="${esc(N.email)}" placeholder="deine@mail.de">
-        <div class="n-push"><span>Push auf diesem Gerät: <b>${'Notification' in window?({granted:'erlaubt',denied:'blockiert',default:'noch nicht erlaubt'})[Notification.permission]:'nicht unterstützt'}</b></span>${'Notification' in window&&Notification.permission==='default'?'<button class="btn small ghost" id="nPerm">Push erlauben</button>':''}</div>
+        <div class="n-push" id="nPushBox"><span>Push auf diesem Gerät: <b id="nPushSt">…</b></span><button class="btn small ghost" id="nPerm" style="display:none">Push aktivieren</button><button class="btn small ghost" id="nTest" style="display:none">Test senden</button></div>
         ${'Notification' in window&&Notification.permission==='denied'?'<p class="hint" style="margin:6px 0 0">Push ist im Browser blockiert. Du kannst es in den Website-Einstellungen deines Browsers wieder erlauben.</p>':''}
       </div>
-      ${[['morning','☀️ Morgenmail','Startet deinen Tag mit Fokus.',[['goal','Mein Masterziel und mein Warum'],['review','KI-Rückblick auf gestern – lobt, was gut lief, und richtet den Blick nach vorn'],['plan','Erinnerung: Tagesfokus und 2 Schritte festlegen']],[5,6,7,8,9,10]],
-         ['evening','🌙 Abendmail','Erinnert dich an deinen Tagesabschluss.',[['reflect','Erinnerung an die Abendreflexion'],['habits','Stand deiner Gewohnheiten heute'],['win','Frage nach deinem Erfolg des Tages']],[17,18,19,20,21,22,23]]].map(([k,t,sub,items,hours])=>{const c=N[k];return`<div class="card ${c.on?'':'n-off'}">
+      ${[['morning','☀️ Am Morgen','Startet deinen Tag mit Fokus.',[['goal','Mein Masterziel und mein Warum'],['review','KI-Rückblick auf gestern – lobt, was gut lief, und richtet den Blick nach vorn'],['plan','Erinnerung: Tagesfokus und 2 Schritte festlegen']],[5,6,7,8,9,10]],
+         ['evening','🌙 Am Abend','Erinnert dich an deinen Tagesabschluss.',[['reflect','Erinnerung an die Abendreflexion'],['habits','Stand deiner Gewohnheiten heute'],['win','Frage nach deinem Erfolg des Tages']],[17,18,19,20,21,22,23]]].map(([k,t,sub,items,hours])=>{const c=N[k];return`<div class="card ${c.on?'':'n-off'}">
         <div class="n-top"><div><h3>${t}</h3><p class="hint" style="margin:2px 0 0">${sub}</p></div><label class="sw-row" style="margin:0"><input type="checkbox" data-non="${k}" ${c.on?'checked':''}><span class="sw-tog"></span></label></div>
         <div class="n-body">
           <div class="n-line"><span>Uhrzeit</span><select data-ntime="${k}" style="width:120px">${hours.flatMap(h=>[h+':00',h+':30']).map(x=>{const v=x.padStart(5,'0');return`<option value="${v}" ${c.time===v?'selected':''}>${x} Uhr</option>`}).join('')}</select></div>
@@ -2371,7 +2413,7 @@ function viewSettings(){
           <div class="n-inh">Inhalt</div>
           ${items.map(([ik,il])=>`<label class="n-item"><input type="checkbox" data-nit="${k}|${ik}" ${c.items.includes(ik)?'checked':''}> <span>${il}</span></label>`).join('')}
         </div></div>`}).join('')}
-      <p class="hint" style="font-size:13px">🔒 Deine Journal-Einträge bleiben verschlüsselt. Für die Mails wird später nur der fertige Text verschickt, den deine App vorbereitet – nicht dein Journal.</p>`,
+      <p class="hint" style="font-size:13px">🔒 Deine Journal-Einträge bleiben verschlüsselt. Für Benachrichtigungen bereitet deine App nur den kurzen Rückblick-Text vor (z. B. Erfolg und Vorsatz von gestern) – dein Journal selbst verlässt das Gerät nie unverschlüsselt.</p>`,
   data:`<div class="card">
         <h3>Datensicherung</h3><p class="hint">Einmal im Monat exportieren – die Datei ist deine Sicherung.</p>
         <div class="row" style="flex-wrap:wrap"><button class="btn" id="exp">⬇ Daten exportieren</button><label class="btn ghost" style="cursor:pointer">⬆ Importieren<input type="file" id="imp" accept="application/json" style="display:none"></label></div>
@@ -2405,7 +2447,10 @@ function viewSettings(){
   bind('[data-ntime]',el=>{N[el.dataset.ntime].time=el.value;NS();toast('Gespeichert ✓',1200)},'change');
   bind('[data-nch]',el=>{const [k,c]=el.dataset.nch.split('|');N[k][c]=el.checked;NS()},'change');
   bind('[data-nit]',el=>{const [k,i]=el.dataset.nit.split('|');const L=N[k].items;N[k].items=el.checked?[...new Set([...L,i])]:L.filter(x=>x!==i);NS()},'change');
-  bind('#nPerm',()=>{Notification.requestPermission().then(()=>viewSettings())},'click');
+  bind('#nPerm',async()=>{if(!(SB&&cloud)){toast('Push geht nur, wenn du angemeldet bist.',2500);return}if(await pushOn()){if(!N.morning.push&&!N.evening.push){N.morning.push=true;N.evening.push=true}NS()}viewSettings()},'click');
+  bind('#nTest',async el=>{el.disabled=true;el.textContent='Sende …';try{notifySync();await new Promise(r=>setTimeout(r,3000));const r=await nCall({action:'test',kind:new Date().getHours()>=12?'evening':'morning'});toast(r.ok&&r.sent&&r.sent.length?'Test gesendet – schau in deine Benachrichtigungen.':'Nichts angekommen: '+(r.error||'kein Gerät aktiviert'),3500)}catch(e){toast('Test fehlgeschlagen.',2500)}el.disabled=false;el.textContent='Test senden'},'click');
+  if(setSec==='notif')pushState().then(st=>{const b=document.getElementById('nPushSt');if(!b)return;b.textContent={on:'aktiv ✓',off:'nicht aktiv',denied:'im Browser blockiert',na:'nicht unterstützt'}[st];
+    const p=document.getElementById('nPerm'),t=document.getElementById('nTest');if(p)p.style.display=st==='off'?'':'none';if(t)t.style.display=st==='on'?'':'none'});
   bind('[data-ddel]',el=>{S.distractions=S.distractions.filter(x=>x[0]!==el.dataset.ddel);markMeta();viewSettings()},'click');
   const addD=()=>{const n=M.querySelector('#sdN').value.trim();if(!n){M.querySelector('#sdN').focus();return}S.distractions.push(['c'+uid(),M.querySelector('#sdI').value+' '+n]);markMeta();toast('Ablenkung hinzugefügt ✓',1400);viewSettings();setTimeout(()=>{const i=M.querySelector('#sdN');if(i)i.focus()},30)};
   bind('#sdAdd',addD,'click');
